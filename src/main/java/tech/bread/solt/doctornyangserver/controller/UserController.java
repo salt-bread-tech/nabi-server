@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.service.UserService;
@@ -24,5 +25,10 @@ public class UserController {
     @PostMapping("/login")
     public int login(@RequestBody LoginRequest request){
         return userService.login(request);
+    }
+
+    @PostMapping("enter-body-information")
+    public int enterBodyInformation(@RequestBody EnterBodyInformationRequest request){
+        return userService.enterBodyInformation(request);
     }
 }
