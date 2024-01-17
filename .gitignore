@@ -166,6 +166,7 @@ $RECYCLE.BIN/
 *.iml
 *.ipr
 /src/main/resources/application.properties
+/src/main/java/tech/bread/solt/doctornyangserver/util/KeySet.java
 
 ### NetBeans ###
 /nbproject/private/
