@@ -27,7 +27,7 @@ public class UserController {
         return userService.login(request);
     }
 
-    @PostMapping("/Prescription")
+    @PostMapping("/prescription")
     public int addPrescription(@RequestBody PrescriptionRequest request) {
         return userService.addPrescription(request);
     }
