@@ -3,6 +3,7 @@ package tech.bread.solt.doctornyangserver.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.PrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
@@ -48,6 +49,11 @@ public class UserServiceImpl implements UserService{
             System.out.println("로그인 성공");
             return 200;
         }
+    }
+
+    @Override
+    public int addPrescription(PrescriptionRequest request) {
+        return 0;
     }
 
     private boolean isUnique(String id){
