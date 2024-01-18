@@ -10,6 +10,9 @@ import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,15 +29,26 @@ public class UserServiceImpl implements UserService{
         if (!isUnique(request.getId())) {
             System.out.println("회원가입 실패: 아이디 중복");
             result = 400;
-        } else {
-            userRepo.save(User.builder()
-                    .id(request.getId())
-                    .password(request.getPassword())
-                    .nickname(request.getNickname())
-                    .birthDate(request.getBirthDate())
-                    .build());
-            System.out.println("회원가입 성공!");
-            result = 200;
+        }
+        else {
+            String salt = getSalt();
+
+            try {
+                userRepo.save(User.builder()
+                        .id(request.getId())
+                        .password(hashing(request.getPassword(), salt))
+                        .salt(salt)
+                        .nickname(request.getNickname())
+                        .birthDate(request.getBirthDate())
+                        .build());
+                System.out.println("회원가입 성공!");
+
+                result = 200;
+            }
+            catch (NoSuchAlgorithmException e) {
+                System.out.println("해싱 오류");
+                throw new RuntimeException(e);
+            }
         }
         return result;
     }
@@ -66,7 +80,7 @@ public class UserServiceImpl implements UserService{
         if(bmi < 0 || bmi > 200){
             System.out.println("유효하지 않은 BMI 값");
             return 400;
-        } else if (bmr == 0) {
+        } else if (bmr == 0 || bmr == 200) {
             System.out.println("유효하지 않은 BMR 값");
             return 500;
         } else {
@@ -90,7 +104,19 @@ public class UserServiceImpl implements UserService{
     private boolean checkPassword(String id, String password){
         Optional<User> user = userRepo.findById(id);
 
-        return user.isPresent() && user.get().getPassword().equals(password);
+        if(user.isPresent()){
+            String salt = user.get().getSalt();
+
+            try {
+                if(hashing(password, salt).equals(user.get().getPassword())){
+                    return true;
+                }
+            }
+            catch (NoSuchAlgorithmException e){
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
     }
 
     private int setBMIRangeId(double bmi){
@@ -125,5 +151,36 @@ public class UserServiceImpl implements UserService{
     private double calcBMI(double weight, double height){
         double heightToMeter = height / 100;
         return weight / (heightToMeter * heightToMeter);
+    }
+
+    private String hashing(String password, String salt) throws NoSuchAlgorithmException {
+        byte[] passwordBytes = password.getBytes();
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+
+        for (int i = 0; i < 100; i++){
+            String str = byteToString(passwordBytes) + salt;
+            messageDigest.update(str.getBytes());
+            passwordBytes = messageDigest.digest();
+        }
+
+        return byteToString(passwordBytes);
+    }
+
+    private String byteToString(byte[] bytes){
+        StringBuilder sb = new StringBuilder();
+
+        for(byte a : bytes){
+            sb.append(String.format("%02x", a));
+        }
+
+        return sb.toString();
+    }
+
+    private String getSalt(){
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] bytes = new byte[16];
+        secureRandom.nextBytes(bytes);
+
+        return byteToString(bytes);
     }
 }
