@@ -17,9 +17,8 @@ public class Medicine {
     @Column(name = "id")
     Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "medicine_id")
-    MedicineInformation medicineId;
+    @Column(name = "medicine_name")
+    String medicineName;
 
     @ManyToOne
     @JoinColumn(name = "prescription_id")
