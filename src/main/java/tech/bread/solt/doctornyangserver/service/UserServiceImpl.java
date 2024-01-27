@@ -2,11 +2,18 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
+import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 import tech.bread.solt.doctornyangserver.model.entity.User;
+import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +21,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
 
     private final UserRepo userRepo;
+    private final BMIRangeRepo bmiRangeRepo;
     @Override
     public int register(RegisterRequest request) {
         int result;
@@ -21,15 +29,26 @@ public class UserServiceImpl implements UserService{
         if (!isUnique(request.getId())) {
             System.out.println("회원가입 실패: 아이디 중복");
             result = 400;
-        } else {
-            userRepo.save(User.builder()
-                    .id(request.getId())
-                    .password(request.getPassword())
-                    .nickname(request.getNickname())
-                    .birthDate(request.getBirthDate())
-                    .build());
-            System.out.println("회원가입 성공!");
-            result = 200;
+        }
+        else {
+            String salt = getSalt();
+
+            try {
+                userRepo.save(User.builder()
+                        .id(request.getId())
+                        .password(hashing(request.getPassword(), salt))
+                        .salt(salt)
+                        .nickname(request.getNickname())
+                        .birthDate(request.getBirthDate())
+                        .build());
+                System.out.println("회원가입 성공!");
+
+                result = 200;
+            }
+            catch (NoSuchAlgorithmException e) {
+                System.out.println("해싱 오류");
+                throw new RuntimeException(e);
+            }
         }
         return result;
     }
@@ -50,6 +69,32 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    @Override
+    public int enterBodyInformation(EnterBodyInformationRequest request) {
+        double bmi = calcBMI(request.getWeight(), request.getHeight());
+        int bmiId = setBMIRangeId(bmi);
+        BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
+
+        double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
+
+        if(bmi < 0 || bmi > 200){
+            System.out.println("유효하지 않은 BMI 값");
+            return 400;
+        } else if (bmr == 0 || bmr == 200) {
+            System.out.println("유효하지 않은 BMR 값");
+            return 500;
+        } else {
+            User user = userRepo.findOneByUid(request.getId());
+            user.setHeight(request.getHeight());
+            user.setWeight(request.getWeight());
+            user.setBmr(bmr);
+            user.setBmiRangeId(bmiRange);
+            userRepo.save(user);
+
+            return 200;
+        }
+    }
+
     private boolean isUnique(String id){
         Optional<User> user = userRepo.findById(id);
 
@@ -59,6 +104,83 @@ public class UserServiceImpl implements UserService{
     private boolean checkPassword(String id, String password){
         Optional<User> user = userRepo.findById(id);
 
-        return user.isPresent() && user.get().getPassword().equals(password);
+        if(user.isPresent()){
+            String salt = user.get().getSalt();
+
+            try {
+                if(hashing(password, salt).equals(user.get().getPassword())){
+                    return true;
+                }
+            }
+            catch (NoSuchAlgorithmException e){
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
+    }
+
+    private int setBMIRangeId(double bmi){
+        int bmiId = 0;
+        List<BMIRange> ranges = bmiRangeRepo.findAll();
+
+        for (BMIRange b : ranges){
+            if(bmi < 18.5)
+                return 0;
+            else if (bmi > 35.0) {
+                return 5;
+            } else if(b.getMax() < bmi){
+                bmiId = b.getId() + 1;
+            }
+        }
+
+        return bmiId;
+    }
+
+    private double calcBMR(String sex, double weight, double height, int age) {
+        // 남성: 66.5 + (13.75 X 체중 kg) + (5.003 X 키 cm) - (6.75 X 나이)
+        // 여성: 655.1 + (9.563 X 체중 kg) + (1.850 X 키 cm) - (4.676 X 나이)
+        if(sex.equals("남성")) {
+            return 66.5 + (13.75 * weight) + (5.003 * height) - (6.75 * age);
+        }
+        else if(sex.equals("여성"))
+            return 655.1 + (9.563 * weight) + (1.850 * height) - (4.676 * age);
+        else
+            return 0;
+    }
+
+    private double calcBMI(double weight, double height){
+        double heightToMeter = height / 100;
+        return weight / (heightToMeter * heightToMeter);
+    }
+
+    private String hashing(String password, String salt) throws NoSuchAlgorithmException {
+        byte[] passwordBytes = password.getBytes();
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+
+        for (int i = 0; i < 100; i++){
+            String str = byteToString(passwordBytes) + salt;
+            messageDigest.update(str.getBytes());
+            passwordBytes = messageDigest.digest();
+        }
+
+        return byteToString(passwordBytes);
+    }
+
+    private String byteToString(byte[] bytes){
+        StringBuilder sb = new StringBuilder();
+
+        for(byte a : bytes){
+            sb.append(String.format("%02x", a));
+        }
+
+        return sb.toString();
+    }
+
+    private String getSalt(){
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] bytes = new byte[16];
+        secureRandom.nextBytes(bytes);
+
+        return byteToString(bytes);
     }
 }
