@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -13,5 +13,5 @@ public class RegisterRequest {
     private String id;
     private String password;
     private String nickname;
-    private Date birthDate;
+    private LocalDate birthDate;
 }
