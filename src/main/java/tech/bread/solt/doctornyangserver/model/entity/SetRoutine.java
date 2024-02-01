@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tech.bread.solt.doctornyangserver.util.Times;
 
 import java.util.Date;
 
@@ -29,14 +28,14 @@ public class SetRoutine {
     Routine routineId;
 
     @Column(name = "perform")
-    Boolean perform;
+    Integer perform;
 
     @Column(name = "end_date")
     Date endDate;
 
-    @Column(name = "daily_repeat")
-    Integer dailyRepeat;
+    @Column(name = "max_perform")
+    Integer maxPerform;
 
-    @Column(name = "times")
-    Times times;
+    @Column(name = "completion")
+    Boolean completion;
 }
