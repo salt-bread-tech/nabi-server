@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService{
         if(bmi < 0 || bmi > 200){
             System.out.println("유효하지 않은 BMI 값");
             return 400;
-        } else if (bmr == 0 || bmr == 200) {
+        } else if (bmr < 0 || bmr > 10000) {
             System.out.println("유효하지 않은 BMR 값");
             return 500;
         } else {
