@@ -23,6 +23,9 @@ public class Prescription {
     @JoinColumn(name = "user_uid")
     User userUid;
 
+    @Column(name = "name")
+    String name;
+
     @Column(name = "date")
     Date date;
 }
