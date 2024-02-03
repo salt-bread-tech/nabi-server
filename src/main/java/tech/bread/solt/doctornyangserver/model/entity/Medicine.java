@@ -35,4 +35,7 @@ public class Medicine {
 
     @Column(name = "once_dosage")
     Integer onceDosage;
+
+    @Column(name = "medicine_dosage")
+    String medicineDosage;
 }
