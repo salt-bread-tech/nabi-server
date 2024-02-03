@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tech.bread.solt.doctornyangserver.util.Times;
+import tech.bread.solt.doctornyangserver.util.TimesConverter;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -21,10 +23,11 @@ public class Dosage {
     Integer id;
 
     @Column(name = "date")
-    Date date;
+    LocalDate date;
 
-    @Column(name = "slot")
-    Times slot;
+    @Column(name = "times")
+    @Convert(converter = TimesConverter.class)
+    Times times;
 
     @Column(name = "medicine_taken")
     Boolean medicineTaken;
