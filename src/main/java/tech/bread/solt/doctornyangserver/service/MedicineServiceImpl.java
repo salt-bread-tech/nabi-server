@@ -1,3 +1,4 @@
+/*
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
@@ -30,4 +31,4 @@ public class MedicineServiceImpl implements MedicineService{
 
         return 200;
     }
-}
+}*/

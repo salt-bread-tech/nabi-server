@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest.MedicineTaking;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
 import tech.bread.solt.doctornyangserver.model.entity.Prescription;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -23,7 +24,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     private final MedicineRepo medicineRepo;
 
     @Override
-    public int addPrescriptions(PostPrescriptionRequest request) {
+    public int addPrescription(PostPrescriptionRequest request) {
         Optional<User> user = userRepo.findById(request.getUid());
         List<MedicineTaking> medicineTakingList = request.getMedicineTakings();
         Prescription prescription;
@@ -53,5 +54,24 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         }
 
         return 0;
+    }
+
+    @Override
+    public List<GetPrescriptionsResponse> getPrescriptions(int uid) {
+        Optional<User> user = userRepo.findById(uid);
+        List<Prescription> prescriptions = new ArrayList<>();
+        List<GetPrescriptionsResponse> responses = new ArrayList<>();
+
+        if (user.isPresent()) {
+            prescriptions = prescriptionRepo.getPrescriptionsByUserUid(user.get());
+
+            for (Prescription p : prescriptions) {
+                responses.add(new GetPrescriptionsResponse(p.getName(), p.getDate()));
+            }
+
+            return responses;
+        }
+
+        return responses;
     }
 }
