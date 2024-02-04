@@ -10,6 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetPrescriptionsResponse {
+    private int prescriptionId;
     private String name;
     private Date date;
 }

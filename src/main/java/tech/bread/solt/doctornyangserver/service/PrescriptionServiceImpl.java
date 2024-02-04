@@ -66,7 +66,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
             prescriptions = prescriptionRepo.getPrescriptionsByUserUid(user.get());
 
             for (Prescription p : prescriptions) {
-                responses.add(new GetPrescriptionsResponse(p.getName(), p.getDate()));
+                responses.add(new GetPrescriptionsResponse(p.getId(), p.getName(), p.getDate()));
             }
 
             return responses;
