@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest.MedicineTaking;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
 import tech.bread.solt.doctornyangserver.model.entity.Prescription;
@@ -73,5 +74,34 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         }
 
         return responses;
+    }
+
+    @Override
+    public GetPrescriptionResponse getPrescription(int prescriptionId) {
+        Optional<Prescription> prescription = prescriptionRepo.getPrescriptionById(prescriptionId);
+        GetPrescriptionResponse response = new GetPrescriptionResponse();
+        List<GetPrescriptionResponse.MedicineTaking> medicineTakings = new ArrayList<>();
+
+        if (prescription.isPresent()) {
+            Prescription p = prescription.get();
+            List<Medicine> medicines = medicineRepo.findAllByPrescriptionId(p);
+
+            for (Medicine m : medicines) {
+                medicineTakings.add(GetPrescriptionResponse.MedicineTaking.builder()
+                                .medicineName(m.getMedicineName())
+                                .dailyDosage(m.getDailyDosage())
+                                .totalDosage(m.getTotalDosage())
+                                .onceDosage(m.getOnceDosage())
+                                .medicineDosage(m.getMedicineDosage())
+                                .build());
+            }
+
+            response = GetPrescriptionResponse.builder()
+                    .prescriptionDate(p.getDate())
+                    .medicineTakings(medicineTakings)
+                    .build();
+        }
+
+        return response;
     }
 }
