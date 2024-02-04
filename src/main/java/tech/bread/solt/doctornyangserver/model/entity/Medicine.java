@@ -24,9 +24,6 @@ public class Medicine {
     @JoinColumn(name = "prescription_id")
     Prescription prescriptionId;
 
-    @Column(name = "medicine_dosage")
-    String medicineDosage;
-
     @Column(name = "daily_dosage")
     Integer dailyDosage;
 
