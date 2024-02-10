@@ -10,7 +10,6 @@ import tech.bread.solt.doctornyangserver.service.PrescriptionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/prescription")
 public class PrescriptionController {
 
     final PrescriptionService prescriptionService;
