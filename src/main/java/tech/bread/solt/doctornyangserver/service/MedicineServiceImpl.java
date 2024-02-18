@@ -1,16 +1,14 @@
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import tech.bread.solt.doctornyangserver.util.KeySet;
 
 import java.io.IOException;
-import java.net.URL;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +19,24 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public String getMedicineDescription(String medicineName) {
         String result = "";
+        String url = REQUEST_URL + "&itemName=" + medicineName;
 
-        RestTemplate restTemplate = new RestTemplate();
-        SAXBuilder builder = new SAXBuilder();
         try {
-            Document document = builder.build(new URL(REQUEST_URL+"&itemName="+medicineName));
-            Element root = document.getRootElement();
-            System.out.println(document);
-        } catch (JDOMException | IOException e) {
+            Document doc = Jsoup.connect(url).parser(org.jsoup.parser.Parser.xmlParser()).get();
+
+            Elements items = doc.select("item");
+
+            for (Element item : items) {
+                String itemName = item.select("itemName").text();
+                System.out.println("Item Name: " + itemName);
+
+                String entpName = item.select("entpName").text();
+                System.out.println("Enterprise Name: " + entpName);
+            }
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
 
         return result;
     }
