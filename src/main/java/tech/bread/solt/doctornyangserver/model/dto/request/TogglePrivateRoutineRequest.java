@@ -12,5 +12,4 @@ import java.time.LocalDate;
 public class TogglePrivateRoutineRequest {
     private int userUid;
     private int routineId;
-    private LocalDate performDate;
 }

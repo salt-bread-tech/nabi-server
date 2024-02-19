@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface SetRoutineRepo extends JpaRepository<SetRoutine, Integer> {
     List<SetRoutine> findByRoutineIdAndUserUid(Routine routineId, User userUid);
     List<SetRoutine> findByUserUidAndRoutineIdAndPerformDateAndCompletionFalse(User userUid, Routine routineId, LocalDate performDate);
+    Long countByUserUidAndCompletionAndPerformDateBetween(User userUid, Boolean b, LocalDate startDate, LocalDate endDate);
 }

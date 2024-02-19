@@ -76,7 +76,7 @@ public class SetRoutineServiceImpl implements SetRoutineService {
         Optional<User> optionalUser = userRepo.findById(request.getUserUid());
 
         List<SetRoutine> setRoutine = setRoutineRepo.findByUserUidAndRoutineIdAndPerformDateAndCompletionFalse(
-                optionalUser.get(), optionalRoutine.get(), request.getPerformDate()
+                optionalUser.get(), optionalRoutine.get(), LocalDate.now()
         );
 
         if (setRoutine.isEmpty()){
@@ -86,6 +86,7 @@ public class SetRoutineServiceImpl implements SetRoutineService {
         SetRoutine setRoutineToToggle = setRoutine.get(0);
         setRoutineToToggle.setCompletion(true);
         setRoutineRepo.save(setRoutineToToggle);
+        System.out.println("데일리 루틴 성공 !");
         return 200;
     }
 }
