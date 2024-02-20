@@ -4,21 +4,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
+import tech.bread.solt.doctornyangserver.model.entity.SetRoutine;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
+import tech.bread.solt.doctornyangserver.repository.SetRoutineRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.service.ScheduleService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class Scheduler {
     private final UserRepo userRepo;
     private final ScheduleRepo scheduleRepo;
+    private final SetRoutineRepo setRoutineRepo;
 
 //    @Scheduled(cron = "*/5 * * * * *") // 테스트용
     @Scheduled(cron = "0 0 8 * * *")
@@ -42,6 +47,19 @@ public class Scheduler {
                 System.out.println(i + ". " + schedule.getText());
                 i++;
             }
+        }
+    }
+
+    @Scheduled(cron = "0 0 8 1 * *")
+    public void alertMonthlyReport() {
+        LocalDate today = LocalDate.now();
+        List<User> users = userRepo.findAll();
+
+        for (User u : users){
+            System.out.println(u.getNickname() + "님이 한 달 간 성공한 루틴은 "
+                    + setRoutineRepo.countByUserUidAndCompletionAndPerformDateBetween(u, true,
+                    today.minusMonths(1),
+                    today.plusDays(1)) + "개 입니다.");
         }
     }
 }

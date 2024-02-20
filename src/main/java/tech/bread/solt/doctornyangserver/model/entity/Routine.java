@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 public class Routine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    Integer id;
+    @Column(name = "routine_id")
+    Integer routineId;
 
     @Column(name = "routine_name")
     String routineName;
