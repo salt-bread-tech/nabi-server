@@ -5,14 +5,20 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.LoginResponse;
 import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
+import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
+import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +28,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepo userRepo;
     private final BMIRangeRepo bmiRangeRepo;
+    private final ScheduleRepo scheduleRepo;
     @Override
     public int register(RegisterRequest request) {
         int result;
@@ -54,19 +61,27 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
+        LoginResponse response;
         if (isUnique(request.getId())) {
-            System.out.println("존재하지 않는 아이디");
-            return 400;
+            response = LoginResponse.builder()
+                    .response("존재하지 않는 아이디").build();
         }
         else if(!checkPassword(request.getId(), request.getPassword())){
-            System.out.println("비밀번호가 일치하지 않음");
-            return 500;
+            response = LoginResponse.builder()
+                    .response("비밀번호가 일치하지 않음").build();
         }
         else {
-            System.out.println("로그인 성공");
-            return 200;
+            Optional<User> u = userRepo.findById(request.getId());
+            if (u.isPresent())
+                response = LoginResponse.builder()
+                        .response(alertSchedule(u.get().getUid()).toString()).build();
+            else {
+                response = LoginResponse.builder()
+                        .response("남은 일정이 없습니다.").build();
+            }
         }
+        return response;
     }
 
     @Override
@@ -182,5 +197,23 @@ public class UserServiceImpl implements UserService{
         secureRandom.nextBytes(bytes);
 
         return byteToString(bytes);
+    }
+
+    private List<String> alertSchedule(int userUid) {
+        Optional<User> u = userRepo.findById(userUid);
+        List<Schedule> scheduleOptional = scheduleRepo.findByUserUid(u.get());
+        List<String> str = new ArrayList<>();
+
+        for (Schedule s : scheduleOptional) {
+            LocalDate today = LocalDate.now();
+            if(today.isEqual(s.getDate().toLocalDate())){
+                str.add(s.getText() + " 일정이 오늘입니다.");
+            }
+            else {
+                str.add(s.getText() + " 일정이 " + Math.abs(today.compareTo(s.getDate().toLocalDate()))
+                        + "일 남아 있습니다.");
+            }
+        }
+        return str;
     }
 }
