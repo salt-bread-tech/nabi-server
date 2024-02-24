@@ -19,24 +19,20 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public String getMedicineDescription(String medicineName) {
         String result = "";
-        String url = REQUEST_URL + "&itemName=" + medicineName;
+        String url = REQUEST_URL + "&itemName=" + medicineName + "&pageNo=1" + "&numOfRows=1";
 
         try {
             Document doc = Jsoup.connect(url).parser(org.jsoup.parser.Parser.xmlParser()).get();
-
             Elements items = doc.select("item");
 
             for (Element item : items) {
-                String itemName = item.select("itemName").text();
-                System.out.println("Item Name: " + itemName);
-
-                String entpName = item.select("entpName").text();
-                System.out.println("Enterprise Name: " + entpName);
+                String efcyQesitm = item.select("efcyQesitm").text();
+                System.out.println("efcyQesitm: " + efcyQesitm);
+                result = efcyQesitm;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
         return result;
     }
