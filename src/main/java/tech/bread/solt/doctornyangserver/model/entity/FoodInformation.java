@@ -20,6 +20,9 @@ public class FoodInformation {
     @Column(name = "calories")
     Double calories;
 
+    @Column(name="serving_size")
+    Double servingSize;
+
     @Column(name = "protein")
     Double protein;
 
@@ -28,4 +31,19 @@ public class FoodInformation {
 
     @Column(name = "carbohydrate")
     Double carbohydrate;
+
+    @Column(name = "sugars")
+    Double sugars;
+
+    @Column(name = "salt")
+    Double salt;
+
+    @Column(name = "cholesterol")
+    Double cholesterol;
+
+    @Column(name = "saturated_fatty_acid")
+    Double saturatedFattyAcid;
+
+    @Column(name = "trans_fatty_acid")
+    Double transFattyAcid;
 }
