@@ -17,12 +17,12 @@ public class DosageController {
         this.dosageService = dosageService;
     }
 
-    @PostMapping("/dosage-register")
+    @PostMapping("/register")
     public int registerDosage(@RequestBody DosageRegisterRequest request){
         return dosageService.registerDosage(request);
     }
 
-    @PostMapping("/dosage-management")
+    @PostMapping("/management")
     public Boolean tookMedicine(@RequestBody DoneDosageRequest request){
         return dosageService.toggleDosage(request);
     }
