@@ -1,11 +1,13 @@
 package tech.bread.solt.doctornyangserver.controller;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
 import tech.bread.solt.doctornyangserver.service.DietService;
+
+import java.util.List;
 
 @RestController
 public class DietController {
@@ -16,8 +18,18 @@ public class DietController {
         this.dietService = dietService;
     }
 
-    @GetMapping("/diet/{name}")
-    public GetCalorieInformResponse getCalorieInform(@PathVariable("name") String name) {
-        return dietService.getCalorieInform(name);
+    @GetMapping("/foods/{name}")
+    public List<String> searchFoodList(@PathVariable("name") String name) {
+        return dietService.getFoodList(name);
+    }
+
+    @GetMapping("/food/{name}/{num}")
+    public GetCalorieInformResponse getCalorieInform(@PathVariable("name") String name, @PathVariable("num") int num) {
+        return dietService.getCalorieInform(name, num);
+    }
+
+    @PostMapping("/food")
+    public int addIngestion(@RequestBody AddIngestionRequest request) {
+        return dietService.addIngestion(request);
     }
 }

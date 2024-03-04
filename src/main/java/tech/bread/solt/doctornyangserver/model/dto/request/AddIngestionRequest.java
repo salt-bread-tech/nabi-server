@@ -1,4 +1,4 @@
-package tech.bread.solt.doctornyangserver.model.dto.response;
+package tech.bread.solt.doctornyangserver.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class GetCalorieInformResponse {
-    private String name;
+public class AddIngestionRequest {
+    private int uid;
+    private int times;
+    private String foodName;
     private double servingSize;
     private double calories;
     private double carbohydrate;

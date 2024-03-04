@@ -17,11 +17,14 @@ public class FoodInformation {
     @Column(name = "food_id")
     Integer foodId;
 
-    @Column(name = "calories")
-    Double calories;
+    @Column(name="name")
+    String name;
 
     @Column(name="serving_size")
     Double servingSize;
+
+    @Column(name = "calories")
+    Double calories;
 
     @Column(name = "protein")
     Double protein;
