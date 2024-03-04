@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -23,4 +25,5 @@ public class AddIngestionRequest {
     private double cholesterol;
     private double saturatedFattyAcid;
     private double transFattyAcid;
+    private LocalDate date;
 }

@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import tech.bread.solt.doctornyangserver.util.Times;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,4 +31,7 @@ public class Ingestion {
     @ManyToOne
     @JoinColumn(name = "food_id")
     FoodInformation foodId;
+
+    @Column(name = "date")
+    LocalDate date;
 }

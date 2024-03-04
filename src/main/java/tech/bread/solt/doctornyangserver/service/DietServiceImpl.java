@@ -19,6 +19,7 @@ import tech.bread.solt.doctornyangserver.util.KeySet;
 import tech.bread.solt.doctornyangserver.util.Times;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -105,7 +106,6 @@ public class DietServiceImpl implements DietService {
             foodInformationRepo.save(foodInformation);
             System.out.println("음식 데이터 저장 성공");
 
-            // Optional<FoodInformation> optionalFoodInformation = foodInformationRepo.findFoodInformationByNameAndServingSize(foodInformation.getName(), foodInformation.getServingSize());
             Optional<FoodInformation> optionalFoodInformation = foodInformationRepo.findById(foodInformation.getFoodId());
 
             if (optionalFoodInformation.isPresent()) {
@@ -116,6 +116,7 @@ public class DietServiceImpl implements DietService {
                         .times(Times.ofOrdinal(9+request.getTimes()))
                         .userUid(user)
                         .foodId(foodInformationResult)
+                        .date(request.getDate())
                         .build();
 
                 ingestionRepo.save(ingestion);
