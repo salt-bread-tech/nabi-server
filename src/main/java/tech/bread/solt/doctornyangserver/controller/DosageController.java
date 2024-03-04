@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.SetPrivateDosageRequest;
 import tech.bread.solt.doctornyangserver.service.DosageService;
 
 @RestController
@@ -17,13 +18,18 @@ public class DosageController {
         this.dosageService = dosageService;
     }
 
-    @PostMapping("/dosage-register")
+    @PostMapping("/register")
     public int registerDosage(@RequestBody DosageRegisterRequest request){
         return dosageService.registerDosage(request);
     }
 
-    @PostMapping("/dosage-management")
+    @PostMapping("/management")
     public Boolean tookMedicine(@RequestBody DoneDosageRequest request){
         return dosageService.toggleDosage(request);
+    }
+
+    @PostMapping("/private-set")
+    public int setPrivateDosage(@RequestBody SetPrivateDosageRequest request){
+        return dosageService.registerPrivateDosage(request);
     }
 }
