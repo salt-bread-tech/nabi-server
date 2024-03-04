@@ -9,8 +9,9 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DosageRegisterRequest {
+public class SetPrivateDosageRequest {
     private int userUid;
     private int medicineId;
     private LocalDate startDate;
+    private int totalDosage;
 }
