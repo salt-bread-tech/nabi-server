@@ -14,7 +14,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MedicineServiceImpl implements MedicineService {
 
-    final private String REQUEST_URL = "http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList?serviceKey=" + KeySet.MEDICINE_API_KEY;
+    final private String REQUEST_URL = "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList?serviceKey=" + KeySet.MEDICINE_API_KEY.getKey();
 
     @Override
     public String getMedicineDescription(String medicineName) {

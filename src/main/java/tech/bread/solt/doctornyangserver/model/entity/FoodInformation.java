@@ -17,6 +17,12 @@ public class FoodInformation {
     @Column(name = "food_id")
     Integer foodId;
 
+    @Column(name="name")
+    String name;
+
+    @Column(name="serving_size")
+    Double servingSize;
+
     @Column(name = "calories")
     Double calories;
 
@@ -28,4 +34,19 @@ public class FoodInformation {
 
     @Column(name = "carbohydrate")
     Double carbohydrate;
+
+    @Column(name = "sugars")
+    Double sugars;
+
+    @Column(name = "salt")
+    Double salt;
+
+    @Column(name = "cholesterol")
+    Double cholesterol;
+
+    @Column(name = "saturated_fatty_acid")
+    Double saturatedFattyAcid;
+
+    @Column(name = "trans_fatty_acid")
+    Double transFattyAcid;
 }
