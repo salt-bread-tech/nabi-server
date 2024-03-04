@@ -35,10 +35,24 @@ public class UserServiceImpl implements UserService{
 
         if (!isUnique(request.getId())) {
             System.out.println("회원가입 실패: 아이디 중복");
-            result = 400;
+            result = 100;
         }
         else {
             String salt = getSalt();
+
+            double bmi = calcBMI(request.getWeight(), request.getHeight());
+            int bmiId = setBMIRangeId(bmi);
+            BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
+
+            double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
+
+            if(bmi < 0 || bmi > 200){
+                System.out.println("유효하지 않은 BMI 값");
+                return 400;
+            } else if (bmr < 0 || bmr > 10000) {
+                System.out.println("유효하지 않은 BMR 값");
+                return 500;
+            }
 
             try {
                 userRepo.save(User.builder()
@@ -47,7 +61,10 @@ public class UserServiceImpl implements UserService{
                         .salt(salt)
                         .nickname(request.getNickname())
                         .birthDate(request.getBirthDate())
-                        .build());
+                        .height(request.getHeight())
+                        .weight(request.getWeight())
+                        .bmr(bmr)
+                        .bmiRangeId(bmiRange).build());
                 System.out.println("회원가입 성공!");
 
                 result = 200;
