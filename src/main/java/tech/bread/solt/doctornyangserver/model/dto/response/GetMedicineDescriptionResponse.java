@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GetMedicineDescriptionResponse {
 
+    private String itemName;
     private String efcyQesitm;
     private String useMethodQesitm;
     private String atpnWarnQesitm;
