@@ -51,6 +51,7 @@ public class MedicineServiceImpl implements MedicineService {
 
             System.out.println("name: " + item.select("itemName").text());
 
+            result.setItemName(item.select("itemName").text());
             result.setEfcyQesitm(item.select("efcyQesitm").text());
             result.setUseMethodQesitm(item.select("useMethodQesitm").text());
             result.setAtpnWarnQesitm(item.select("atpnWarnQesitm").text());
