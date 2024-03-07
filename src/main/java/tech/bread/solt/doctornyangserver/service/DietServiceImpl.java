@@ -19,7 +19,6 @@ import tech.bread.solt.doctornyangserver.util.KeySet;
 import tech.bread.solt.doctornyangserver.util.Times;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +55,6 @@ public class DietServiceImpl implements DietService {
     @Override
     public GetCalorieInformResponse getCalorieInform(String name, int num) {
         String url = REQUEST_URL + "&desc_kor=" + name + "&pageNo=1&numOfRows=10";
-
         GetCalorieInformResponse result = new GetCalorieInformResponse();
 
         try {

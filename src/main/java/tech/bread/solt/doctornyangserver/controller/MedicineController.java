@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
 import tech.bread.solt.doctornyangserver.service.MedicineService;
+
+import java.util.List;
 
 @RestController
 public class MedicineController {
@@ -16,8 +19,13 @@ public class MedicineController {
         this.medicineService = medicineService;
     }
 
-    @GetMapping("/medicine/{name}")
-    public String getMedicineDescription(@PathVariable("name") String name) {
-        return medicineService.getMedicineDescription(name);
+    @GetMapping("/medicines/{name}")
+    public List<String> getMedicineDescription(@PathVariable("name") String name) {
+        return medicineService.getMedicineList(name);
+    }
+
+    @GetMapping("/medicine/{name}/{num}")
+    public GetMedicineDescriptionResponse getMedicineDescriptionResponse(@PathVariable("name") String name, @PathVariable("num") int num) {
+        return medicineService.getMedicineDescription(name, num);
     }
 }
