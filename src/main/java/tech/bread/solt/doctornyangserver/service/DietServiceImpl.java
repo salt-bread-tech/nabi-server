@@ -9,6 +9,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalTodayResponse;
 import tech.bread.solt.doctornyangserver.model.entity.FoodInformation;
 import tech.bread.solt.doctornyangserver.model.entity.Ingestion;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -19,6 +21,7 @@ import tech.bread.solt.doctornyangserver.util.KeySet;
 import tech.bread.solt.doctornyangserver.util.Times;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -128,6 +131,52 @@ public class DietServiceImpl implements DietService {
         else {
             System.out.println("유저가 존재하지 않음");
             result = 400;
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<GetDietResponse> getDietToday(int uid) {
+        List<GetDietResponse> result = new ArrayList<>();
+        Optional<User> optionalUser = userRepo.findById(uid);
+        LocalDate localDate = LocalDate.now();
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, localDate);
+
+            for (Ingestion ingestion : ingestionList) {
+                result.add(GetDietResponse.builder()
+                                .dietId(ingestion.getId())
+                                .foodId(ingestion.getFoodId().getFoodId())
+                                .times(ingestion.getTimes())
+                                .name(ingestion.getFoodId().getName())
+                                .servingSize(ingestion.getFoodId().getServingSize())
+                                .calories(ingestion.getFoodId().getCalories())
+                                .carbohydrate(ingestion.getFoodId().getCarbohydrate())
+                                .protein(ingestion.getFoodId().getProtein())
+                                .fat(ingestion.getFoodId().getFat())
+                                .build());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public GetIngestionTotalTodayResponse getIngestionTotalToday(int uid) {
+        GetIngestionTotalTodayResponse result = new GetIngestionTotalTodayResponse();
+        Optional<User> optionalUser = userRepo.findById(uid);
+        LocalDate localDate = LocalDate.now();
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, localDate);
+
+            for (Ingestion ingestion : ingestionList) {
+                // result에 하루 먹은 것들 추가할 부분
+            }
         }
 
         return result;

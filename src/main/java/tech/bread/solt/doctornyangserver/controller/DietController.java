@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalTodayResponse;
 import tech.bread.solt.doctornyangserver.service.DietService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,8 +31,19 @@ public class DietController {
         return dietService.getCalorieInform(name, num);
     }
 
-    @PostMapping("/food")
+    @GetMapping("/diet/today/{uid}")
+    public List<GetDietResponse> getDiet(@PathVariable("uid") int uid) {
+        return dietService.getDietToday(uid);
+    }
+
+    @GetMapping("/ingestion/total/today/{uid}")
+    public GetIngestionTotalTodayResponse getIngestionTotalToday(@PathVariable("uid") int uid) {
+        return dietService.getIngestionTotalToday(uid);
+    }
+
+    @PostMapping("/ingestion")
     public int addIngestion(@RequestBody AddIngestionRequest request) {
         return dietService.addIngestion(request);
     }
+
 }
