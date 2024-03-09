@@ -1,12 +1,11 @@
 package tech.bread.solt.doctornyangserver.controller;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
-import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalTodayResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalResponse;
 import tech.bread.solt.doctornyangserver.service.DietService;
 
 import java.time.LocalDate;
@@ -36,9 +35,14 @@ public class DietController {
         return dietService.getDietToday(uid);
     }
 
-    @GetMapping("/ingestion/total/today/{uid}")
-    public GetIngestionTotalTodayResponse getIngestionTotalToday(@PathVariable("uid") int uid) {
-        return dietService.getIngestionTotalToday(uid);
+    @GetMapping("/ingestion/total/{uid}/today")
+    public GetIngestionTotalResponse getIngestionTotalToday(@PathVariable("uid") int uid) {
+        return dietService.getIngestionTotal(uid, LocalDate.now());
+    }
+
+    @GetMapping("/ingestion/total/{uid}/{date}")
+    public GetIngestionTotalResponse getIngestionTotal(@PathVariable("uid") int uid,@PathVariable("date") LocalDate date) {
+        return dietService.getIngestionTotal(uid, date);
     }
 
     @PostMapping("/ingestion")

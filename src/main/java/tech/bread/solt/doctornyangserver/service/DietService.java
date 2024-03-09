@@ -3,7 +3,7 @@ package tech.bread.solt.doctornyangserver.service;
 import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
-import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalTodayResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +18,6 @@ public interface DietService {
 
     List<GetDietResponse> getDietToday(int uid);
 
-    GetIngestionTotalTodayResponse getIngestionTotalToday(int uid);
+    GetIngestionTotalResponse getIngestionTotal(int uid, LocalDate date);
 
 }

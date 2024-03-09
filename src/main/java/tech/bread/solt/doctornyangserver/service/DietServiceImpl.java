@@ -1,6 +1,5 @@
 package tech.bread.solt.doctornyangserver.service;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
-import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalTodayResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalResponse;
 import tech.bread.solt.doctornyangserver.model.entity.FoodInformation;
 import tech.bread.solt.doctornyangserver.model.entity.Ingestion;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -165,19 +164,52 @@ public class DietServiceImpl implements DietService {
     }
 
     @Override
-    public GetIngestionTotalTodayResponse getIngestionTotalToday(int uid) {
-        GetIngestionTotalTodayResponse result = new GetIngestionTotalTodayResponse();
+    public GetIngestionTotalResponse getIngestionTotal(int uid, LocalDate date) {
+        GetIngestionTotalResponse result;
         Optional<User> optionalUser = userRepo.findById(uid);
-        LocalDate localDate = LocalDate.now();
+
+        double totalKcal = 0;
+        double breakfastKcal = 0;
+        double lunchKcal = 0;
+        double dinnerKcal = 0;
+        double snackKcal = 0;
+        double totalCarbohydrate = 0;
+        double totalProtein = 0;
+        double totalFat = 0;
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, localDate);
+            List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, date);
 
             for (Ingestion ingestion : ingestionList) {
-                // result에 하루 먹은 것들 추가할 부분
+                FoodInformation food = ingestion.getFoodId();
+
+                switch (ingestion.getTimes()) {
+                    case BREAKFAST -> breakfastKcal += food.getCalories();
+                    case LUNCH -> lunchKcal += food.getCalories();
+                    case DINNER -> dinnerKcal += food.getCalories();
+                    case SNACK -> snackKcal += food.getCalories();
+                    default -> System.out.println("times error");
+                }
+
+                totalCarbohydrate += food.getCarbohydrate();
+                totalProtein += food.getProtein();
+                totalFat += food.getFat();
             }
+
+            totalKcal = breakfastKcal + lunchKcal + dinnerKcal + snackKcal;
         }
+
+        result = GetIngestionTotalResponse.builder()
+                .totalKcal(totalKcal)
+                .breakfastKcal(breakfastKcal)
+                .lunchKcal(lunchKcal)
+                .dinnerKcal(dinnerKcal)
+                .snackKcal(snackKcal)
+                .totalCarbohydrate(totalCarbohydrate)
+                .totalProtein(totalProtein)
+                .totalFat(totalFat)
+                .build();
 
         return result;
     }

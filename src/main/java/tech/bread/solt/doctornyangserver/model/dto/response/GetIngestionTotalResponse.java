@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class GetIngestionTotalTodayResponse {
+public class GetIngestionTotalResponse {
 
     double totalKcal;
     double breakfastKcal;
