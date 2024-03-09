@@ -30,10 +30,16 @@ public class DietController {
         return dietService.getCalorieInform(name, num);
     }
 
-    @GetMapping("/diet/today/{uid}")
-    public List<GetDietResponse> getDiet(@PathVariable("uid") int uid) {
-        return dietService.getDietToday(uid);
+    @GetMapping("/diet/{uid}/today")
+    public List<GetDietResponse> getDietToday(@PathVariable("uid") int uid) {
+        return dietService.getDiet(uid, LocalDate.now());
     }
+
+    @GetMapping("/diet/{uid}/{date}")
+    public List<GetDietResponse> getDiet(@PathVariable("uid") int uid, @PathVariable("date") LocalDate date) {
+        return dietService.getDiet(uid, date);
+    }
+
 
     @GetMapping("/ingestion/total/{uid}/today")
     public GetIngestionTotalResponse getIngestionTotalToday(@PathVariable("uid") int uid) {
@@ -41,7 +47,7 @@ public class DietController {
     }
 
     @GetMapping("/ingestion/total/{uid}/{date}")
-    public GetIngestionTotalResponse getIngestionTotal(@PathVariable("uid") int uid,@PathVariable("date") LocalDate date) {
+    public GetIngestionTotalResponse getIngestionTotal(@PathVariable("uid") int uid, @PathVariable("date") LocalDate date) {
         return dietService.getIngestionTotal(uid, date);
     }
 

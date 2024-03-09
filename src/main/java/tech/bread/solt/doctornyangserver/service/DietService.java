@@ -16,7 +16,7 @@ public interface DietService {
 
     int addIngestion(AddIngestionRequest request);
 
-    List<GetDietResponse> getDietToday(int uid);
+    List<GetDietResponse> getDiet(int uid, LocalDate date);
 
     GetIngestionTotalResponse getIngestionTotal(int uid, LocalDate date);
 

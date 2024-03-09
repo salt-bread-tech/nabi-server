@@ -136,14 +136,13 @@ public class DietServiceImpl implements DietService {
     }
 
     @Override
-    public List<GetDietResponse> getDietToday(int uid) {
+    public List<GetDietResponse> getDiet(int uid, LocalDate date) {
         List<GetDietResponse> result = new ArrayList<>();
         Optional<User> optionalUser = userRepo.findById(uid);
-        LocalDate localDate = LocalDate.now();
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, localDate);
+            List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, date);
 
             for (Ingestion ingestion : ingestionList) {
                 result.add(GetDietResponse.builder()
