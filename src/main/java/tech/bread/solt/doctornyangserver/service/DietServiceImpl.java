@@ -244,4 +244,19 @@ public class DietServiceImpl implements DietService {
         System.out.println("음식 섭취 정보가 없음");
         return 400;
     }
+
+    @Override
+    public int deleteIngestion(int ingestionId) {
+        Optional<Ingestion> ingestion = ingestionRepo.findById(ingestionId);
+
+        if (ingestion.isPresent()) {
+            Ingestion i = ingestion.get();
+            ingestionRepo.delete(ingestion.get());
+            foodInformationRepo.delete(i.getFoodId());
+            System.out.println("섭취 정보 삭제");
+            return 200;
+        }
+        System.out.println("찾는 정보가 없음");
+        return 400;
+    }
 }

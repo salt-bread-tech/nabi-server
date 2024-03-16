@@ -57,9 +57,13 @@ public class DietController {
         return dietService.addIngestion(request);
     }
 
-    @PostMapping("/update/ingestion")
+    @PostMapping("/ingestion/update")
     public int updateIngestion(@RequestBody UpdateIngestionRequest request) {
         return dietService.updateIngestion(request);
     }
 
+    @GetMapping("/delete/{ingestionId}")
+    public int deleteIngestion(@PathVariable("ingestionId") int ingestionId) {
+        return dietService.deleteIngestion(ingestionId);
+    }
 }
