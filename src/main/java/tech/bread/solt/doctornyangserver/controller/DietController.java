@@ -62,7 +62,7 @@ public class DietController {
         return dietService.updateIngestion(request);
     }
 
-    @GetMapping("/delete/{ingestionId}")
+    @GetMapping("/ingestion/{ingestionId}/delete")
     public int deleteIngestion(@PathVariable("ingestionId") int ingestionId) {
         return dietService.deleteIngestion(ingestionId);
     }

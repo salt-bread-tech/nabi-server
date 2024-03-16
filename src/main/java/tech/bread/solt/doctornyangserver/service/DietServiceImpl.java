@@ -219,8 +219,8 @@ public class DietServiceImpl implements DietService {
         Optional<Ingestion> ingestionOptional = ingestionRepo.findById(request.getIngestionId());
 
         if (ingestionOptional.isPresent()){
-            FoodInformation foodInformation = ingestionOptional.get().getFoodId();
-            Optional<FoodInformation> foodOptional = foodInformationRepo.findById(foodInformation.getFoodId());
+            Optional<FoodInformation> foodOptional
+                    = foodInformationRepo.findById(ingestionOptional.get().getFoodId().getFoodId());
 
             if (foodOptional.isPresent()){
                 FoodInformation info = foodOptional.get();
