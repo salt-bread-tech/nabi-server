@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdateIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalResponse;
@@ -213,4 +214,49 @@ public class DietServiceImpl implements DietService {
         return result;
     }
 
+    @Override
+    public int updateIngestion(UpdateIngestionRequest request) {
+        Optional<Ingestion> ingestionOptional = ingestionRepo.findById(request.getIngestionId());
+
+        if (ingestionOptional.isPresent()){
+            Optional<FoodInformation> foodOptional
+                    = foodInformationRepo.findById(ingestionOptional.get().getFoodId().getFoodId());
+
+            if (foodOptional.isPresent()){
+                FoodInformation info = foodOptional.get();
+                info.setServingSize(request.getServingSize());
+                info.setCalories(request.getCalories());
+                info.setProtein(request.getProtein());
+                info.setFat(request.getFat());
+                info.setCarbohydrate(request.getCarbohydrate());
+                info.setSugars(request.getSugars());
+                info.setSalt(request.getSalt());
+                info.setCholesterol(request.getCholesterol());
+                info.setSaturatedFattyAcid(request.getSaturatedFattyAcid());
+                info.setTransFattyAcid(request.getTransFattyAcid());
+                foodInformationRepo.save(info);
+                
+                return 200;
+            }
+            System.out.println("찾는 음식에 대한 정보가 없음");
+            return 500;
+        }
+        System.out.println("음식 섭취 정보가 없음");
+        return 400;
+    }
+
+    @Override
+    public int deleteIngestion(int ingestionId) {
+        Optional<Ingestion> ingestion = ingestionRepo.findById(ingestionId);
+
+        if (ingestion.isPresent()) {
+            Ingestion i = ingestion.get();
+            ingestionRepo.delete(ingestion.get());
+            foodInformationRepo.delete(i.getFoodId());
+            System.out.println("섭취 정보 삭제");
+            return 200;
+        }
+        System.out.println("찾는 정보가 없음");
+        return 400;
+    }
 }

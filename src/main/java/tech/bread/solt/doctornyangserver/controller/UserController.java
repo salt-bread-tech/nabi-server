@@ -28,7 +28,7 @@ public class UserController {
         return userService.login(request);
     }
 
-    @PostMapping("enter-body-information")
+    @PostMapping("/enter-body-information")
     public int enterBodyInformation(@RequestBody EnterBodyInformationRequest request){
         return userService.enterBodyInformation(request);
     }

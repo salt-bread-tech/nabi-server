@@ -3,6 +3,7 @@ package tech.bread.solt.doctornyangserver.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.AddIngestionRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdateIngestionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetCalorieInformResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalResponse;
@@ -56,4 +57,13 @@ public class DietController {
         return dietService.addIngestion(request);
     }
 
+    @PostMapping("/ingestion/update")
+    public int updateIngestion(@RequestBody UpdateIngestionRequest request) {
+        return dietService.updateIngestion(request);
+    }
+
+    @GetMapping("/ingestion/{ingestionId}/delete")
+    public int deleteIngestion(@PathVariable("ingestionId") int ingestionId) {
+        return dietService.deleteIngestion(ingestionId);
+    }
 }
