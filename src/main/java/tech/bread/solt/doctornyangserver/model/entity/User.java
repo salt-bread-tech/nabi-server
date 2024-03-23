@@ -46,4 +46,7 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "bmi_range_id")
     BMIRange bmiRangeId;
+
+    @Column(name = "done_tutorial")
+    Boolean doneTutorial;
 }

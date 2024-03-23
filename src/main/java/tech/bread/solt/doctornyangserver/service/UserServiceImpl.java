@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
-import tech.bread.solt.doctornyangserver.model.dto.response.LoginResponse;
 import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -17,7 +16,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +62,8 @@ public class UserServiceImpl implements UserService{
                         .height(request.getHeight())
                         .weight(request.getWeight())
                         .bmr(bmr)
-                        .bmiRangeId(bmiRange).build());
+                        .bmiRangeId(bmiRange)
+                        .doneTutorial(false).build());
                 System.out.println("회원가입 성공!");
 
                 result = 200;
@@ -78,27 +77,39 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public LoginResponse login(LoginRequest request) {
-        LoginResponse response;
+    public int login(LoginRequest request) {
         if (isUnique(request.getId())) {
-            response = LoginResponse.builder()
-                    .response("존재하지 않는 아이디").build();
+            System.out.println("존재하지 않는 아이디");
+            return 100;
         }
         else if(!checkPassword(request.getId(), request.getPassword())){
-            response = LoginResponse.builder()
-                    .response("비밀번호가 일치하지 않음").build();
+            System.out.println("비밀번호가 일치하지 않음");
+            return 300;
         }
         else {
             Optional<User> u = userRepo.findById(request.getId());
-            if (u.isPresent())
-                response = LoginResponse.builder()
-                        .response(alertSchedule(u.get().getUid()).toString()).build();
-            else {
-                response = LoginResponse.builder()
-                        .response("남은 일정이 없습니다.").build();
+            if (u.isPresent() && u.get().getDoneTutorial()){
+                List<String> responses;
+                responses = alertSchedule(u.get().getUid());
+                System.out.println("유저 정보: " + u.get().getNickname() + "님");
+                for (String s : responses)
+                    System.out.println(s);
+                return 200;
+            }
+            else if(u.isPresent()){
+                System.out.println("유저 정보: " + u.get().getNickname() + "님");
+
+                //TODO 튜토리얼 진행
+                System.out.println("튜토리얼을 진행합니다.");
+                User user = u.get();
+                user.setDoneTutorial(true);
+                userRepo.save(user);
+
+                return 201;
             }
         }
-        return response;
+        System.out.println("유저 정보를 찾을 수 없습니다.");
+        return 400;
     }
 
     @Override
