@@ -34,18 +34,15 @@ public class NabiServiceImpl implements NabiService {
         String result = "";
         List<Chat> chats = new ArrayList<>();
 
-        System.out.println(request.getUid());
-        System.out.println(request.getQuestion());
-
         Optional<User> optionalUser = userRepo.findById(request.getUid());
 
         if (optionalUser.isPresent()) {
-            ChatGPTResponse chatGPTResponse = GPTManager.getInstance().getResponse(request.getQuestion());
+            ChatGPTResponse chatGPTResponse = GPTManager.getInstance().getResponse(request.getContent());
             result = chatGPTResponse.getChoices().get(0).getMessage().getContent();
 
             chats.add(Chat.builder()
                             .isUser(true)
-                            .text(request.getQuestion())
+                            .text(request.getContent())
                             .createAt(LocalDateTime.now())
                             .uid(optionalUser.get())
                             .build());

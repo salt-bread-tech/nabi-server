@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class CreateChatRequest {
 
     int uid;
-    String question;
+    String content;
 
 }
