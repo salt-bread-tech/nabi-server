@@ -1,12 +1,13 @@
 package tech.bread.solt.doctornyangserver.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.CreateChatRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetChatResponse;
 import tech.bread.solt.doctornyangserver.service.NabiService;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 public class NabiController {
@@ -16,6 +17,16 @@ public class NabiController {
     @Autowired
     public NabiController(NabiService nabiService) {
         this.nabiService = nabiService;
+    }
+
+    @GetMapping("/chats/{uid}")
+    public List<GetChatResponse> getChats(@PathVariable("uid") int uid) {
+        return nabiService.getChats(uid);
+    }
+
+    @GetMapping("/chats/{uid}/{page}")
+    public List<GetChatResponse> getChats(@PathVariable("uid") int uid, @PathVariable("page") int page) {
+        return nabiService.getChats(uid, page);
     }
 
     @PostMapping("/chat")
