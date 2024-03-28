@@ -1,4 +1,4 @@
-package tech.bread.solt.doctornyangserver.model.dto.response;
+package tech.bread.solt.doctornyangserver.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginResponse {
-    private String response;
+public class CreateChatRequest {
+
+    int uid;
+    String content;
+
 }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
-import tech.bread.solt.doctornyangserver.model.dto.response.LoginResponse;
 import tech.bread.solt.doctornyangserver.service.UserService;
 
 @RestController
@@ -24,11 +23,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request){
+    public int login(@RequestBody LoginRequest request){
         return userService.login(request);
     }
 
-    @PostMapping("enter-body-information")
+    @PostMapping("/enter-body-information")
     public int enterBodyInformation(@RequestBody EnterBodyInformationRequest request){
         return userService.enterBodyInformation(request);
     }
