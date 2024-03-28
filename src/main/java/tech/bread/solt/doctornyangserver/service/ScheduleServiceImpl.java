@@ -57,7 +57,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         Optional<User> users = userRepo.findById(request.getUserUid());
         Map<LocalDate, List<Schedule>> schedulesByLocalDate = new HashMap<>();
         List<Schedule> schedules;
-        LocalDate today = LocalDate.now();
+        LocalDate today;
+        if (request.getDate() == null){
+            today = LocalDate.now();
+        } else {
+            today = request.getDate();
+        }
         int day = today.get(ChronoField.DAY_OF_WEEK);
 
         LocalDate startDate = today.minusDays(day);
