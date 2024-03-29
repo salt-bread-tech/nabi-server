@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +95,7 @@ public class UserServiceImpl implements UserService{
                 System.out.println("유저 정보: " + u.get().getNickname() + "님");
                 for (String s : responses)
                     System.out.println(s);
-                return 200;
+                return u.get().getUid();
             }
             else if(u.isPresent()){
                 System.out.println("유저 정보: " + u.get().getNickname() + "님");
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService{
                 user.setDoneTutorial(true);
                 userRepo.save(user);
 
-                return 201;
+                return user.getUid();
             }
         }
         System.out.println("유저 정보를 찾을 수 없습니다.");
@@ -237,8 +238,9 @@ public class UserServiceImpl implements UserService{
             if(today.isEqual(s.getDate().toLocalDate())){
                 str.add(s.getText() + " 일정이 오늘입니다.");
             }
-            else {
-                str.add(s.getText() + " 일정이 " + Math.abs(today.compareTo(s.getDate().toLocalDate()))
+            else if (today.isBefore(s.getDate().toLocalDate())){
+                str.add(s.getText() + " 일정이 "
+                        + ChronoUnit.DAYS.between(today, s.getDate().toLocalDate())
                         + "일 남아 있습니다.");
             }
         }
