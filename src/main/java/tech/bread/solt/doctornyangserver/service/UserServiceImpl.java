@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -238,7 +239,8 @@ public class UserServiceImpl implements UserService{
                 str.add(s.getText() + " 일정이 오늘입니다.");
             }
             else if (today.isBefore(s.getDate().toLocalDate())){
-                str.add(s.getText() + " 일정이 " + Math.abs(today.compareTo(s.getDate().toLocalDate()))
+                str.add(s.getText() + " 일정이 "
+                        + ChronoUnit.DAYS.between(today, s.getDate().toLocalDate())
                         + "일 남아 있습니다.");
             }
         }
