@@ -5,4 +5,5 @@ import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 
 public interface BMIRangeRepo extends JpaRepository<BMIRange, Integer> {
     BMIRange findOneById(int bmiId);
+    BMIRange findById(int bmiId);
 }
