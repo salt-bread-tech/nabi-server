@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.UserInfoResponse;
 import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -137,6 +138,27 @@ public class UserServiceImpl implements UserService{
 
             return 200;
         }
+    }
+
+    @Override
+    public UserInfoResponse showUser(int uid) {
+        Optional<User> u = userRepo.findById(uid);
+        UserInfoResponse userInfoResponse;
+        if(u.isPresent()) {
+            User user = u.get();
+            Optional<BMIRange> bmi = bmiRangeRepo.findById(user.getBmiRangeId().getId());
+            userInfoResponse = UserInfoResponse.builder()
+                    .id(user.getId())
+                    .nickName(user.getNickname())
+                    .birth(user.getBirthDate())
+                    .bmr(user.getBmr())
+                    .weight(user.getWeight())
+                    .height(user.getHeight())
+                    .bmiRangeName(bmi.get().getName()).build();
+
+            return userInfoResponse;
+        }
+        return null;
     }
 
     private boolean isUnique(String id){
