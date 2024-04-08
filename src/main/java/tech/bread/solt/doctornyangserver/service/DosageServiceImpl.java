@@ -13,7 +13,6 @@ import tech.bread.solt.doctornyangserver.repository.MedicineRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.util.Times;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -137,5 +136,24 @@ public class DosageServiceImpl implements DosageService {
         }
         System.out.println("등록 실패: 약 정보가 없음");
         return 500;
+    }
+
+    @Override
+    public List<Dosage> getMedicineDosage(int uid) {
+        Optional<User> u = userRepo.findById(uid);
+        if (u.isPresent()) {
+            List<Dosage> d = dosageRepo.findByUserUid(u.get());
+
+            if (d.isEmpty()) {
+                System.out.println("등록된 의약품 복용 일정이 없습니다.");
+                return null;
+            }
+            else{
+                System.out.println("복용 일정 가져오기 성공");
+                return d;
+            }
+        }
+        System.out.println("찾고자 하는 User 없음");
+        return null;
     }
 }
