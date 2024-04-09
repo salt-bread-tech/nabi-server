@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.SetPrivateDosageRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.service.DosageService;
 
@@ -34,7 +35,7 @@ public class DosageController {
     }
 
     @GetMapping("/show/{uid}")
-    public List<Dosage> getMedicineDosage(@PathVariable("uid") int uid){
+    public List<ShowDosageResponse> getMedicineDosage(@PathVariable("uid") int uid){
         return dosageService.getMedicineDosage(uid);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.SetPrivateDosageRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -139,18 +140,28 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public List<Dosage> getMedicineDosage(int uid) {
+    public List<ShowDosageResponse> getMedicineDosage(int uid) {
         Optional<User> u = userRepo.findById(uid);
+        List<ShowDosageResponse> responses = new ArrayList<>();
+
         if (u.isPresent()) {
             List<Dosage> d = dosageRepo.findByUserUid(u.get());
-
             if (d.isEmpty()) {
                 System.out.println("등록된 의약품 복용 일정이 없습니다.");
                 return null;
             }
             else{
+                for (Dosage dosage : d) {
+                    Medicine m = medicineRepo.findOneById(dosage.getMedicineId().getId());
+                    responses.add(ShowDosageResponse.builder()
+                            .dosageId(dosage.getId())
+                            .date(dosage.getDate())
+                            .medicineName(m.getMedicineName())
+                            .times(dosage.getTimes().getDesc())
+                            .medicineTaken(dosage.getMedicineTaken()).build());
+                }
                 System.out.println("복용 일정 가져오기 성공");
-                return d;
+                return responses;
             }
         }
         System.out.println("찾고자 하는 User 없음");
