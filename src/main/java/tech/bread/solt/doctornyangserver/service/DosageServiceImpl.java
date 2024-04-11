@@ -13,7 +13,9 @@ import tech.bread.solt.doctornyangserver.repository.DosageRepo;
 import tech.bread.solt.doctornyangserver.repository.MedicineRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.util.Times;
+import tech.bread.solt.doctornyangserver.util.TimesConverter;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,9 +73,10 @@ public class DosageServiceImpl implements DosageService {
     public Boolean toggleDosage(DoneDosageRequest request) {
         User u = userRepo.findOneByUid(request.getUserUid());
         Medicine m = medicineRepo.findOneById(request.getMedicineId());
+        Times time = new TimesConverter().convertToEntityAttribute(request.getTimes());
 
         Optional<Dosage> d = dosageRepo.findByUserUidAndMedicineIdAndTimesAndDate(
-                u, m, request.getTimes(), request.getDate()
+                u, m, time, request.getDate()
         );
 
         if (d.isPresent()){
