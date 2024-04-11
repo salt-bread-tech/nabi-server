@@ -14,7 +14,9 @@ import java.time.LocalDate;
 public class ShowDosageResponse {
     int dosageId;
     LocalDate date;
+    int medicineId;
     String medicineName;
     String times;
     boolean medicineTaken;
+
 }

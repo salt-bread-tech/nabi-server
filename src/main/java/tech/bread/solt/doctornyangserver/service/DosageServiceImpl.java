@@ -156,6 +156,7 @@ public class DosageServiceImpl implements DosageService {
                     responses.add(ShowDosageResponse.builder()
                             .dosageId(dosage.getId())
                             .date(dosage.getDate())
+                            .medicineId(m.getId())
                             .medicineName(m.getMedicineName())
                             .times(dosage.getTimes().getDesc())
                             .medicineTaken(dosage.getMedicineTaken()).build());
