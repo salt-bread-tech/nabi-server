@@ -36,12 +36,6 @@ public class SetRoutine {   // 1일 1회를 표현, 1일 3회 루틴을 표현�
     @Column(name = "perform_date")
     LocalDate performDate;
 
-    @Column(name = "perform")
-    Integer perform;
-
-    @Column(name = "max_perform")
-    Integer maxPerform;
-
     @Column(name = "completion")
     Boolean completion;
 }
