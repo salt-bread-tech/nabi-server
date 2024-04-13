@@ -6,8 +6,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+import tech.bread.solt.doctornyangserver.model.dto.request.GetMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
 import tech.bread.solt.doctornyangserver.model.entity.Prescription;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -114,5 +116,35 @@ public class MedicineServiceImpl implements MedicineService {
         }
         System.out.println("유저 정보를 찾을 수 없습니다.");
         return 100;
+    }
+
+    @Override
+    public List<GetMedicineResponse> getMedicineList(GetMedicineRequest request) {
+        Optional<User> u = userRepo.findById(request.getUserUid());
+        List<GetMedicineResponse> responses = new ArrayList<>();
+        GetMedicineResponse response;
+        if(u.isPresent()){
+            List<Prescription> p = prescriptionRepo.getPrescriptionsByUserUid(u.get());
+            if (p.isEmpty()) {
+                System.out.println("등록된 처방전이 없습니다.");
+                return null;
+            }
+            for (Prescription prescription : p) {
+                List<Medicine> medicines = medicineRepo.findAllByPrescriptionId(prescription);
+                for (Medicine m : medicines){
+                    response = GetMedicineResponse.builder()
+                            .name(m.getMedicineName())
+                            .total(m.getTotalDosage())
+                            .daily(m.getDailyDosage())
+                            .once(m.getOnceDosage())
+                            .desc(m.getMedicineDosage()).build();
+                    responses.add(response);
+                }
+            }
+            System.out.println(u.get().getNickname() + "의 의약품 정보");
+            return responses;
+        }
+        System.out.println("사용자 정보가 잘못됐거나 없습니다.");
+        return null;
     }
 }
