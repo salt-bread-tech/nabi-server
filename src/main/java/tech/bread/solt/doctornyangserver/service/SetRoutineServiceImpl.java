@@ -41,8 +41,6 @@ public class SetRoutineServiceImpl implements SetRoutineService {
                         .startDate(request.getStartDate())
                         .performDate(startDate.plusDays(i))
                         .endDate(request.getEndDate())
-                        .maxPerform(request.getMaxPerform())
-                        .perform(j)
                         .completion(false).build());
             }
         }
