@@ -138,7 +138,7 @@ public class DosageServiceImpl implements DosageService {
 
             int count = 0;
             for (int i = 0; i < doseDays; i++) {
-                for (int j = 0; j < medicine.getDailyDosage(); j++) {
+                for (int j = 0; j < (medicine.getDailyDosage() / medicine.getOnceDosage()); j++) {
                     count++;
                     dosageRepo.save(Dosage.builder()
                             .date(request.getStartDate().plusDays(i))
@@ -146,7 +146,7 @@ public class DosageServiceImpl implements DosageService {
                             .times(Times.ofOrdinal(ordinals.get(j)))
                             .medicineId(m.get())
                             .medicineTaken(false).build());
-                    if (count >= medicine.getTotalDosage())
+                    if (count >= (medicine.getTotalDosage() / medicine.getOnceDosage()))
                         break;
                 }
             }
