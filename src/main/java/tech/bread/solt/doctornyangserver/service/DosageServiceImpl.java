@@ -38,6 +38,8 @@ public class DosageServiceImpl implements DosageService {
             Medicine medicine = m.get();
 
             int doseDays = medicine.getTotalDosage() / medicine.getDailyDosage();
+            if (medicine.getTotalDosage() % medicine.getDailyDosage() > 0)
+                doseDays += 1;
             String desc = medicine.getMedicineDosage();
 
             if (desc.contains("식후")) {
@@ -134,14 +136,18 @@ public class DosageServiceImpl implements DosageService {
             if (desc.contains("취침"))
                 ordinals.add(6);
 
+            int count = 0;
             for (int i = 0; i < doseDays; i++) {
                 for (int j = 0; j < medicine.getDailyDosage(); j++) {
+                    count++;
                     dosageRepo.save(Dosage.builder()
                             .date(request.getStartDate().plusDays(i))
                             .userUid(u.get())
                             .times(Times.ofOrdinal(ordinals.get(j)))
                             .medicineId(m.get())
                             .medicineTaken(false).build());
+                    if (count >= medicine.getTotalDosage())
+                        break;
                 }
             }
             System.out.println("복용 날짜 등록 완료");
