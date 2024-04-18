@@ -37,7 +37,8 @@ public class NabiServiceImpl implements NabiService {
         Optional<User> optionalUser = userRepo.findById(request.getUid());
 
         if (optionalUser.isPresent()) {
-            ChatGPTResponse chatGPTResponse = GPTManager.getInstance().getResponse(request.getContent());
+            GPTManager gptManager = new GPTManager();
+            ChatGPTResponse chatGPTResponse = gptManager.getResponse(request.getContent());
             result = chatGPTResponse.getChoices().get(0).getMessage().getContent();
 
             chats.add(Chat.builder()
