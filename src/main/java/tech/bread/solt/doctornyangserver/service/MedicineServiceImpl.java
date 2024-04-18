@@ -133,6 +133,7 @@ public class MedicineServiceImpl implements MedicineService {
                 List<Medicine> medicines = medicineRepo.findAllByPrescriptionId(prescription);
                 for (Medicine m : medicines){
                     response = GetMedicineResponse.builder()
+                            .id(m.getId())
                             .name(m.getMedicineName())
                             .total(m.getTotalDosage())
                             .daily(m.getDailyDosage())
