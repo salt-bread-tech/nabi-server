@@ -165,6 +165,7 @@ $RECYCLE.BIN/
 *.iws
 *.iml
 *.ipr
+/out/
 /src/main/resources/application.properties
 /src/main/java/tech/bread/solt/doctornyangserver/util/KeySet.java
 
