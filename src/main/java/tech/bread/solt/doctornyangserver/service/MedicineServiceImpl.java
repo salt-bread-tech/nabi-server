@@ -10,13 +10,16 @@ import tech.bread.solt.doctornyangserver.model.dto.request.GetMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineResponse;
+import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
 import tech.bread.solt.doctornyangserver.model.entity.Prescription;
 import tech.bread.solt.doctornyangserver.model.entity.User;
+import tech.bread.solt.doctornyangserver.repository.DosageRepo;
 import tech.bread.solt.doctornyangserver.repository.MedicineRepo;
 import tech.bread.solt.doctornyangserver.repository.PrescriptionRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.util.KeySet;
+import tech.bread.solt.doctornyangserver.util.Times;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ public class MedicineServiceImpl implements MedicineService {
     final private UserRepo userRepo;
     final private PrescriptionRepo prescriptionRepo;
     final private MedicineRepo medicineRepo;
+    final private DosageRepo dosageRepo;
 
     @Override
     public List<String> getMedicineList(String name) {
@@ -84,9 +88,10 @@ public class MedicineServiceImpl implements MedicineService {
     public int registerMedicine(RegisterMedicineRequest request) {
         Prescription prescription;
         Medicine medicine;
-        int pId;
+        int pId, mId;
         Optional<User> optionalUser = userRepo.findById(request.getUid());
         Optional<Prescription> optionalPrescription;
+        List<Integer> ordinals = new ArrayList<>();
 
         if (optionalUser.isPresent()) {
             prescription = Prescription.builder()
@@ -107,8 +112,124 @@ public class MedicineServiceImpl implements MedicineService {
                         .medicineDosage(request.getDosage())
                         .build();
 
-                medicineRepo.save(medicine);
-                System.out.println("약품 정보 등록 완료");
+                mId = medicineRepo.save(medicine).getId();
+                Optional<Medicine> m = medicineRepo.findById(mId);
+                Medicine medicineToRegister = m.get();
+
+                int doseDays = medicineToRegister.getTotalDosage() / medicineToRegister.getDailyDosage();
+                if (medicineToRegister.getTotalDosage() % medicineToRegister.getDailyDosage() > 0)
+                    doseDays += 1;
+                String desc = medicineToRegister.getMedicineDosage();
+
+                if (desc.contains("식후")) {
+                    switch (medicine.getOnceDosage()) {
+                        case 1:
+                            switch (medicine.getDailyDosage()) {
+                                case 3:
+                                    ordinals.add(1);
+                                    ordinals.add(3);
+                                    ordinals.add(5);
+                                    break;
+                                case 2:
+                                    ordinals.add(1);
+                                    ordinals.add(3);
+                                    break;
+                                case 1:
+                                    ordinals.add(1);
+                                    break;
+                                default:
+                                    System.out.println("연산 오류");
+                                    break;
+                            }
+                            break;
+                        case 2:
+                            switch (medicine.getDailyDosage()){
+                                case 6:
+                                    ordinals.add(1);
+                                    ordinals.add(3);
+                                    ordinals.add(5);
+                                    break;
+                                case 4:
+                                    ordinals.add(1);
+                                    ordinals.add(3);
+                                    break;
+                                case 2:
+                                    ordinals.add(1);
+                                    break;
+                                default:
+                                    System.out.println("연산 오류");
+                                    break;
+                            }
+                            break;
+                        default:
+                            System.out.println("연산 오류");
+                            break;
+                    }
+
+                } else if (desc.contains("식전")) {
+                    switch (medicine.getOnceDosage()) {
+                        case 1:
+                            switch (medicine.getDailyDosage()) {
+                                case 3:
+                                    ordinals.add(0);
+                                    ordinals.add(2);
+                                    ordinals.add(4);
+                                    break;
+                                case 2:
+                                    ordinals.add(0);
+                                    ordinals.add(4);
+                                    break;
+                                case 1:
+                                    ordinals.add(0);
+                                    break;
+                                default:
+                                    System.out.println("연산 오류");
+                                    break;
+                            }
+                            break;
+                        case 2:
+                            switch (medicine.getDailyDosage()){
+                                case 6:
+                                    ordinals.add(0);
+                                    ordinals.add(2);
+                                    ordinals.add(4);
+                                    break;
+                                case 4:
+                                    ordinals.add(0);
+                                    ordinals.add(2);
+                                    break;
+                                case 2:
+                                    ordinals.add(0);
+                                    break;
+                                default:
+                                    System.out.println("연산 오류");
+                                    break;
+                            }
+                            break;
+                        default:
+                            System.out.println("연산 오류");
+                            break;
+                    }
+                }
+
+                if (desc.contains("취침"))
+                    ordinals.add(6);
+
+                int count = 0;
+                for (int i = 0; i < doseDays; i++) {
+                    for (int j = 0; j < (medicine.getDailyDosage() / medicine.getOnceDosage()); j++) {
+                        count++;
+                        dosageRepo.save(Dosage.builder()
+                                .date(request.getStartDate().plusDays(i))
+                                .userUid(optionalUser.get())
+                                .times(Times.ofOrdinal(ordinals.get(j)))
+                                .medicineId(medicineToRegister)
+                                .medicineTaken(false).build());
+                        if (count >= (medicine.getTotalDosage() / medicine.getOnceDosage()))
+                            break;
+                    }
+                }
+                System.out.println("약품 정보 및 복용 일정 등록 완료");
                 return 200;
             }
             System.out.println("처방전을 찾을 수 없습니다.");

@@ -4,9 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.DeleteDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
-import tech.bread.solt.doctornyangserver.model.dto.request.SetPrivateDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
-import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.service.DosageService;
 
 import java.util.List;
@@ -28,11 +26,6 @@ public class DosageController {
     @PostMapping("/management")
     public Boolean tookMedicine(@RequestBody DoneDosageRequest request){
         return dosageService.toggleDosage(request);
-    }
-
-    @PostMapping("/private-set")
-    public int setPrivateDosage(@RequestBody SetPrivateDosageRequest request){
-        return dosageService.registerPrivateDosage(request);
     }
 
     @GetMapping("/show/{uid}")

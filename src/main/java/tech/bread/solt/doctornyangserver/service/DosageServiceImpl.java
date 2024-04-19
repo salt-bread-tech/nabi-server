@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.DeleteDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
-import tech.bread.solt.doctornyangserver.model.dto.request.SetPrivateDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
@@ -16,7 +15,6 @@ import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.util.Times;
 import tech.bread.solt.doctornyangserver.util.TimesConverter;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -177,57 +175,6 @@ public class DosageServiceImpl implements DosageService {
         }
         System.out.println("변경 실패");
         return false;
-    }
-
-    @Override
-    public int registerPrivateDosage(SetPrivateDosageRequest request) {
-        Optional<Medicine> medicine = medicineRepo.findById(request.getMedicineId());
-        Optional<User> user = userRepo.findById(request.getUserUid());
-
-        if (medicine.isPresent() && user.isPresent()){
-            Medicine privateMedicine = medicine.get();
-            int doseDays = request.getTotalDosage() / privateMedicine.getDailyDosage();
-            int restDosage = request.getTotalDosage() % privateMedicine.getDailyDosage();
-            String desc = privateMedicine.getMedicineDosage();
-            List<Integer> ordinals = new ArrayList<>();
-
-            if (desc.contains("식후")){
-                ordinals.add(1);
-                ordinals.add(3);
-                ordinals.add(5);
-            } else if (desc.contains("식전")) {
-                ordinals.add(2);
-                ordinals.add(4);
-                ordinals.add(6);
-            }
-            if (desc.contains("취침"))
-                ordinals.add(6);
-
-            for (int i = 0; i < doseDays; i++) {
-                for (int j = 0; j < privateMedicine.getDailyDosage(); j++) {
-                    dosageRepo.save(Dosage.builder()
-                            .date(request.getStartDate().plusDays(i))
-                            .userUid(user.get())
-                            .times(Times.ofOrdinal(ordinals.get(j)))
-                            .medicineId(privateMedicine)
-                            .medicineTaken(false).build());
-                }
-            }
-            if (restDosage > 0){
-                for(int i = 0; i < restDosage; i++) {
-                    dosageRepo.save(Dosage.builder().
-                            date(request.getStartDate().plusDays(doseDays))
-                            .userUid(user.get())
-                            .times(Times.ofOrdinal(ordinals.get(i)))
-                            .medicineId(privateMedicine)
-                            .medicineTaken(false).build());
-                }
-            }
-            System.out.println("등록 성공");
-            return 200;
-        }
-        System.out.println("등록 실패: 약 정보가 없음");
-        return 500;
     }
 
     @Override
