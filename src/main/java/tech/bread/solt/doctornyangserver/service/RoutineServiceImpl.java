@@ -2,6 +2,7 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tech.bread.solt.doctornyangserver.model.dto.request.DeleteRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.ShowRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.IncrementRoutinePerformRequest;
@@ -14,6 +15,7 @@ import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class RoutineServiceImpl implements RoutineService {
@@ -88,5 +90,19 @@ public class RoutineServiceImpl implements RoutineService {
         return null;
     }
 
+    @Override
+    public int delete(DeleteRoutineRequest request) {
+        Optional<User> u = userRepo.findById(request.getUid());
+        Optional<Routine> r = routineRepo.findById(request.getRid());
+        if (u.isPresent()) {
+            if (r.isPresent()) {
+                routineRepo.delete(r.get());
+                return 200;
+            }
+            System.out.println("루틴 정보를 찾을 수 없음");
+            return 400;
+        }
+        System.out.println("사용자 정보를 찾을 수 없음");
+        return 500;
     }
 }

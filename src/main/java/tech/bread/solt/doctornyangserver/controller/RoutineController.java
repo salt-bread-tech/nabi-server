@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tech.bread.solt.doctornyangserver.model.dto.request.DeleteRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.ShowRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.IncrementRoutinePerformRequest;
@@ -36,5 +37,8 @@ public class RoutineController {
         return routineService.show(request);
     }
 
+    @PostMapping("/delete")
+    public int deleteRoutine(@RequestBody DeleteRoutineRequest request) {
+        return routineService.delete(request);
     }
 }
