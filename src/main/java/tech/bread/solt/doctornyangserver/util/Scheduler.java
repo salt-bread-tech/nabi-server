@@ -4,19 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
-import tech.bread.solt.doctornyangserver.model.entity.SetRoutine;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.SetRoutineRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
-import tech.bread.solt.doctornyangserver.service.ScheduleService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
