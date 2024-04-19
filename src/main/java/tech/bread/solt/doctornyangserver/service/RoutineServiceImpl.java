@@ -3,12 +3,17 @@ package tech.bread.solt.doctornyangserver.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.ShowRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.IncrementRoutinePerformRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Routine;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.RoutineRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RoutineServiceImpl implements RoutineService {
@@ -51,6 +56,36 @@ public class RoutineServiceImpl implements RoutineService {
         }
         System.out.println("사용자 정보를 찾을 수 없음");
         return 500;
+    }
+
+    @Override
+    public List<ShowRoutineResponse> show(ShowRoutineRequest request) {
+        Optional<User> u = userRepo.findById(request.getUid());
+        List<ShowRoutineResponse> responses = new ArrayList<>();
+        ShowRoutineResponse response;
+
+        if (u.isPresent()) {
+            List<Routine> routines = routineRepo.findByUId(u.get());
+
+            if (routines.isEmpty()) {
+                System.out.println("등록된 루틴이 없습니다.");
+                return null;
+            }
+
+            for (Routine r: routines) {
+                response = ShowRoutineResponse.builder()
+                        .id(r.getRoutineId())
+                        .name(r.getRoutineName())
+                        .color(r.getColorCode())
+                        .max(r.getMaxPerform())
+                        .counts(r.getPerformCounts()).build();
+                responses.add(response);
+            }
+
+            System.out.println("루틴 정보 불러오기 성공");
+            return responses;
+        }
+        return null;
     }
 
     }
