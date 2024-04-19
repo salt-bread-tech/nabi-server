@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.service.RoutineService;
 
 @RestController
@@ -16,7 +17,9 @@ public class RoutineController {
     }
 
     @PostMapping("/register")
-    public int registerRoutine(@RequestBody String routineName) {
-        return routineService.register(routineName);
+    public int registerRoutine(@RequestBody RegisterRoutineRequest request) {
+        return routineService.register(request);
+    }
+
     }
 }
