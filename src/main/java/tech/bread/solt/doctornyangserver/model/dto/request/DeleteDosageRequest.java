@@ -5,17 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterMedicineRequest {
-    int uid;
-    LocalDate startDate;
-    String medicineName;
-    int once;
-    int total;
-    int daily;
-    String dosage;
+public class DeleteDosageRequest {
+    int userUid;
+    LocalDate date;
+    int times;
 }

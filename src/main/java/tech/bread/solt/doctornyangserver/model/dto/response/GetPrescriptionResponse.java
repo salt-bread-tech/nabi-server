@@ -2,6 +2,7 @@ package tech.bread.solt.doctornyangserver.model.dto.response;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class GetPrescriptionResponse {
-    private Date prescriptionDate;
+    private LocalDate prescriptionDate;
     private List<MedicineTaking> medicineTakings;
 
     @Getter

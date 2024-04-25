@@ -4,12 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TogglePrivateRoutineRequest {
-    private int userUid;
-    private int routineId;
+public class ShowRoutineRequest {
+    int uid;
 }
