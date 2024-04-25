@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeletePrivateRoutineRequest {
-    private int userUid;
-    private int routineId;
+public class IncrementRoutinePerformRequest {
+    private int uid;
+    private int rid;
 }
