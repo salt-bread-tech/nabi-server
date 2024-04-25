@@ -47,7 +47,11 @@ public class RoutineServiceImpl implements RoutineService {
             if(r.isPresent()) {
                 Routine routine = r.get();
                 int performCountNow = routine.getPerformCounts();
-                routine.setRoutineId(performCountNow + 1);
+                if (performCountNow == routine.getMaxPerform()) {
+                    System.out.println("이미 완료한 루틴입니다.");
+                    return 300;
+                }
+                routine.setPerformCounts(performCountNow + 1);
                 routineRepo.save(routine);
 
                 System.out.println("루틴 1회 성공 !");
@@ -67,7 +71,7 @@ public class RoutineServiceImpl implements RoutineService {
         ShowRoutineResponse response;
 
         if (u.isPresent()) {
-            List<Routine> routines = routineRepo.findByUId(u.get());
+            List<Routine> routines = routineRepo.findByUserUid(u.get());
 
             if (routines.isEmpty()) {
                 System.out.println("등록된 루틴이 없습니다.");
@@ -97,6 +101,7 @@ public class RoutineServiceImpl implements RoutineService {
         if (u.isPresent()) {
             if (r.isPresent()) {
                 routineRepo.delete(r.get());
+                System.out.println("루틴 삭제 성공");
                 return 200;
             }
             System.out.println("루틴 정보를 찾을 수 없음");

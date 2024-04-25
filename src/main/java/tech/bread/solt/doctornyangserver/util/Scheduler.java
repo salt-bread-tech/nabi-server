@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
-//import tech.bread.solt.doctornyangserver.repository.SetRoutineRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
 import java.time.LocalDate;
