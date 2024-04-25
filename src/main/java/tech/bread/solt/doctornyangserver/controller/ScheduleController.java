@@ -25,7 +25,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/delete")
-    public int deleteSchedule(@RequestParam int scheduleId){
+    public int deleteSchedule(@RequestParam("scheduleId") int scheduleId){
         return scheduleService.deleteSchedule(scheduleId);
     }
 
