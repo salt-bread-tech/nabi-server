@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DietServiceImpl implements DietService {
-    final private String REQUEST_URL = "https://apis.data.go.kr/1471000/FoodNtrIrdntInfoService1/getFoodNtrItdntList1?ServiceKey=" + KeySet.CALORIE_API_KEY.getKey();
+    final private String REQUEST_URL = "http://openapi.foodsafetykorea.go.kr/api/" + KeySet.CALORIE_API_KEY.getKey() + "/I2790/xml/1/10/";
 
     private final UserRepo userRepo;
     private final FoodInformationRepo foodInformationRepo;
@@ -37,12 +37,12 @@ public class DietServiceImpl implements DietService {
 
     @Override
     public List<String> getFoodList(String name) {
-        String url = REQUEST_URL + "&desc_kor=" + name + "&pageNo=1&numOfRows=10";
+        String url = REQUEST_URL + "DESC_KOR=" + name;
         List<String> result = new ArrayList<>();
 
         try {
             Document doc = Jsoup.connect(url).parser(org.jsoup.parser.Parser.xmlParser()).get();
-            Elements items = doc.select("item");
+            Elements items = doc.select("row");
 
             for (Element item : items) {
                 System.out.println("name: " + item.select("DESC_KOR").text());
@@ -57,31 +57,45 @@ public class DietServiceImpl implements DietService {
 
     @Override
     public GetCalorieInformResponse getCalorieInform(String name, int num) {
-        String url = REQUEST_URL + "&desc_kor=" + name + "&pageNo=1&numOfRows=10";
+        String url = REQUEST_URL + "DESC_KOR=" + name;
         GetCalorieInformResponse result = new GetCalorieInformResponse();
+        System.out.println(num);
 
         try {
             Document doc = Jsoup.connect(url).parser(org.jsoup.parser.Parser.xmlParser()).get();
-            Elements items = doc.select("item");
+
+            Elements items = doc.select("row");
             Element item = items.get(num);
 
             System.out.println("name: " + item.select("DESC_KOR").text());
             result.setName(item.select("DESC_KOR").text());
-            result.setServingSize(Double.parseDouble(item.select("SERVING_WT").text().replace("N/A", "200000")));
-            result.setCalories(Double.parseDouble(item.select("NUTR_CONT1").text().replace("N/A", "200000")));
-            result.setCarbohydrate(Double.parseDouble(item.select("NUTR_CONT2").text().replace("N/A", "200000")));
-            result.setProtein(Double.parseDouble(item.select("NUTR_CONT3").text().replace("N/A", "200000")));
-            result.setFat(Double.parseDouble(item.select("NUTR_CONT4").text().replace("N/A", "200000")));
-            result.setSugars(Double.parseDouble(item.select("NUTR_CONT5").text().replace("N/A", "200000")));
-            result.setSalt(Double.parseDouble(item.select("NUTR_CONT6").text().replace("N/A", "200000")));
-            result.setCholesterol(Double.parseDouble(item.select("NUTR_CONT7").text().replace("N/A", "200000")));
-            result.setSaturatedFattyAcid(Double.parseDouble(item.select("NUTR_CONT8").text().replace("N/A", "200000")));
-            result.setTransFattyAcid(Double.parseDouble(item.select("NUTR_CONT9").text().replace("N/A", "200000")));
+
+            result.setServingSize(parseDoubleOrDefault(item.select("SERVING_SIZE").text()));
+            result.setCalories(parseDoubleOrDefault(item.select("NUTR_CONT1").text()));
+            result.setCarbohydrate(parseDoubleOrDefault(item.select("NUTR_CONT2").text()));
+            result.setProtein(parseDoubleOrDefault(item.select("NUTR_CONT3").text()));
+            result.setFat(parseDoubleOrDefault(item.select("NUTR_CONT4").text()));
+            result.setSugars(parseDoubleOrDefault(item.select("NUTR_CONT5").text()));
+            result.setSalt(parseDoubleOrDefault(item.select("NUTR_CONT6").text()));
+            result.setCholesterol(parseDoubleOrDefault(item.select("NUTR_CONT7").text()));
+            result.setSaturatedFattyAcid(parseDoubleOrDefault(item.select("NUTR_CONT8").text()));
+            result.setTransFattyAcid(parseDoubleOrDefault(item.select("NUTR_CONT9").text()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         return result;
+    }
+
+    private static double parseDoubleOrDefault(String value) {
+        if (value != null && !value.trim().isEmpty()) {
+            try {
+                return Double.parseDouble(value);
+            } catch (NumberFormatException e) {
+                return 9999999.0;
+            }
+        }
+        return 9999999.0;
     }
 
     @Override
