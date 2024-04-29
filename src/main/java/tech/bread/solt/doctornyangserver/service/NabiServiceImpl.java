@@ -27,7 +27,9 @@ import java.util.Optional;
 public class NabiServiceImpl implements NabiService {
 
     final private UserRepo userRepo;
-    private final ChatRepo chatRepo;
+    final private ChatRepo chatRepo;
+
+    private int LIKEABILITY_SCORE = 3;
 
     @Override
     public String createChat(CreateChatRequest request) {
@@ -107,5 +109,34 @@ public class NabiServiceImpl implements NabiService {
 
         return result;
     }
+
+    @Override
+    public int feed(int uid) {
+        int result = 400;
+        Optional<User> optionalUser = userRepo.findById(uid);
+
+        if (optionalUser.isEmpty()) {
+            System.out.println("먹이 주기 실패: 유저가 존재하지 않음");
+            return result;
+        }
+        else {
+            User user = optionalUser.get();
+
+            if (user.getFed()) {
+                System.out.println("먹이 주기 실패: 오늘 먹이를 이미 줬습니다.");
+                result = 300;
+            }
+            else {
+                user.setFed(true);
+                user.setLikeability(user.getLikeability() + LIKEABILITY_SCORE);
+                System.out.println("먹이 주기 성공, 현재 호감도: " + user.getLikeability());
+                userRepo.save(user);
+                result = 200;
+            }
+        }
+
+        return result;
+    }
+
 
 }

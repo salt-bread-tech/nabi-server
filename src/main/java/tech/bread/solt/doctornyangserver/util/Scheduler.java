@@ -44,6 +44,21 @@ public class Scheduler {
         }
     }
 
+//    @Scheduled(cron = "*/5 * * * * *")
+    @Scheduled(cron = "0 0 6 * * *")
+    public void feedSchedule() {
+        List<User> fedUsers = userRepo.findByFedIsTrue();
+        List<User> users = new ArrayList<>();
+
+        for (User user : fedUsers) {
+            user.setFed(false);
+            users.add(user);
+        }
+
+        userRepo.saveAll(users);
+        System.out.println("먹이 주기 초기화 완료");
+    }
+
 //    @Scheduled(cron = "0 0 8 1 * *")
 //    public void alertMonthlyReport() {
 //        LocalDate today = LocalDate.now();
