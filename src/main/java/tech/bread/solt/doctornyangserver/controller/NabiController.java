@@ -34,4 +34,8 @@ public class NabiController {
         return nabiService.createChat(request);
     }
 
+    @GetMapping("/feed/{uid}")
+    public int feed(@PathVariable("uid") int uid) {
+        return nabiService.feed(uid);
+    }
 }

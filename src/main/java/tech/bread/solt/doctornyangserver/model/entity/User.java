@@ -49,4 +49,10 @@ public class User {
 
     @Column(name = "done_tutorial")
     Boolean doneTutorial;
+
+    @Column(name= "fed")
+    Boolean fed;
+
+    @Column(name="likeability")
+    Integer likeability;
 }

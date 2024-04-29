@@ -13,4 +13,6 @@ public interface NabiService {
     List<GetChatResponse> getChats(int uid);
 
     List<GetChatResponse> getChats(int uid, int page);
+
+    int feed(int uid);
 }
