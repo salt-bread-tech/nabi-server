@@ -42,8 +42,9 @@ public class NabiServiceImpl implements NabiService {
             User user = optionalUser.get();
             List<Chat> recentChats = chatRepo.findTop40ByUidOrderByCreateAtDesc(user);
             Collections.reverse(recentChats);
+            int type = user.getLikeability() > 100 ? 1 : 2;
 
-            GPTManager gptManager = new GPTManager(recentChats);
+            GPTManager gptManager = new GPTManager(recentChats, type);
             ChatGPTResponse chatGPTResponse = gptManager.getResponse(request.getContent());
             result = chatGPTResponse.getChoices().get(0).getMessage().getContent();
 

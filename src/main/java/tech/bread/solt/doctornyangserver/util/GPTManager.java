@@ -48,14 +48,13 @@ public class GPTManager {
         mediaType = "application/json; charset=UTF-8";
     }
 
-    public GPTManager(List<Chat> recentConversations) {
+    public GPTManager(List<Chat> recentConversations, int type) {
         apiKey = KeySet.GPT_API_KEY.getKey();
         model = KeySet.GPT_MODEL.getKey();
         url = KeySet.GPT_URL.getKey();
 
         messages = new ArrayList<>();
 
-        type = 1;
         initPersonality(type);
         applyRecentChats(recentConversations);
 
