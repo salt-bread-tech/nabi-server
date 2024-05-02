@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class RegisterMedicineRequest {
     int uid;
-    Date startDate;
+    LocalDate startDate;
     String medicineName;
     int once;
     int total;

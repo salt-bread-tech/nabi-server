@@ -65,7 +65,10 @@ public class UserServiceImpl implements UserService{
                         .weight(request.getWeight())
                         .bmr(bmr)
                         .bmiRangeId(bmiRange)
-                        .doneTutorial(false).build());
+                        .doneTutorial(false)
+                        .fed(false)
+                        .likeability(0)
+                        .userRole("User").build());
                 System.out.println("회원가입 성공!");
 
                 result = 200;
@@ -204,7 +207,7 @@ public class UserServiceImpl implements UserService{
     }
 
     private double calcBMR(String sex, double weight, double height, int age) {
-        // 남성: 66.5 + (13.75 X 체중 kg) + (5.003 X 키 cm) - (6.75 X 나이)
+        // 남성: 66.5 + (13.75 X 체중 kg) + (5.003 X f키 cm) - (6.75 X 나이)
         // 여성: 655.1 + (9.563 X 체중 kg) + (1.850 X 키 cm) - (4.676 X 나이)
         if(sex.equals("남성")) {
             return 66.5 + (13.75 * weight) + (5.003 * height) - (6.75 * age);

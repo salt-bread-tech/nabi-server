@@ -14,5 +14,5 @@ public class DoneDosageRequest {
     private int userUid;
     private int medicineId;
     private LocalDate date;
-    private Times times;
+    private int times;
 }

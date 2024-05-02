@@ -10,7 +10,7 @@ public interface NabiService {
 
     String createChat(CreateChatRequest request);
 
-    List<GetChatResponse> getChats(int uid);
-
     List<GetChatResponse> getChats(int uid, int page);
+
+    int feed(int uid);
 }

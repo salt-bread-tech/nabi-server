@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface DietService {
 
-    List<String> getFoodList(String name);
+    List<GetCalorieInformResponse> getFoodList(String name);
 
     GetCalorieInformResponse getCalorieInform(String name, int num);
 

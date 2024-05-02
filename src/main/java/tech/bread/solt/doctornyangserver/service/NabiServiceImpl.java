@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,58 +28,45 @@ import java.util.Optional;
 public class NabiServiceImpl implements NabiService {
 
     final private UserRepo userRepo;
-    private final ChatRepo chatRepo;
+    final private ChatRepo chatRepo;
+
+    private int CHAT_PAGE_SIZE = 20;
+    private int LIKEABILITY_SCORE = 3;
 
     @Override
     public String createChat(CreateChatRequest request) {
         String result = "";
-        List<Chat> chats = new ArrayList<>();
-
         Optional<User> optionalUser = userRepo.findById(request.getUid());
 
         if (optionalUser.isPresent()) {
-            ChatGPTResponse chatGPTResponse = GPTManager.getInstance().getResponse(request.getContent());
+            User user = optionalUser.get();
+            List<Chat> recentChats = chatRepo.findTop40ByUidOrderByCreateAtDesc(user);
+            Collections.reverse(recentChats);
+            int type = user.getLikeability() > 100 ? 1 : 2;
+
+            GPTManager gptManager = new GPTManager(recentChats, type);
+            ChatGPTResponse chatGPTResponse = gptManager.getResponse(request.getContent());
             result = chatGPTResponse.getChoices().get(0).getMessage().getContent();
 
-            chats.add(Chat.builder()
+            Chat userChat = Chat.builder()
                             .isUser(true)
                             .text(request.getContent())
                             .createAt(LocalDateTime.now())
                             .uid(optionalUser.get())
-                            .build());
+                            .build();
 
-            chats.add(Chat.builder()
+            Chat gptChat = Chat.builder()
                             .isUser(false)
                             .text(result)
                             .createAt(LocalDateTime.now())
                             .uid(optionalUser.get())
-                            .build());
+                            .build();
 
-            chatRepo.saveAll(chats);
+            chatRepo.save(userChat);
+            chatRepo.save(gptChat);
         }
         else {
             result = "UID가 올바르지 않습니다.";
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<GetChatResponse> getChats(int uid) {
-        List<GetChatResponse> result = new ArrayList<>();
-        Optional<User> optionalUser = userRepo.findById(uid);
-
-        if (optionalUser.isPresent()) {
-            List<Chat> chats = chatRepo.findTop20ByUidOrderByCreateAtDesc(optionalUser.get());
-
-            for (Chat c: chats) {
-                System.out.println(c.getUid() + " " + c.getText());
-                result.add(GetChatResponse.builder()
-                                .isUser(c.getIsUser())
-                                .content(c.getText())
-                                .createAt(c.getCreateAt())
-                                .build());
-            }
         }
 
         return result;
@@ -90,7 +78,7 @@ public class NabiServiceImpl implements NabiService {
         Optional<User> optionalUser = userRepo.findById(uid);
 
         if (optionalUser.isPresent()) {
-            Pageable pageable = PageRequest.of(page, 20, Sort.by("createAt").descending());
+            Pageable pageable = PageRequest.of(page, CHAT_PAGE_SIZE, Sort.by("createAt").descending());
             Page<Chat> chatPage = chatRepo.findByUidAndCreateAtBefore(optionalUser.get(), LocalDateTime.now(), pageable);
             List<Chat> chats = chatPage.getContent();
 
@@ -106,5 +94,34 @@ public class NabiServiceImpl implements NabiService {
 
         return result;
     }
+
+    @Override
+    public int feed(int uid) {
+        int result = 400;
+        Optional<User> optionalUser = userRepo.findById(uid);
+
+        if (optionalUser.isEmpty()) {
+            System.out.println("먹이 주기 실패: 유저가 존재하지 않음");
+            return result;
+        }
+        else {
+            User user = optionalUser.get();
+
+            if (user.getFed()) {
+                System.out.println("먹이 주기 실패: 오늘 먹이를 이미 줬습니다.");
+                result = 300;
+            }
+            else {
+                user.setFed(true);
+                user.setLikeability(user.getLikeability() + LIKEABILITY_SCORE);
+                System.out.println("먹이 주기 성공, 현재 호감도: " + user.getLikeability());
+                userRepo.save(user);
+                result = 200;
+            }
+        }
+
+        return result;
+    }
+
 
 }

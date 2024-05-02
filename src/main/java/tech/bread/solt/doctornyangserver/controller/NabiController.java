@@ -19,11 +19,6 @@ public class NabiController {
         this.nabiService = nabiService;
     }
 
-    @GetMapping("/chats/{uid}")
-    public List<GetChatResponse> getChats(@PathVariable("uid") int uid) {
-        return nabiService.getChats(uid);
-    }
-
     @GetMapping("/chats/{uid}/{page}")
     public List<GetChatResponse> getChats(@PathVariable("uid") int uid, @PathVariable("page") int page) {
         return nabiService.getChats(uid, page);
@@ -34,4 +29,8 @@ public class NabiController {
         return nabiService.createChat(request);
     }
 
+    @GetMapping("/feed/{uid}")
+    public int feed(@PathVariable("uid") int uid) {
+        return nabiService.feed(uid);
+    }
 }
