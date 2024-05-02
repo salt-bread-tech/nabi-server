@@ -53,6 +53,9 @@ public class User {
     @Column(name= "fed")
     Boolean fed;
 
+    @Column(name="user_role")
+    String userRole;
+
     @Column(name="likeability")
     Integer likeability;
 }

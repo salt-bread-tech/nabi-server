@@ -67,7 +67,8 @@ public class UserServiceImpl implements UserService{
                         .bmiRangeId(bmiRange)
                         .doneTutorial(false)
                         .fed(false)
-                        .likeability(0).build());
+                        .likeability(0)
+                        .userRole("User").build());
                 System.out.println("회원가입 성공!");
 
                 result = 200;
