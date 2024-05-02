@@ -22,7 +22,7 @@ public class DietController {
     }
 
     @GetMapping("/foods/{name}")
-    public List<String> searchFoodList(@PathVariable("name") String name) {
+    public List<GetCalorieInformResponse> searchFoodList(@PathVariable("name") String name) {
         return dietService.getFoodList(name);
     }
 

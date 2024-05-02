@@ -36,17 +36,28 @@ public class DietServiceImpl implements DietService {
     private final IngestionRepo ingestionRepo;
 
     @Override
-    public List<String> getFoodList(String name) {
+    public List<GetCalorieInformResponse> getFoodList(String name) {
         String url = REQUEST_URL + "DESC_KOR=" + name;
-        List<String> result = new ArrayList<>();
+        List<GetCalorieInformResponse> result = new ArrayList<>();
 
         try {
             Document doc = Jsoup.connect(url).parser(org.jsoup.parser.Parser.xmlParser()).get();
             Elements items = doc.select("row");
 
             for (Element item : items) {
-                System.out.println("name: " + item.select("DESC_KOR").text());
-                result.add(item.select("DESC_KOR").text());
+                result.add(GetCalorieInformResponse.builder()
+                                .name(item.select("DESC_KOR").text())
+                                .servingSize(parseDoubleOrDefault(item.select("SERVING_SIZE").text()))
+                                .calories(parseDoubleOrDefault(item.select("NUTR_CONT1").text()))
+                                .carbohydrate(parseDoubleOrDefault(item.select("NUTR_CONT2").text()))
+                                .protein(parseDoubleOrDefault(item.select("NUTR_CONT3").text()))
+                                .fat(parseDoubleOrDefault(item.select("NUTR_CONT4").text()))
+                                .sugars(parseDoubleOrDefault(item.select("NUTR_CONT5").text()))
+                                .salt(parseDoubleOrDefault(item.select("NUTR_CONT6").text()))
+                                .cholesterol(parseDoubleOrDefault(item.select("NUTR_CONT7").text()))
+                                .saturatedFattyAcid(parseDoubleOrDefault(item.select("NUTR_CONT8").text()))
+                                .transFattyAcid(parseDoubleOrDefault(item.select("NUTR_CONT9").text()))
+                                .build());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
