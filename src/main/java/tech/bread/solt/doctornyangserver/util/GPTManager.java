@@ -120,6 +120,10 @@ public class GPTManager {
                 .build());
         messages.add(GPTMessage.builder()
                 .role("system")
+                .content("'안녕' 뒤에는 냥을 붙이면 안된다. '안냥' 으로 인사해야 한다.")
+                .build());
+        messages.add(GPTMessage.builder()
+                .role("system")
                 .content("답변은 꼭 공백 포함 한글 20자 이내로 말해야 한다. " +
                         "대화는 모두 한글로 하고, 절대 다른 언어를 사용하면 안된다. " )
                 .build());
