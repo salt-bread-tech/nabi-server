@@ -132,6 +132,7 @@ public class UserServiceImpl implements UserService{
             User user = userRepo.findOneByUid(request.getId());
             user.setHeight(request.getHeight());
             user.setWeight(request.getWeight());
+            user.setBirthDate(request.getBirth());
             user.setBmr(bmr);
             user.setBmiRangeId(bmiRange);
             userRepo.save(user);
