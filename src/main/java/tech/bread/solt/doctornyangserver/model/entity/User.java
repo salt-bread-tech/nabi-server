@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tech.bread.solt.doctornyangserver.util.Gender;
 
 import java.time.LocalDate;
 
@@ -33,6 +34,10 @@ public class User {
 
     @Column(name = "birth_date")
     LocalDate birthDate;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "gender")
+    Gender gender;
 
     @Column(name = "height")
     Double height;

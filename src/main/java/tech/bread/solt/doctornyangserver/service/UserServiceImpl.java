@@ -12,6 +12,7 @@ import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
+import tech.bread.solt.doctornyangserver.util.Gender;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public int register(RegisterRequest request) {
         int result;
+        Gender g;
 
         if (!isUnique(request.getId())) {
             System.out.println("회원가입 실패: 아이디 중복");
@@ -43,16 +45,20 @@ public class UserServiceImpl implements UserService{
             double bmi = calcBMI(request.getWeight(), request.getHeight());
             int bmiId = setBMIRangeId(bmi);
             BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
-
+            if (request.getHeight() > 251 || request.getHeight() < 65){
+                System.out.println("키를 잘못 입력했습니다.");
+                return 300;
+            }
+            if (request.getWeight() > 769 || request.getWeight() < 6 ) {
+                System.out.println("체중을 잘못 입력했습니다.");
+                return 300;
+            }
             double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
 
-            if(bmi < 0 || bmi > 200){
-                System.out.println("유효하지 않은 BMI 값");
-                return 400;
-            } else if (bmr < 0 || bmr > 10000) {
-                System.out.println("유효하지 않은 BMR 값");
-                return 500;
-            }
+            if (request.getSex().equals("남성"))
+                g = Gender.MALE;
+            else
+                g = Gender.FEMALE;
 
             try {
                 userRepo.save(User.builder()
@@ -61,6 +67,7 @@ public class UserServiceImpl implements UserService{
                         .salt(salt)
                         .nickname(request.getNickname())
                         .birthDate(request.getBirthDate())
+                        .gender(g)
                         .height(request.getHeight())
                         .weight(request.getWeight())
                         .bmr(bmr)
@@ -122,40 +129,51 @@ public class UserServiceImpl implements UserService{
         double bmi = calcBMI(request.getWeight(), request.getHeight());
         int bmiId = setBMIRangeId(bmi);
         BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
-
+        Gender g;
+        if (request.getHeight() > 251 || request.getHeight() < 65){
+            System.out.println("키를 잘못 입력했습니다.");
+            return 300;
+        }
+        if (request.getWeight() > 769 || request.getWeight() < 6 ) {
+            System.out.println("체중을 잘못 입력했습니다.");
+            return 300;
+        }
         double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
 
-        if(bmi < 0 || bmi > 200){
-            System.out.println("유효하지 않은 BMI 값");
-            return 400;
-        } else if (bmr < 0 || bmr > 10000) {
-            System.out.println("유효하지 않은 BMR 값");
-            return 500;
-        } else {
-            User user = userRepo.findOneByUid(request.getId());
-            user.setHeight(request.getHeight());
-            user.setWeight(request.getWeight());
-            user.setBirthDate(request.getBirth());
-            user.setBmr(bmr);
-            user.setBmiRangeId(bmiRange);
-            userRepo.save(user);
+        if (request.getSex().equals("남성"))
+            g = Gender.MALE;
+        else
+            g = Gender.FEMALE;
 
-            return 200;
-        }
+        User user = userRepo.findOneByUid(request.getId());
+        user.setHeight(request.getHeight());
+        user.setWeight(request.getWeight());
+        user.setBirthDate(request.getBirth());
+        user.setGender(g);
+        user.setBmr(bmr);
+        user.setBmiRangeId(bmiRange);
+        userRepo.save(user);
+
+        return 200;
     }
 
     @Override
     public UserInfoResponse showUser(int uid) {
         Optional<User> u = userRepo.findById(uid);
         UserInfoResponse userInfoResponse;
+        String gender;
         if(u.isPresent()) {
             User user = u.get();
             Optional<BMIRange> bmi = bmiRangeRepo.findById(user.getBmiRangeId().getId());
+            if (user.getGender().toString().equals("MALE"))
+                gender = "남성";
+            else gender = "여성";
             userInfoResponse = UserInfoResponse.builder()
                     .id(user.getId())
                     .nickName(user.getNickname())
                     .birth(user.getBirthDate())
                     .bmr(user.getBmr())
+                    .gender(gender)
                     .weight(user.getWeight())
                     .height(user.getHeight())
                     .bmiRangeName(bmi.get().getName()).build();
@@ -207,15 +225,14 @@ public class UserServiceImpl implements UserService{
     }
 
     private double calcBMR(String sex, double weight, double height, int age) {
-        // 남성: 66.5 + (13.75 X 체중 kg) + (5.003 X f키 cm) - (6.75 X 나이)
+        // 남성: 66.5 + (13.75 X 체중 kg) + (5.003 X 키 cm) - (6.75 X 나이)
         // 여성: 655.1 + (9.563 X 체중 kg) + (1.850 X 키 cm) - (4.676 X 나이)
         if(sex.equals("남성")) {
             return 66.5 + (13.75 * weight) + (5.003 * height) - (6.75 * age);
         }
         else if(sex.equals("여성"))
             return 655.1 + (9.563 * weight) + (1.850 * height) - (4.676 * age);
-        else
-            return 0;
+        return 0;
     }
 
     private double calcBMI(double weight, double height){
