@@ -33,7 +33,8 @@ public class UserServiceImpl implements UserService{
     private final ScheduleRepo scheduleRepo;
     @Override
     public int register(RegisterRequest request) {
-        Pattern pattern = Pattern.compile("^(?=.*[@.]?[A-Za-z])[A-Za-z0-9@.]*$");
+        Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
+        Pattern patternEmail = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?:\\.[A-Za-z]{2,})?$");
         int result;
         Gender g;
 
@@ -42,13 +43,7 @@ public class UserServiceImpl implements UserService{
             result = 100;
         }
         else {
-            if (!pattern.matcher(request.getId()).find()) {
-                System.out.println("아이디 형식이 일치하지 않습니다.");
-                System.out.println("아이디는 영어와 숫자로 이루어져야 하며, @나 . 이 포함되는 경우 이메일 형식을 따라야 합니다.");
-                return 600;
-            }
-            else {
-                System.out.println(pattern.matcher(request.getId()).find());
+            if (pattern.matcher(request.getId()).find() || patternEmail.matcher(request.getId()).find()) {
                 String salt = getSalt();
 
                 double bmi = calcBMI(request.getWeight(), request.getHeight());
@@ -93,6 +88,11 @@ public class UserServiceImpl implements UserService{
                     System.out.println("해싱 오류");
                     throw new RuntimeException(e);
                 }
+            }
+            else {
+                System.out.println("아이디 형식이 일치하지 않습니다.");
+                System.out.println("아이디는 영어와 숫자로 이루어져야 하며, @나 . 이 포함되는 경우 이메일 형식을 따라야 합니다.");
+                result = 600;
             }
         }
         return result;
