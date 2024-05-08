@@ -13,6 +13,7 @@ import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.util.Gender;
+import java.util.regex.Pattern;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService{
     private final ScheduleRepo scheduleRepo;
     @Override
     public int register(RegisterRequest request) {
+        Pattern pattern = Pattern.compile("^(?=.*[@.]?[A-Za-z])[A-Za-z0-9@.]*$");
         int result;
         Gender g;
 
@@ -40,49 +42,57 @@ public class UserServiceImpl implements UserService{
             result = 100;
         }
         else {
-            String salt = getSalt();
-
-            double bmi = calcBMI(request.getWeight(), request.getHeight());
-            int bmiId = setBMIRangeId(bmi);
-            BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
-            if (request.getHeight() > 251 || request.getHeight() < 65){
-                System.out.println("키를 잘못 입력했습니다.");
-                return 300;
+            if (!pattern.matcher(request.getId()).find()) {
+                System.out.println("아이디 형식이 일치하지 않습니다.");
+                System.out.println("아이디는 영어와 숫자로 이루어져야 하며, @나 . 이 포함되는 경우 이메일 형식을 따라야 합니다.");
+                return 600;
             }
-            if (request.getWeight() > 769 || request.getWeight() < 6 ) {
-                System.out.println("체중을 잘못 입력했습니다.");
-                return 300;
-            }
-            double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
+            else {
+                System.out.println(pattern.matcher(request.getId()).find());
+                String salt = getSalt();
 
-            if (request.getSex().equals("남성"))
-                g = Gender.MALE;
-            else
-                g = Gender.FEMALE;
+                double bmi = calcBMI(request.getWeight(), request.getHeight());
+                int bmiId = setBMIRangeId(bmi);
+                BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
+                if (request.getHeight() > 251 || request.getHeight() < 65){
+                    System.out.println("키를 잘못 입력했습니다.");
+                    return 300;
+                }
+                if (request.getWeight() > 769 || request.getWeight() < 6 ) {
+                    System.out.println("체중을 잘못 입력했습니다.");
+                    return 300;
+                }
+                double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
 
-            try {
-                userRepo.save(User.builder()
-                        .id(request.getId())
-                        .password(hashing(request.getPassword(), salt))
-                        .salt(salt)
-                        .nickname(request.getNickname())
-                        .birthDate(request.getBirthDate())
-                        .gender(g)
-                        .height(request.getHeight())
-                        .weight(request.getWeight())
-                        .bmr(bmr)
-                        .bmiRangeId(bmiRange)
-                        .doneTutorial(false)
-                        .fed(false)
-                        .likeability(0)
-                        .userRole("User").build());
-                System.out.println("회원가입 성공!");
+                if (request.getSex().equals("남성"))
+                    g = Gender.MALE;
+                else
+                    g = Gender.FEMALE;
 
-                result = 200;
-            }
-            catch (NoSuchAlgorithmException e) {
-                System.out.println("해싱 오류");
-                throw new RuntimeException(e);
+                try {
+                    userRepo.save(User.builder()
+                            .id(request.getId())
+                            .password(hashing(request.getPassword(), salt))
+                            .salt(salt)
+                            .nickname(request.getNickname())
+                            .birthDate(request.getBirthDate())
+                            .gender(g)
+                            .height(request.getHeight())
+                            .weight(request.getWeight())
+                            .bmr(bmr)
+                            .bmiRangeId(bmiRange)
+                            .doneTutorial(false)
+                            .fed(false)
+                            .likeability(0)
+                            .userRole("User").build());
+                    System.out.println("회원가입 성공!");
+
+                    result = 200;
+                }
+                catch (NoSuchAlgorithmException e) {
+                    System.out.println("해싱 오류");
+                    throw new RuntimeException(e);
+                }
             }
         }
         return result;
