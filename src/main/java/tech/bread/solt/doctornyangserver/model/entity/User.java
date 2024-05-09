@@ -26,9 +26,6 @@ public class User {
     @Column(name = "password")
     String password;
 
-    @Column(name = "salt")
-    String salt;
-
     @Column(name = "nickname")
     String nickname;
 

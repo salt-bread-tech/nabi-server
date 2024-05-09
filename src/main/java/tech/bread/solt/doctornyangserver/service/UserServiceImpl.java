@@ -18,16 +18,10 @@ import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
-import tech.bread.solt.doctornyangserver.security.IdCheckRequestDto;
-import tech.bread.solt.doctornyangserver.security.IdCheckResponseDto;
 import tech.bread.solt.doctornyangserver.security.JwtProvider;
-import tech.bread.solt.doctornyangserver.security.ResponseMessage;
 import tech.bread.solt.doctornyangserver.util.Gender;
 import java.util.regex.Pattern;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -46,20 +40,6 @@ public class UserServiceImpl implements UserService{
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public ResponseEntity<? super IdCheckResponseDto> idCheck(IdCheckRequestDto dto) {
-        try {
-            String userId = dto.getId();
-            boolean isExistId = userRepo.existsById(userId);
-            if (isExistId) return IdCheckResponseDto.duplicateId();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-
-        return IdCheckResponseDto.success();
-    }
-
-    @Override
     public ResponseEntity<? super RegisterResponse> register(RegisterRequest request) {
         Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
         Pattern patternEmail = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?:\\.[A-Za-z]{2,})?$");
@@ -72,7 +52,6 @@ public class UserServiceImpl implements UserService{
         }
         else {
             if (pattern.matcher(request.getId()).find() || patternEmail.matcher(request.getId()).find()) {
-                String salt = getSalt();
 
                 double bmi = calcBMI(request.getWeight(), request.getHeight());
                 int bmiId = setBMIRangeId(bmi);
@@ -99,7 +78,6 @@ public class UserServiceImpl implements UserService{
                     userRepo.save(User.builder()
                             .id(request.getId())
                             .password(request.getPassword())
-                            .salt(salt)
                             .nickname(request.getNickname())
                             .birthDate(request.getBirthDate())
                             .gender(g)
@@ -147,38 +125,6 @@ public class UserServiceImpl implements UserService{
             return ResponseDto.databaseError();
         }
         return LoginResponse.success(token);
-//        if (isUnique(request.getId())) {
-//            System.out.println("존재하지 않는 아이디");
-//            return 100;
-//        }
-//        else if(!checkPassword(request.getId(), request.getPassword())){
-//            System.out.println("비밀번호가 일치하지 않음");
-//            return 300;
-//        }
-//        else {
-//            Optional<User> u = userRepo.findById(request.getId());
-//            if (u.isPresent() && u.get().getDoneTutorial()){
-//                List<String> responses;
-//                responses = alertSchedule(u.get().getUid());
-//                System.out.println("유저 정보: " + u.get().getNickname() + "님");
-//                for (String s : responses)
-//                    System.out.println(s);
-//                return u.get().getUid();
-//            }
-//            else if(u.isPresent()){
-//                System.out.println("유저 정보: " + u.get().getNickname() + "님");
-//
-//                //TODO 튜토리얼 진행
-//                System.out.println("튜토리얼을 진행합니다.");
-//                User user = u.get();
-//                user.setDoneTutorial(true);
-//                userRepo.save(user);
-//
-//                return user.getUid();
-//            }
-//        }
-//        System.out.println("유저 정보를 찾을 수 없습니다.");
-//        return 400;
     }
 
     @Override
@@ -240,30 +186,6 @@ public class UserServiceImpl implements UserService{
         return null;
     }
 
-    private boolean isUnique(String id){
-        Optional<User> user = userRepo.findById(id);
-
-        return user.isEmpty();
-    }
-
-    private boolean checkPassword(String id, String password){
-        Optional<User> user = userRepo.findById(id);
-
-        if(user.isPresent()){
-            String salt = user.get().getSalt();
-
-            try {
-                if(hashing(password, salt).equals(user.get().getPassword())){
-                    return true;
-                }
-            }
-            catch (NoSuchAlgorithmException e){
-                throw new RuntimeException(e);
-            }
-        }
-        return false;
-    }
-
     private int setBMIRangeId(double bmi){
         int bmiId = 0;
         List<BMIRange> ranges = bmiRangeRepo.findAll();
@@ -295,37 +217,6 @@ public class UserServiceImpl implements UserService{
     private double calcBMI(double weight, double height){
         double heightToMeter = height / 100;
         return weight / (heightToMeter * heightToMeter);
-    }
-
-    private String hashing(String password, String salt) throws NoSuchAlgorithmException {
-        byte[] passwordBytes = password.getBytes();
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-
-        for (int i = 0; i < 100; i++){
-            String str = byteToString(passwordBytes) + salt;
-            messageDigest.update(str.getBytes());
-            passwordBytes = messageDigest.digest();
-        }
-
-        return byteToString(passwordBytes);
-    }
-
-    private String byteToString(byte[] bytes){
-        StringBuilder sb = new StringBuilder();
-
-        for(byte a : bytes){
-            sb.append(String.format("%02x", a));
-        }
-
-        return sb.toString();
-    }
-
-    private String getSalt(){
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] bytes = new byte[16];
-        secureRandom.nextBytes(bytes);
-
-        return byteToString(bytes);
     }
 
     private List<String> alertSchedule(int userUid) {

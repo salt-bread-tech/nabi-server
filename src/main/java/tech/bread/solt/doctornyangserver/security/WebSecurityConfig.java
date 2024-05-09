@@ -42,9 +42,6 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/", "/user/login").permitAll()
                         .requestMatchers("/user/register").permitAll()
-                        .requestMatchers("/user/test").hasRole("USER")
-                        .requestMatchers("/user/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/id-check").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
