@@ -48,8 +48,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<? super RegisterResponse> register(RegisterRequest request) {
-        Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
+        Pattern patternId = Pattern.compile("^[A-Za-z0-9]{4,}$");
         Pattern patternEmail = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?:\\.[A-Za-z]{2,})?$");
+        Pattern patternPassword = Pattern.compile("^(?=.*[0-9])(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*()\\-_=+\\\\\\|{}\\[\\]:;\"'<>,.?/]{8,20}$");
         Gender g;
         String userId = request.getId();
         boolean isExistId = userRepo.existsById(userId);
@@ -58,7 +59,8 @@ public class UserServiceImpl implements UserService{
             return RegisterResponse.duplicateId();
         }
         else {
-            if (pattern.matcher(request.getId()).find() || patternEmail.matcher(request.getId()).find()) {
+            if ((patternId.matcher(request.getId()).find() || patternEmail.matcher(request.getId()).find())
+                    && patternPassword.matcher(request.getPassword()).find()) {
 
                 double bmi = calcBMI(request.getWeight(), request.getHeight());
                 int bmiId = setBMIRangeId(bmi);
