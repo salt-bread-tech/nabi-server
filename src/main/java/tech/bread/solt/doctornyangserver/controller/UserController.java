@@ -41,7 +41,7 @@ public class UserController {
         return userService.showUser(uid);
     }
 
-    @GetMapping("/counting")
+    @GetMapping("/d-day")
     public CountingDaysResponse test(Principal p) {
         return userService.countingDays(p.getName());
     }
