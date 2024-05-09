@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tech.bread.solt.doctornyangserver.util.Gender;
-import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
@@ -26,9 +25,6 @@ public class User {
 
     @Column(name = "password")
     String password;
-
-    @Column(name = "salt")
-    String salt;
 
     @Column(name = "nickname")
     String nickname;

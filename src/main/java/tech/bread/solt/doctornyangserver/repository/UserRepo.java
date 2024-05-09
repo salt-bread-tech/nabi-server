@@ -11,4 +11,6 @@ public interface UserRepo extends JpaRepository<User, Integer> {
 
     User findOneByUid(int uid);
     List<User> findByFedIsTrue();
+
+    boolean existsById(String userId);
 }
