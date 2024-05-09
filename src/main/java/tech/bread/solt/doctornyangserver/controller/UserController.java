@@ -5,10 +5,13 @@ import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.CountingDaysResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.LoginResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.RegisterResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.UserInfoResponse;
 import tech.bread.solt.doctornyangserver.service.UserService;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/user")
@@ -36,5 +39,10 @@ public class UserController {
     @GetMapping("/show-info/{uid}")
     public UserInfoResponse showUserInformation(@PathVariable("uid") int uid) {
         return userService.showUser(uid);
+    }
+
+    @GetMapping("/counting")
+    public CountingDaysResponse test(Principal p) {
+        return userService.countingDays(p.getName());
     }
 }
