@@ -60,7 +60,4 @@ public class User {
 
     @Column(name="likeability")
     Integer likeability;
-
-    @Column(name = "create_at")
-    LocalDate createAt;
 }

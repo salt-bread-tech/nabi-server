@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
-import tech.bread.solt.doctornyangserver.model.dto.response.*;
+import tech.bread.solt.doctornyangserver.model.dto.response.LoginResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.RegisterResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.ResponseDto;
+import tech.bread.solt.doctornyangserver.model.dto.response.UserInfoResponse;
 import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -17,12 +20,13 @@ import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.security.JwtProvider;
 import tech.bread.solt.doctornyangserver.util.Gender;
-
-import java.util.*;
 import java.util.regex.Pattern;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,17 +38,6 @@ public class UserServiceImpl implements UserService{
 
     private final JwtProvider jwtProvider;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    @Override
-    public CountingDaysResponse countingDays(String userId) {
-        Optional<User> user = userRepo.findById(userId);
-        if (user.isPresent()){
-            User u = user.get();
-            return CountingDaysResponse.builder()
-                    .days((int)ChronoUnit.DAYS.between(u.getCreateAt(), LocalDate.now())).build();
-        }
-        return CountingDaysResponse.builder().build();
-    }
 
     @Override
     public ResponseEntity<? super RegisterResponse> register(RegisterRequest request) {
@@ -95,8 +88,7 @@ public class UserServiceImpl implements UserService{
                             .doneTutorial(false)
                             .fed(false)
                             .likeability(0)
-                            .userRole("ROLE_USER")
-                            .createAt(LocalDate.now()).build());
+                            .userRole("ROLE_USER").build());
                     System.out.println("회원가입 성공!");
                 }
                 catch (Exception e) {
