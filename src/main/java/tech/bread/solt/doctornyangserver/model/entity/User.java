@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tech.bread.solt.doctornyangserver.util.Gender;
-import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 

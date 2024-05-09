@@ -1,10 +1,16 @@
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.LoginResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.RegisterResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.ResponseDto;
 import tech.bread.solt.doctornyangserver.model.dto.response.UserInfoResponse;
 import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
@@ -12,6 +18,10 @@ import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
+import tech.bread.solt.doctornyangserver.security.IdCheckRequestDto;
+import tech.bread.solt.doctornyangserver.security.IdCheckResponseDto;
+import tech.bread.solt.doctornyangserver.security.JwtProvider;
+import tech.bread.solt.doctornyangserver.security.ResponseMessage;
 import tech.bread.solt.doctornyangserver.util.Gender;
 import java.util.regex.Pattern;
 
@@ -31,16 +41,34 @@ public class UserServiceImpl implements UserService{
     private final UserRepo userRepo;
     private final BMIRangeRepo bmiRangeRepo;
     private final ScheduleRepo scheduleRepo;
+
+    private final JwtProvider jwtProvider;
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Override
-    public int register(RegisterRequest request) {
+    public ResponseEntity<? super IdCheckResponseDto> idCheck(IdCheckRequestDto dto) {
+        try {
+            String userId = dto.getId();
+            boolean isExistId = userRepo.existsById(userId);
+            if (isExistId) return IdCheckResponseDto.duplicateId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return IdCheckResponseDto.success();
+    }
+
+    @Override
+    public ResponseEntity<? super RegisterResponse> register(RegisterRequest request) {
         Pattern pattern = Pattern.compile("^[A-Za-z0-9]+$");
         Pattern patternEmail = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?:\\.[A-Za-z]{2,})?$");
-        int result;
         Gender g;
+        String userId = request.getId();
+        boolean isExistId = userRepo.existsById(userId);
 
-        if (!isUnique(request.getId())) {
-            System.out.println("회원가입 실패: 아이디 중복");
-            result = 100;
+        if (isExistId) {
+            return RegisterResponse.duplicateId();
         }
         else {
             if (pattern.matcher(request.getId()).find() || patternEmail.matcher(request.getId()).find()) {
@@ -51,11 +79,11 @@ public class UserServiceImpl implements UserService{
                 BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
                 if (request.getHeight() > 251 || request.getHeight() < 65){
                     System.out.println("키를 잘못 입력했습니다.");
-                    return 300;
+                    return RegisterResponse.certificationFail();
                 }
                 if (request.getWeight() > 769 || request.getWeight() < 6 ) {
                     System.out.println("체중을 잘못 입력했습니다.");
-                    return 300;
+                    return RegisterResponse.certificationFail();
                 }
                 double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
 
@@ -65,9 +93,12 @@ public class UserServiceImpl implements UserService{
                     g = Gender.FEMALE;
 
                 try {
+                    String password = request.getPassword();
+                    String encodedPassword = passwordEncoder.encode(password);
+                    request.setPassword(encodedPassword);
                     userRepo.save(User.builder()
                             .id(request.getId())
-                            .password(hashing(request.getPassword(), salt))
+                            .password(request.getPassword())
                             .salt(salt)
                             .nickname(request.getNickname())
                             .birthDate(request.getBirthDate())
@@ -79,59 +110,75 @@ public class UserServiceImpl implements UserService{
                             .doneTutorial(false)
                             .fed(false)
                             .likeability(0)
-                            .userRole("User").build());
+                            .userRole("ROLE_USER").build());
                     System.out.println("회원가입 성공!");
-
-                    result = 200;
                 }
-                catch (NoSuchAlgorithmException e) {
-                    System.out.println("해싱 오류");
+                catch (Exception e) {
+                    e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             }
             else {
-                System.out.println("아이디 형식이 일치하지 않습니다.");
-                System.out.println("아이디는 영어와 숫자로 이루어져야 하며, @나 . 이 포함되는 경우 이메일 형식을 따라야 합니다.");
-                result = 600;
+                return RegisterResponse.certificationFail();
             }
         }
-        return result;
+        return RegisterResponse.success();
     }
 
     @Override
-    public int login(LoginRequest request) {
-        if (isUnique(request.getId())) {
-            System.out.println("존재하지 않는 아이디");
-            return 100;
-        }
-        else if(!checkPassword(request.getId(), request.getPassword())){
-            System.out.println("비밀번호가 일치하지 않음");
-            return 300;
-        }
-        else {
-            Optional<User> u = userRepo.findById(request.getId());
-            if (u.isPresent() && u.get().getDoneTutorial()){
-                List<String> responses;
-                responses = alertSchedule(u.get().getUid());
-                System.out.println("유저 정보: " + u.get().getNickname() + "님");
-                for (String s : responses)
-                    System.out.println(s);
-                return u.get().getUid();
-            }
-            else if(u.isPresent()){
-                System.out.println("유저 정보: " + u.get().getNickname() + "님");
+    public ResponseEntity<? super LoginResponse> login(LoginRequest request) {
+        String token = null;
+        try {
 
-                //TODO 튜토리얼 진행
-                System.out.println("튜토리얼을 진행합니다.");
-                User user = u.get();
-                user.setDoneTutorial(true);
-                userRepo.save(user);
+            String userId = request.getId();
+            Optional<User> user = userRepo.findById(userId);
+            if (user.isEmpty()) return LoginResponse.loginFail();
 
-                return user.getUid();
-            }
+            String password = request.getPassword();
+            String encodedPassword = user.get().getPassword();
+            boolean isMatched = passwordEncoder.matches(password, encodedPassword);
+            if (!isMatched) return LoginResponse.loginFail();
+
+            // 토큰 생성
+            token = jwtProvider.create(userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
         }
-        System.out.println("유저 정보를 찾을 수 없습니다.");
-        return 400;
+        return LoginResponse.success(token);
+//        if (isUnique(request.getId())) {
+//            System.out.println("존재하지 않는 아이디");
+//            return 100;
+//        }
+//        else if(!checkPassword(request.getId(), request.getPassword())){
+//            System.out.println("비밀번호가 일치하지 않음");
+//            return 300;
+//        }
+//        else {
+//            Optional<User> u = userRepo.findById(request.getId());
+//            if (u.isPresent() && u.get().getDoneTutorial()){
+//                List<String> responses;
+//                responses = alertSchedule(u.get().getUid());
+//                System.out.println("유저 정보: " + u.get().getNickname() + "님");
+//                for (String s : responses)
+//                    System.out.println(s);
+//                return u.get().getUid();
+//            }
+//            else if(u.isPresent()){
+//                System.out.println("유저 정보: " + u.get().getNickname() + "님");
+//
+//                //TODO 튜토리얼 진행
+//                System.out.println("튜토리얼을 진행합니다.");
+//                User user = u.get();
+//                user.setDoneTutorial(true);
+//                userRepo.save(user);
+//
+//                return user.getUid();
+//            }
+//        }
+//        System.out.println("유저 정보를 찾을 수 없습니다.");
+//        return 400;
     }
 
     @Override
