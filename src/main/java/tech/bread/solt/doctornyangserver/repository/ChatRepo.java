@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ChatRepo extends JpaRepository<Chat, Integer> {
+    List<Chat> findTop10ByUidOrderByCreateAtDesc(User user);
     List<Chat> findTop40ByUidOrderByCreateAtDesc(User user);
     Page<Chat> findByUidAndCreateAtBefore(User user, LocalDateTime date, Pageable pageable);
 

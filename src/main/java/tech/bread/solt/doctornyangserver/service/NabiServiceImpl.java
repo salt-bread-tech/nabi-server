@@ -40,7 +40,7 @@ public class NabiServiceImpl implements NabiService {
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            List<Chat> recentChats = chatRepo.findTop40ByUidOrderByCreateAtDesc(user);
+            List<Chat> recentChats = chatRepo.findTop10ByUidOrderByCreateAtDesc(user);
             Collections.reverse(recentChats);
             int type = user.getLikeability() > 100 ? 1 : 2;
 

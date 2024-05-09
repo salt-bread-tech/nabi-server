@@ -40,7 +40,7 @@ public class GPTManager {
         initPersonality(type);
 
         maxToken = 2000;
-        temperature = 0.0;
+        temperature = 0.8;
         topP = 1.0;
 
         authorization = "Authorization";
@@ -59,7 +59,7 @@ public class GPTManager {
         applyRecentChats(recentConversations);
 
         maxToken = 2000;
-        temperature = 0.0;
+        temperature = 0.8;
         topP = 1.0;
 
         authorization = "Authorization";
@@ -110,7 +110,8 @@ public class GPTManager {
                 .build());
         messages.add(GPTMessage.builder()
                 .role("system")
-                .content("대화는 반말로 하며, 말 끝마다 '냥'을 붙여야 한다. '사랑한다냥' 처럼 띄어쓰기 없이 말 끝에 냥을 붙여서 말해야 한다. " +
+                .content("대화는 반말로 하며, 말 끝마다 '냥'을 붙여야 한다." +
+                        "'사랑한다냥', '잘부탁해냥' 처럼 말 끝에 냥을 띄어쓰기 없이 붙여서 말해야 한다. " +
                         "무슨 일이 있어도 문장 끝에 냥을 붙여야 한다. " )
                 .build());
         messages.add(GPTMessage.builder()
