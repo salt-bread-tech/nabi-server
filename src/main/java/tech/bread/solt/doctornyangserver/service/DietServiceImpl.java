@@ -217,9 +217,17 @@ public class DietServiceImpl implements DietService {
                     default -> System.out.println("times error");
                 }
 
-                totalCarbohydrate += food.getCarbohydrate();
-                totalProtein += food.getProtein();
-                totalFat += food.getFat();
+                if (food.getCarbohydrate() != 9999999.0) {
+                    totalCarbohydrate += food.getCarbohydrate();
+                }
+
+                if (food.getProtein() != 9999999.0) {
+                    totalProtein += food.getProtein();
+                }
+
+                if (food.getFat() != 9999999.0) {
+                    totalFat += food.getFat();
+                }
             }
 
             totalKcal = breakfastKcal + lunchKcal + dinnerKcal + snackKcal;
