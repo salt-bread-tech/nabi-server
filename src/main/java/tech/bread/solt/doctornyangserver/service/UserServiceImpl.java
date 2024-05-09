@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService{
         if (user.isPresent()){
             User u = user.get();
             return CountingDaysResponse.builder()
-                    .days((int)ChronoUnit.DAYS.between(u.getCreateAt(), LocalDate.now())).build();
+                    .days((int)ChronoUnit.DAYS.between(u.getCreateAt(), LocalDate.now()) + 1).build();
         }
         return CountingDaysResponse.builder().build();
     }
