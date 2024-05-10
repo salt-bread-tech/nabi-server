@@ -2,7 +2,6 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.DeleteDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
@@ -211,21 +210,13 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public int deleteDosage(DeleteDosageRequest request) {
-        Optional<User> u = userRepo.findById(request.getUserUid());
-        if (u.isPresent()){
-            Times t = Times.ofOrdinal(request.getTimes());
-            Optional<Dosage> d = dosageRepo.findByUserUidAndDateAndTimes(u.get(),
-                    request.getDate(), t);
-            if (d.isPresent()) {
-                System.out.println("복용 일정 삭제");
-                dosageRepo.delete(d.get());
-                return 200;
-            }
-            System.out.println("찾는 복용 일정이 없습니다.");
-            return 400;
+    public boolean deleteDosage(int dosageId) {
+        try {
+            dosageRepo.deleteById(dosageId);
+            System.out.println("복용 일정 삭제");
+            return true;
+        } catch (Exception e){
+            return false;
         }
-        System.out.println("사용자 정보가 없습니다.");
-        return 500;
     }
 }
