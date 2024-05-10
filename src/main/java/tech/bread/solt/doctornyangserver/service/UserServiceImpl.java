@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserInfoResponse showUser(String id) {
+    public UserInfoResponse getUser(String id) {
         Optional<User> u = userRepo.findById(id);
         UserInfoResponse userInfoResponse;
         String gender;
