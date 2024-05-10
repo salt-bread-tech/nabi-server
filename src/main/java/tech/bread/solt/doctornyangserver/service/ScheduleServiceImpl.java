@@ -40,16 +40,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public int deleteSchedule(int scheduleId) {
+    public boolean delete(int scheduleId) {
         Optional<Schedule> s = scheduleRepo.findById(scheduleId);
-
-        if (s.isPresent()) {
-            scheduleRepo.delete(s.get());
-            System.out.println("일정 삭제 완료");
-            return 200;
+        if (s.isEmpty()) return false;
+        try {
+            scheduleRepo.deleteById(scheduleId);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        System.out.println("일정이 존재하지 않음");
-        return 500;
     }
 
     @Override

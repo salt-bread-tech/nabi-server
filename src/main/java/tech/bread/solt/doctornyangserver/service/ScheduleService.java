@@ -10,6 +10,6 @@ import java.util.Map;
 
 public interface ScheduleService {
     int register(ScheduleRegisterRequest request);
-    int deleteSchedule(int scheduleId);
+    boolean delete(int scheduleId);
     Map<LocalDate, List<Schedule>> showWeeklySchedules(WeeklyCalendarRequest request);
 }

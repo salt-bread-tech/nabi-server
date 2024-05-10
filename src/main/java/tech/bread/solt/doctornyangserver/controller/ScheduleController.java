@@ -25,9 +25,9 @@ public class ScheduleController {
         return scheduleService.register(request);
     }
 
-    @GetMapping("/delete")
-    public int deleteSchedule(@RequestParam("scheduleId") int scheduleId){
-        return scheduleService.deleteSchedule(scheduleId);
+    @DeleteMapping("/{scheduleId}")
+    public boolean deleteSchedule(@PathVariable("scheduleId") int scheduleId){
+        return scheduleService.delete(scheduleId);
     }
 
     @PostMapping("/weekly-calendar")
