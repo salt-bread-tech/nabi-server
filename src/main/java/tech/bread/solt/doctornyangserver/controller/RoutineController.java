@@ -11,6 +11,7 @@ import tech.bread.solt.doctornyangserver.model.dto.request.IncrementRoutinePerfo
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.service.RoutineService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -22,8 +23,9 @@ public class RoutineController {
         this.routineService = routineService;
     }
 
-    @PostMapping("/register")
-    public int registerRoutine(@RequestBody RegisterRoutineRequest request) {
+    @PostMapping()
+    public int registerRoutine(@RequestBody RegisterRoutineRequest request, Principal principal) {
+        request.setId(principal.getName());
         return routineService.register(request);
     }
 

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRoutineRequest {
-    int uid;
+    String id;
     String name;
     int maxPerform;
     LocalDate date;

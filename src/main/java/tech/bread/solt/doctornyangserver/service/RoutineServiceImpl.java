@@ -23,7 +23,7 @@ public class RoutineServiceImpl implements RoutineService {
     private final UserRepo userRepo;
     @Override
     public int register(RegisterRoutineRequest request) {
-        Optional<User> u = userRepo.findById(request.getUid());
+        Optional<User> u = userRepo.findById(request.getId());
         if (u.isPresent()){
             routineRepo.save(Routine.builder()
                     .userUid(u.get())
