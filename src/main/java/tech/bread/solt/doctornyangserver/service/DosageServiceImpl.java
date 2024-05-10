@@ -2,7 +2,6 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.DeleteDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
@@ -27,9 +26,9 @@ public class DosageServiceImpl implements DosageService {
     private final UserRepo userRepo;
 
     @Override
-    public int registerDosage(DosageRegisterRequest request) {
+    public int register(DosageRegisterRequest request) {
         Optional<Medicine> m = medicineRepo.findById(request.getMedicineId());
-        Optional<User> u = userRepo.findById(request.getUserUid());
+        Optional<User> u = userRepo.findById(request.getUserId());
         List<Integer> ordinals = new ArrayList<>();
 
         if (m.isPresent() && u.isPresent()) {
@@ -156,30 +155,33 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public Boolean toggleDosage(DoneDosageRequest request) {
-        User u = userRepo.findOneByUid(request.getUserUid());
+    public Boolean take(DoneDosageRequest request) {
+        Optional<User> u = userRepo.findById(request.getUserId());
         Medicine m = medicineRepo.findOneById(request.getMedicineId());
         Times time = new TimesConverter().convertToEntityAttribute(request.getTimes());
 
-        Optional<Dosage> d = dosageRepo.findByUserUidAndMedicineIdAndTimesAndDate(
-                u, m, time, request.getDate()
-        );
+        if (u.isPresent()) {
+            Optional<Dosage> d = dosageRepo.findByUserUidAndMedicineIdAndTimesAndDate(
+                    u.get(), m, time, request.getDate()
+            );
+            if (d.isPresent()) {
+                Dosage dosage = d.get();
+                dosage.setMedicineTaken(!dosage.getMedicineTaken());
+                dosageRepo.save(dosage);
 
-        if (d.isPresent()){
-            Dosage dosage = d.get();
-            dosage.setMedicineTaken(!dosage.getMedicineTaken());
-            dosageRepo.save(dosage);
-
-            System.out.println("변경 완료");
-            return true;
+                System.out.println("변경 완료");
+                return true;
+            }
+            System.out.println("약 정보를 찾을 수 없습니다.");
+            return false;
         }
-        System.out.println("변경 실패");
+        System.out.println("유저 정보를 찾을 수 없습니다.");
         return false;
     }
 
     @Override
-    public List<ShowDosageResponse> getMedicineDosage(int uid) {
-        Optional<User> u = userRepo.findById(uid);
+    public List<ShowDosageResponse> getDosages(String id) {
+        Optional<User> u = userRepo.findById(id);
         List<ShowDosageResponse> responses = new ArrayList<>();
 
         if (u.isPresent()) {
@@ -208,21 +210,13 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public int deleteDosage(DeleteDosageRequest request) {
-        Optional<User> u = userRepo.findById(request.getUserUid());
-        if (u.isPresent()){
-            Times t = Times.ofOrdinal(request.getTimes());
-            Optional<Dosage> d = dosageRepo.findByUserUidAndDateAndTimes(u.get(),
-                    request.getDate(), t);
-            if (d.isPresent()) {
-                System.out.println("복용 일정 삭제");
-                dosageRepo.delete(d.get());
-                return 200;
-            }
-            System.out.println("찾는 복용 일정이 없습니다.");
-            return 400;
+    public boolean delete(int dosageId) {
+        try {
+            dosageRepo.deleteById(dosageId);
+            System.out.println("복용 일정 삭제");
+            return true;
+        } catch (Exception e){
+            return false;
         }
-        System.out.println("사용자 정보가 없습니다.");
-        return 500;
     }
 }

@@ -1,12 +1,12 @@
 package tech.bread.solt.doctornyangserver.controller;
 
 import org.springframework.web.bind.annotation.*;
-import tech.bread.solt.doctornyangserver.model.dto.request.DeleteDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.service.DosageService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -18,23 +18,25 @@ public class DosageController {
         this.dosageService = dosageService;
     }
 
-    @PostMapping("/register")
-    public int registerDosage(@RequestBody DosageRegisterRequest request){
-        return dosageService.registerDosage(request);
+    @PostMapping()
+    public int register(@RequestBody DosageRegisterRequest request, Principal principal){
+        request.setUserId(principal.getName());
+        return dosageService.register(request);
     }
 
-    @PostMapping("/management")
-    public Boolean tookMedicine(@RequestBody DoneDosageRequest request){
-        return dosageService.toggleDosage(request);
+    @PutMapping()
+    public Boolean take(@RequestBody DoneDosageRequest request, Principal principal){
+        request.setUserId(principal.getName());
+        return dosageService.take(request);
     }
 
-    @GetMapping("/show/{uid}")
-    public List<ShowDosageResponse> getMedicineDosage(@PathVariable("uid") int uid){
-        return dosageService.getMedicineDosage(uid);
+    @GetMapping()
+    public List<ShowDosageResponse> getDosages(Principal principal){
+        return dosageService.getDosages(principal.getName());
     }
 
-    @PostMapping("/delete")
-    public int deleteDosage(@RequestBody DeleteDosageRequest request){
-        return dosageService.deleteDosage(request);
+    @DeleteMapping("/{dosageId}")
+    public boolean delete(@PathVariable("dosageId") int dosageId){
+        return dosageService.delete(dosageId);
     }
 }
