@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.ModifyUserRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.*;
@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int enterBodyInformation(EnterBodyInformationRequest request) {
+    public int modifyUser(ModifyUserRequest request) {
         User u;
         double bmi = calcBMI(request.getWeight(), request.getHeight());
         int bmiId = setBMIRangeId(bmi);

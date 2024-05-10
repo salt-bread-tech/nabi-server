@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
-public class EnterBodyInformationRequest {
+public class ModifyUserRequest {
     private String id;
     private String sex;
     private double height;
