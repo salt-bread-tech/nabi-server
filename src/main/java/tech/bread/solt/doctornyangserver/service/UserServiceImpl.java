@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.ModifyUserRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.*;
@@ -140,7 +140,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int enterBodyInformation(EnterBodyInformationRequest request) {
+    public int modifyUser(ModifyUserRequest request) {
+        User u;
         double bmi = calcBMI(request.getWeight(), request.getHeight());
         int bmiId = setBMIRangeId(bmi);
         BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
@@ -160,21 +161,23 @@ public class UserServiceImpl implements UserService{
         else
             g = Gender.FEMALE;
 
-        User user = userRepo.findOneByUid(request.getId());
-        user.setHeight(request.getHeight());
-        user.setWeight(request.getWeight());
-        user.setBirthDate(request.getBirth());
-        user.setGender(g);
-        user.setBmr(bmr);
-        user.setBmiRangeId(bmiRange);
-        userRepo.save(user);
-
+        Optional<User> user = userRepo.findById(request.getId());
+        if(user.isPresent()) {
+            u = user.get();
+            u.setHeight(request.getHeight());
+            u.setWeight(request.getWeight());
+            u.setBirthDate(request.getBirth());
+            u.setGender(g);
+            u.setBmr(bmr);
+            u.setBmiRangeId(bmiRange);
+            userRepo.save(u);
+        }
         return 200;
     }
 
     @Override
-    public UserInfoResponse showUser(int uid) {
-        Optional<User> u = userRepo.findById(uid);
+    public UserInfoResponse showUser(String id) {
+        Optional<User> u = userRepo.findById(id);
         UserInfoResponse userInfoResponse;
         String gender;
         if(u.isPresent()) {
