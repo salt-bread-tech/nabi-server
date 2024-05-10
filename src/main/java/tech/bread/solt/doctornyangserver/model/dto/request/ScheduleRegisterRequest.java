@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScheduleRegisterRequest {
-    private int userUid;
+    private String id;
     private String text;
     private LocalDateTime date;
 }

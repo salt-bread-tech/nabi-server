@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ScheduleService {
-    int registerSchedule(ScheduleRegisterRequest request);
+    int register(ScheduleRegisterRequest request);
     int deleteSchedule(int scheduleId);
     Map<LocalDate, List<Schedule>> showWeeklySchedules(WeeklyCalendarRequest request);
 }

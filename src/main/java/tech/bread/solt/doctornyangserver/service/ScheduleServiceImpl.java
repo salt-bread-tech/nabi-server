@@ -22,8 +22,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final UserRepo userRepo;
 
     @Override
-    public int registerSchedule(ScheduleRegisterRequest request) {
-        Optional<User> users = userRepo.findById(request.getUserUid());
+    public int register(ScheduleRegisterRequest request) {
+        Optional<User> users = userRepo.findById(request.getId());
 
         if (users.isPresent()) {
             scheduleRepo.save(Schedule.builder()
