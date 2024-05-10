@@ -53,23 +53,19 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Map<LocalDate, List<ScheduleListResponse>> getScheduleList(WeeklyCalendarRequest request) {
-        Optional<User> users = userRepo.findById(request.getId());
+    public Map<LocalDate, List<ScheduleListResponse>> getScheduleList(LocalDate date, String id) {
+        Optional<User> users = userRepo.findById(id);
         Map<LocalDate, List<ScheduleListResponse>> schedulesByLocalDate = new HashMap<>();
-        LocalDate today;
-        if (request.getDate() == null){
-            today = LocalDate.now();
-        } else {
-            today = request.getDate();
-        }
-        int day = today.get(ChronoField.DAY_OF_WEEK);
 
-        LocalDate startDate = today.minusDays(day);
+        int day = date.get(ChronoField.DAY_OF_WEEK);
+        if (day == 7)
+            day = 0;
+        LocalDate startDate = date.minusDays(day);
 
         if (users.isPresent()) {
             for(int i = 0; i <= 6; i++) {
                 List<ScheduleListResponse> schedules = new ArrayList<>();
-                LocalDate date = startDate.plusDays(i);
+                date = startDate.plusDays(i);
                 List<Schedule> s = scheduleRepo.findByUserUidAndDateBetween(users.get(),
                         date.atStartOfDay(), date.atTime(LocalTime.MAX));
                 for (Schedule schedule : s) {

@@ -31,11 +31,14 @@ public class ScheduleController {
         return scheduleService.delete(scheduleId);
     }
 
-    @PostMapping("/week")
-    public Map<LocalDate, List<ScheduleListResponse>> getScheduleList(
-            @RequestBody WeeklyCalendarRequest request,
-            Principal principal) {
-        request.setId(principal.getName());
-        return scheduleService.getScheduleList(request);
+    @GetMapping("/{date}")
+    public Map<LocalDate, List<ScheduleListResponse>>
+    getScheduleList(@PathVariable("date") LocalDate date, Principal principal) {
+        return scheduleService.getScheduleList(date, principal.getName());
+    }
+
+    @GetMapping("/today")
+    public Map<LocalDate, List<ScheduleListResponse>> getScheduleList(Principal principal) {
+        return scheduleService.getScheduleList(LocalDate.now(), principal.getName());
     }
 }

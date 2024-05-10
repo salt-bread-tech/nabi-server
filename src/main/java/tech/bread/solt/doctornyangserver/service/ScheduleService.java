@@ -12,5 +12,5 @@ import java.util.Map;
 public interface ScheduleService {
     int register(ScheduleRegisterRequest request);
     boolean delete(int scheduleId);
-    Map<LocalDate, List<ScheduleListResponse>> getScheduleList(WeeklyCalendarRequest request);
+    Map<LocalDate, List<ScheduleListResponse>> getScheduleList(LocalDate date, String id);
 }
