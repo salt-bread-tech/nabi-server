@@ -181,8 +181,8 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public List<ShowDosageResponse> getMedicineDosage(int uid) {
-        Optional<User> u = userRepo.findById(uid);
+    public List<ShowDosageResponse> getMedicineDosage(String id) {
+        Optional<User> u = userRepo.findById(id);
         List<ShowDosageResponse> responses = new ArrayList<>();
 
         if (u.isPresent()) {

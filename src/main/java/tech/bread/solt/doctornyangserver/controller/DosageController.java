@@ -31,9 +31,9 @@ public class DosageController {
         return dosageService.toggleDosage(request);
     }
 
-    @GetMapping("/show/{uid}")
-    public List<ShowDosageResponse> getMedicineDosage(@PathVariable("uid") int uid){
-        return dosageService.getMedicineDosage(uid);
+    @GetMapping()
+    public List<ShowDosageResponse> getMedicineDosage(Principal principal){
+        return dosageService.getMedicineDosage(principal.getName());
     }
 
     @PostMapping("/delete")

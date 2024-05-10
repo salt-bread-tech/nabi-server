@@ -10,6 +10,6 @@ import java.util.List;
 public interface DosageService {
     int registerDosage(DosageRegisterRequest request);
     Boolean toggleDosage(DoneDosageRequest request);
-    List<ShowDosageResponse> getMedicineDosage(int uid);
+    List<ShowDosageResponse> getMedicineDosage(String id);
     int deleteDosage(DeleteDosageRequest request);
 }
