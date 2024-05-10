@@ -7,8 +7,8 @@ import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import java.util.List;
 
 public interface DosageService {
-    int registerDosage(DosageRegisterRequest request);
-    Boolean toggleDosage(DoneDosageRequest request);
-    List<ShowDosageResponse> getMedicineDosage(String id);
-    boolean deleteDosage(int dosageId);
+    int register(DosageRegisterRequest request);
+    Boolean take(DoneDosageRequest request);
+    List<ShowDosageResponse> getDosages(String id);
+    boolean delete(int dosageId);
 }

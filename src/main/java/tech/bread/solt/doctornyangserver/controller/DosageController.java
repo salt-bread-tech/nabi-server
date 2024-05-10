@@ -19,24 +19,24 @@ public class DosageController {
     }
 
     @PostMapping()
-    public int registerDosage(@RequestBody DosageRegisterRequest request, Principal principal){
+    public int register(@RequestBody DosageRegisterRequest request, Principal principal){
         request.setUserId(principal.getName());
-        return dosageService.registerDosage(request);
+        return dosageService.register(request);
     }
 
     @PutMapping()
-    public Boolean tookMedicine(@RequestBody DoneDosageRequest request, Principal principal){
+    public Boolean take(@RequestBody DoneDosageRequest request, Principal principal){
         request.setUserId(principal.getName());
-        return dosageService.toggleDosage(request);
+        return dosageService.take(request);
     }
 
     @GetMapping()
-    public List<ShowDosageResponse> getMedicineDosage(Principal principal){
-        return dosageService.getMedicineDosage(principal.getName());
+    public List<ShowDosageResponse> getDosages(Principal principal){
+        return dosageService.getDosages(principal.getName());
     }
 
     @DeleteMapping("/{dosageId}")
-    public boolean deleteDosage(@PathVariable("dosageId") int dosageId){
-        return dosageService.deleteDosage(dosageId);
+    public boolean delete(@PathVariable("dosageId") int dosageId){
+        return dosageService.delete(dosageId);
     }
 }

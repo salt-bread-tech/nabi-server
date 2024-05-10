@@ -26,7 +26,7 @@ public class DosageServiceImpl implements DosageService {
     private final UserRepo userRepo;
 
     @Override
-    public int registerDosage(DosageRegisterRequest request) {
+    public int register(DosageRegisterRequest request) {
         Optional<Medicine> m = medicineRepo.findById(request.getMedicineId());
         Optional<User> u = userRepo.findById(request.getUserId());
         List<Integer> ordinals = new ArrayList<>();
@@ -155,7 +155,7 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public Boolean toggleDosage(DoneDosageRequest request) {
+    public Boolean take(DoneDosageRequest request) {
         Optional<User> u = userRepo.findById(request.getUserId());
         Medicine m = medicineRepo.findOneById(request.getMedicineId());
         Times time = new TimesConverter().convertToEntityAttribute(request.getTimes());
@@ -180,7 +180,7 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public List<ShowDosageResponse> getMedicineDosage(String id) {
+    public List<ShowDosageResponse> getDosages(String id) {
         Optional<User> u = userRepo.findById(id);
         List<ShowDosageResponse> responses = new ArrayList<>();
 
@@ -210,7 +210,7 @@ public class DosageServiceImpl implements DosageService {
     }
 
     @Override
-    public boolean deleteDosage(int dosageId) {
+    public boolean delete(int dosageId) {
         try {
             dosageRepo.deleteById(dosageId);
             System.out.println("복용 일정 삭제");
