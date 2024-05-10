@@ -2,7 +2,6 @@ package tech.bread.solt.doctornyangserver.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import tech.bread.solt.doctornyangserver.model.dto.request.GetMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineResponse;
@@ -37,8 +36,8 @@ public class MedicineController {
         return medicineService.register(request);
     }
 
-    @PostMapping("/medicine/info")
-    public List<GetMedicineResponse> GetMedicineList(@RequestBody GetMedicineRequest request){
-        return medicineService.getMedicineList(request);
+    @GetMapping("/medicine")
+    public List<GetMedicineResponse> GetMedicineList(Principal principal){
+        return medicineService.getMedicines(principal.getName());
     }
 }

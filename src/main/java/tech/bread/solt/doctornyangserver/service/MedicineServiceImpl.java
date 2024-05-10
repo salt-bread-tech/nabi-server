@@ -6,7 +6,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.GetMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineResponse;
@@ -239,16 +238,15 @@ public class MedicineServiceImpl implements MedicineService {
         return 100;
     }
 
-    @Override
-    public List<GetMedicineResponse> getMedicineList(GetMedicineRequest request) {
-        Optional<User> u = userRepo.findById(request.getUserUid());
+    public List<GetMedicineResponse> getMedicines(String id) {
+        Optional<User> u = userRepo.findById(id);
         List<GetMedicineResponse> responses = new ArrayList<>();
         GetMedicineResponse response;
         if(u.isPresent()){
             List<Prescription> p = prescriptionRepo.getPrescriptionsByUserUid(u.get());
             if (p.isEmpty()) {
                 System.out.println("등록된 처방전이 없습니다.");
-                return null;
+                return responses;
             }
             for (Prescription prescription : p) {
                 List<Medicine> medicines = medicineRepo.findAllByPrescriptionId(prescription);
@@ -264,9 +262,7 @@ public class MedicineServiceImpl implements MedicineService {
                 }
             }
             System.out.println(u.get().getNickname() + "의 의약품 정보");
-            return responses;
         }
-        System.out.println("사용자 정보가 잘못됐거나 없습니다.");
-        return null;
+        return responses;
     }
 }
