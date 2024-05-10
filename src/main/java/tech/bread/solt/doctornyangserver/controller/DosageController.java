@@ -25,8 +25,9 @@ public class DosageController {
         return dosageService.registerDosage(request);
     }
 
-    @PostMapping("/management")
-    public Boolean tookMedicine(@RequestBody DoneDosageRequest request){
+    @PutMapping()
+    public Boolean tookMedicine(@RequestBody DoneDosageRequest request, Principal principal){
+        request.setUserId(principal.getName());
         return dosageService.toggleDosage(request);
     }
 

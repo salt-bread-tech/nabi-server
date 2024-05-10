@@ -157,23 +157,26 @@ public class DosageServiceImpl implements DosageService {
 
     @Override
     public Boolean toggleDosage(DoneDosageRequest request) {
-        User u = userRepo.findOneByUid(request.getUserUid());
+        Optional<User> u = userRepo.findById(request.getUserId());
         Medicine m = medicineRepo.findOneById(request.getMedicineId());
         Times time = new TimesConverter().convertToEntityAttribute(request.getTimes());
 
-        Optional<Dosage> d = dosageRepo.findByUserUidAndMedicineIdAndTimesAndDate(
-                u, m, time, request.getDate()
-        );
+        if (u.isPresent()) {
+            Optional<Dosage> d = dosageRepo.findByUserUidAndMedicineIdAndTimesAndDate(
+                    u.get(), m, time, request.getDate()
+            );
+            if (d.isPresent()) {
+                Dosage dosage = d.get();
+                dosage.setMedicineTaken(!dosage.getMedicineTaken());
+                dosageRepo.save(dosage);
 
-        if (d.isPresent()){
-            Dosage dosage = d.get();
-            dosage.setMedicineTaken(!dosage.getMedicineTaken());
-            dosageRepo.save(dosage);
-
-            System.out.println("변경 완료");
-            return true;
+                System.out.println("변경 완료");
+                return true;
+            }
+            System.out.println("약 정보를 찾을 수 없습니다.");
+            return false;
         }
-        System.out.println("변경 실패");
+        System.out.println("유저 정보를 찾을 수 없습니다.");
         return false;
     }
 
