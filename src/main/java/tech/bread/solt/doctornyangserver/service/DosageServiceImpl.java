@@ -29,7 +29,7 @@ public class DosageServiceImpl implements DosageService {
     @Override
     public int registerDosage(DosageRegisterRequest request) {
         Optional<Medicine> m = medicineRepo.findById(request.getMedicineId());
-        Optional<User> u = userRepo.findById(request.getUserUid());
+        Optional<User> u = userRepo.findById(request.getUserId());
         List<Integer> ordinals = new ArrayList<>();
 
         if (m.isPresent() && u.isPresent()) {

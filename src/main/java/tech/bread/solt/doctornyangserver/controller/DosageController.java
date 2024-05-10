@@ -7,6 +7,7 @@ import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.service.DosageService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -18,8 +19,9 @@ public class DosageController {
         this.dosageService = dosageService;
     }
 
-    @PostMapping("/register")
-    public int registerDosage(@RequestBody DosageRegisterRequest request){
+    @PostMapping()
+    public int registerDosage(@RequestBody DosageRegisterRequest request, Principal principal){
+        request.setUserId(principal.getName());
         return dosageService.registerDosage(request);
     }
 
