@@ -141,6 +141,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int enterBodyInformation(EnterBodyInformationRequest request) {
+        User u;
         double bmi = calcBMI(request.getWeight(), request.getHeight());
         int bmiId = setBMIRangeId(bmi);
         BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
@@ -159,16 +160,18 @@ public class UserServiceImpl implements UserService{
             g = Gender.MALE;
         else
             g = Gender.FEMALE;
-
-        User user = userRepo.findOneByUid(request.getId());
-        user.setHeight(request.getHeight());
-        user.setWeight(request.getWeight());
-        user.setBirthDate(request.getBirth());
-        user.setGender(g);
-        user.setBmr(bmr);
-        user.setBmiRangeId(bmiRange);
-        userRepo.save(user);
-
+        
+        Optional<User> user = userRepo.findById(request.getId());
+        if(user.isPresent()) {
+            u = user.get();
+            u.setHeight(request.getHeight());
+            u.setWeight(request.getWeight());
+            u.setBirthDate(request.getBirth());
+            u.setGender(g);
+            u.setBmr(bmr);
+            u.setBmiRangeId(bmiRange);
+            userRepo.save(u);
+        }
         return 200;
     }
 

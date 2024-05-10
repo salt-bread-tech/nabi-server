@@ -32,7 +32,8 @@ public class UserController {
     }
 
     @PostMapping("/enter-body-information")
-    public int enterBodyInformation(@RequestBody EnterBodyInformationRequest request){
+    public int enterBodyInformation(@RequestBody EnterBodyInformationRequest request, Principal p){
+        request.setId(p.getName());
         return userService.enterBodyInformation(request);
     }
 
