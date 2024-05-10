@@ -1,6 +1,5 @@
 package tech.bread.solt.doctornyangserver.service;
 
-import tech.bread.solt.doctornyangserver.model.dto.request.DeleteRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
@@ -14,5 +13,5 @@ public interface RoutineService {
 
     List<ShowRoutineResponse> show(String id);
 
-    int delete(DeleteRoutineRequest request);
+    boolean delete(int routineId);
 }

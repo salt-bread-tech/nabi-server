@@ -2,7 +2,6 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.DeleteRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
@@ -92,19 +91,15 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public int delete(DeleteRoutineRequest request) {
-        Optional<User> u = userRepo.findById(request.getUid());
-        Optional<Routine> r = routineRepo.findById(request.getRid());
-        if (u.isPresent()) {
-            if (r.isPresent()) {
-                routineRepo.delete(r.get());
-                System.out.println("루틴 삭제 성공");
-                return 200;
-            }
-            System.out.println("루틴 정보를 찾을 수 없음");
-            return 400;
+    public boolean delete(int routineId) {
+        Optional<Routine> r = routineRepo.findById(routineId);
+        if (r.isEmpty())
+            return false;
+        try {
+            routineRepo.deleteById(routineId);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        System.out.println("사용자 정보를 찾을 수 없음");
-        return 500;
     }
 }
