@@ -3,6 +3,7 @@ package tech.bread.solt.doctornyangserver.controller;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.ScheduleRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.WeeklyCalendarRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.ScheduleListResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.service.ScheduleService;
 
@@ -30,8 +31,11 @@ public class ScheduleController {
         return scheduleService.delete(scheduleId);
     }
 
-    @PostMapping("/weekly-calendar")
-    public Map<LocalDate, List<Schedule>> showWeeklyCalendar(@RequestBody WeeklyCalendarRequest request){
-        return scheduleService.showWeeklySchedules(request);
+    @PostMapping("/week")
+    public Map<LocalDate, List<ScheduleListResponse>> getScheduleList(
+            @RequestBody WeeklyCalendarRequest request,
+            Principal principal) {
+        request.setId(principal.getName());
+        return scheduleService.getScheduleList(request);
     }
 }

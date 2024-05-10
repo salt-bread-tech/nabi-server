@@ -10,6 +10,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeeklyCalendarRequest {
-    private int userUid;
+    private String id;
     private LocalDate date;
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.ScheduleRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.WeeklyCalendarRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.ScheduleListResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
@@ -52,10 +53,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Map<LocalDate, List<Schedule>> showWeeklySchedules(WeeklyCalendarRequest request) {
-        Optional<User> users = userRepo.findById(request.getUserUid());
-        Map<LocalDate, List<Schedule>> schedulesByLocalDate = new HashMap<>();
-        List<Schedule> schedules;
+    public Map<LocalDate, List<ScheduleListResponse>> getScheduleList(WeeklyCalendarRequest request) {
+        Optional<User> users = userRepo.findById(request.getId());
+        Map<LocalDate, List<ScheduleListResponse>> schedulesByLocalDate = new HashMap<>();
         LocalDate today;
         if (request.getDate() == null){
             today = LocalDate.now();
@@ -68,9 +68,17 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         if (users.isPresent()) {
             for(int i = 0; i <= 6; i++) {
+                List<ScheduleListResponse> schedules = new ArrayList<>();
                 LocalDate date = startDate.plusDays(i);
-                schedules = scheduleRepo.findByUserUidAndDateBetween(users.get(),
+                List<Schedule> s = scheduleRepo.findByUserUidAndDateBetween(users.get(),
                         date.atStartOfDay(), date.atTime(LocalTime.MAX));
+                for (Schedule schedule : s) {
+                    ScheduleListResponse r = ScheduleListResponse.builder()
+                            .scheduleId(schedule.getId())
+                            .text(schedule.getText())
+                            .date(schedule.getDate()).build();
+                    schedules.add(r);
+                }
                 schedulesByLocalDate.put(date, schedules);
             }
         }
