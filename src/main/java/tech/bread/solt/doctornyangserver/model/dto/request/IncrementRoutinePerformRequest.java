@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class IncrementRoutinePerformRequest {
     private int uid;
     private int rid;
+    private int counts;
 }
