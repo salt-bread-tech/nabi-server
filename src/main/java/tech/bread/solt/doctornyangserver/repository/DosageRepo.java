@@ -14,6 +14,5 @@ public interface DosageRepo extends JpaRepository<Dosage, Integer>{
     Optional<Dosage> findByUserUidAndMedicineIdAndTimesAndDate(User uid, Medicine medicineId, Times times, LocalDate date);
 
     List<Dosage> findByUserUid(User uid);
-
-    Optional<Dosage> findByUserUidAndDateAndTimes(User uid, LocalDate date, Times times);
+    void deleteById(int dosageId);
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DoneDosageRequest {
-    private int userUid;
+    private String userId;
     private int medicineId;
     private LocalDate date;
     private int times;
