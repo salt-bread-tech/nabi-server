@@ -85,11 +85,11 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
-    public int registerMedicine(RegisterMedicineRequest request) {
+    public int register(RegisterMedicineRequest request) {
         Prescription prescription;
         Medicine medicine;
         int pId, mId;
-        Optional<User> optionalUser = userRepo.findById(request.getUid());
+        Optional<User> optionalUser = userRepo.findById(request.getId());
         Optional<Prescription> optionalPrescription;
         List<Integer> ordinals = new ArrayList<>();
 

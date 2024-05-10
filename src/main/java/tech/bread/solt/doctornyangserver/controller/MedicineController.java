@@ -6,9 +6,9 @@ import tech.bread.solt.doctornyangserver.model.dto.request.GetMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineResponse;
-import tech.bread.solt.doctornyangserver.model.entity.Medicine;
 import tech.bread.solt.doctornyangserver.service.MedicineService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -31,9 +31,10 @@ public class MedicineController {
         return medicineService.getMedicineDescription(name, num);
     }
 
-    @PostMapping("/medicine/register")
-    public int registerMedicine(@RequestBody RegisterMedicineRequest request){
-        return medicineService.registerMedicine(request);
+    @PostMapping("/medicine")
+    public int register(@RequestBody RegisterMedicineRequest request, Principal principal){
+        request.setId(principal.getName());
+        return medicineService.register(request);
     }
 
     @PostMapping("/medicine/info")
