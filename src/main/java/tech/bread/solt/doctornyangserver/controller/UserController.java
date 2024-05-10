@@ -37,9 +37,9 @@ public class UserController {
         return userService.enterBodyInformation(request);
     }
 
-    @GetMapping("/show-info/{uid}")
-    public UserInfoResponse showUserInformation(@PathVariable("uid") int uid) {
-        return userService.showUser(uid);
+    @GetMapping("/show-info")
+    public UserInfoResponse showUserInformation(Principal p) {
+        return userService.showUser(p.getName());
     }
 
     @GetMapping("/d-day")

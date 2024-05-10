@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService{
             g = Gender.MALE;
         else
             g = Gender.FEMALE;
-        
+
         Optional<User> user = userRepo.findById(request.getId());
         if(user.isPresent()) {
             u = user.get();
@@ -176,8 +176,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserInfoResponse showUser(int uid) {
-        Optional<User> u = userRepo.findById(uid);
+    public UserInfoResponse showUser(String id) {
+        Optional<User> u = userRepo.findById(id);
         UserInfoResponse userInfoResponse;
         String gender;
         if(u.isPresent()) {
