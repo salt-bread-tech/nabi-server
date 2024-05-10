@@ -73,6 +73,27 @@ public class NabiServiceImpl implements NabiService {
     }
 
     @Override
+    public List<GetChatResponse> getChats(int uid) {
+        List<GetChatResponse> result = new ArrayList<>();
+        Optional<User> optionalUser = userRepo.findById(uid);
+
+        if (optionalUser.isPresent()) {
+            List<Chat> chats = chatRepo.findTop100ByUidOrderByCreateAtDesc(optionalUser.get());
+
+            for (Chat c: chats) {
+                System.out.println(c.getUid() + " " + c.getText());
+                result.add(GetChatResponse.builder()
+                        .isUser(c.getIsUser())
+                        .content(c.getText())
+                        .createAt(c.getCreateAt())
+                        .build());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<GetChatResponse> getChats(int uid, int page) {
         List<GetChatResponse> result = new ArrayList<>();
         Optional<User> optionalUser = userRepo.findById(uid);
