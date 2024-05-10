@@ -14,6 +14,6 @@ public interface UserService {
     ResponseEntity<? super RegisterResponse> register(RegisterRequest request);
     ResponseEntity<? super LoginResponse> login(LoginRequest request);
     int modifyUser(ModifyUserRequest request);
-    UserInfoResponse showUser(String id);
+    UserInfoResponse getUser(String id);
     CountingDaysResponse countingDays(String userId);
 }

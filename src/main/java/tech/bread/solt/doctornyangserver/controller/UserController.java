@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
+    @PostMapping()
     public ResponseEntity<? super RegisterResponse> register(@RequestBody RegisterRequest request){
         return userService.register(request);
     }
@@ -31,19 +31,19 @@ public class UserController {
         return userService.login(request);
     }
 
-    @PutMapping("")
+    @PutMapping()
     public int modifyUser(@RequestBody ModifyUserRequest request, Principal p){
         request.setId(p.getName());
         return userService.modifyUser(request);
     }
 
-    @GetMapping("/show-info")
-    public UserInfoResponse showUserInformation(Principal p) {
-        return userService.showUser(p.getName());
+    @GetMapping()
+    public UserInfoResponse getUser(Principal p) {
+        return userService.getUser(p.getName());
     }
 
     @GetMapping("/d-day")
-    public CountingDaysResponse test(Principal p) {
+    public CountingDaysResponse countingDays(Principal p) {
         return userService.countingDays(p.getName());
     }
 }
