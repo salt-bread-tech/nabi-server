@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.DeleteRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
-import tech.bread.solt.doctornyangserver.model.dto.request.ShowRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Routine;
@@ -63,8 +62,8 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public List<ShowRoutineResponse> show(ShowRoutineRequest request) {
-        Optional<User> u = userRepo.findById(request.getUid());
+    public List<ShowRoutineResponse> show(String id) {
+        Optional<User> u = userRepo.findById(id);
         List<ShowRoutineResponse> responses = new ArrayList<>();
         ShowRoutineResponse response;
 

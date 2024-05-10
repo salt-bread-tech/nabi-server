@@ -3,7 +3,6 @@ package tech.bread.solt.doctornyangserver.controller;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.DeleteRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
-import tech.bread.solt.doctornyangserver.model.dto.request.ShowRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.service.RoutineService;
@@ -32,9 +31,9 @@ public class RoutineController {
         return routineService.update(request);
     }
 
-    @PostMapping("/list")
-    public List<ShowRoutineResponse> showRoutine(@RequestBody ShowRoutineRequest request){
-        return routineService.show(request);
+    @GetMapping()
+    public List<ShowRoutineResponse> showRoutine(Principal principal){
+        return routineService.show(principal.getName());
     }
 
     @PostMapping("/delete")
