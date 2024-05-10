@@ -116,6 +116,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public ResponseEntity<? super LoginResponse> login(LoginRequest request) {
         String token = null;
+        int userUid = 0;
         try {
 
             String userId = request.getId();
@@ -125,6 +126,7 @@ public class UserServiceImpl implements UserService{
             String password = request.getPassword();
             String encodedPassword = user.get().getPassword();
             boolean isMatched = passwordEncoder.matches(password, encodedPassword);
+            userUid = user.get().getUid();
             if (!isMatched) return LoginResponse.loginFail();
 
             // 토큰 생성
@@ -134,7 +136,7 @@ public class UserServiceImpl implements UserService{
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return LoginResponse.success(token);
+        return LoginResponse.success(token, userUid);
     }
 
     @Override
