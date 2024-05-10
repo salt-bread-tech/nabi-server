@@ -10,14 +10,16 @@ import tech.bread.solt.doctornyangserver.security.ResponseMessage;
 public class LoginResponse extends ResponseDto{
     private String token;
     private int expirationTime;
-    private LoginResponse(String token) {
+    private int userUid;
+    private LoginResponse(String token, int userUid) {
         super();
         this.token = token;
         this.expirationTime = 3600;
+        this.userUid = userUid;
     }
 
-    public static ResponseEntity<LoginResponse> success(String token) {
-        LoginResponse response = new LoginResponse(token);
+    public static ResponseEntity<LoginResponse> success(String token, int userUid) {
+        LoginResponse response = new LoginResponse(token, userUid);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
