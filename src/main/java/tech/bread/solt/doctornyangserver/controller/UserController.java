@@ -31,8 +31,8 @@ public class UserController {
         return userService.login(request);
     }
 
-    @PutMapping("/put")
-    public int enterBodyInformation(@RequestBody ModifyUserRequest request, Principal p){
+    @PutMapping("")
+    public int modifyUser(@RequestBody ModifyUserRequest request, Principal p){
         request.setId(p.getName());
         return userService.modifyUser(request);
     }
