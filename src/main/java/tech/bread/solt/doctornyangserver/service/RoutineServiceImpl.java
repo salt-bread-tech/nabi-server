@@ -46,12 +46,15 @@ public class RoutineServiceImpl implements RoutineService {
             Optional<Routine> r = routineRepo.findById(request.getRid());
             if(r.isPresent()) {
                 Routine routine = r.get();
-                int performCountNow = routine.getPerformCounts();
-                if (performCountNow == routine.getMaxPerform()) {
+                if (request.getCounts() > routine.getMaxPerform()) {
+                    System.out.println("Count를 잘못 입력함");
+                    return 600;
+                }
+                if (routine.getPerformCounts() == routine.getMaxPerform()) {
                     System.out.println("이미 완료한 루틴입니다.");
                     return 300;
                 }
-                routine.setPerformCounts(performCountNow + 1);
+                routine.setPerformCounts(request.getCounts());
                 routineRepo.save(routine);
 
                 System.out.println("루틴 1회 성공 !");
