@@ -2,10 +2,8 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.DeleteRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
-import tech.bread.solt.doctornyangserver.model.dto.request.ShowRoutineRequest;
-import tech.bread.solt.doctornyangserver.model.dto.request.IncrementRoutinePerformRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Routine;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -23,7 +21,7 @@ public class RoutineServiceImpl implements RoutineService {
     private final UserRepo userRepo;
     @Override
     public int register(RegisterRoutineRequest request) {
-        Optional<User> u = userRepo.findById(request.getUid());
+        Optional<User> u = userRepo.findById(request.getId());
         if (u.isPresent()){
             routineRepo.save(Routine.builder()
                     .userUid(u.get())
@@ -40,24 +38,19 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public int increment(IncrementRoutinePerformRequest request) {
-        Optional<User> u = userRepo.findById(request.getUid());
+    public int update(UpdateRoutineRequest request) {
+        Optional<User> u = userRepo.findById(request.getId());
         if(u.isPresent()) {
             Optional<Routine> r = routineRepo.findById(request.getRid());
             if(r.isPresent()) {
                 Routine routine = r.get();
                 if (request.getCounts() > routine.getMaxPerform()) {
                     System.out.println("Count를 잘못 입력함");
-                    return 600;
-                }
-                if (routine.getPerformCounts() == routine.getMaxPerform()) {
-                    System.out.println("이미 완료한 루틴입니다.");
                     return 300;
                 }
                 routine.setPerformCounts(request.getCounts());
                 routineRepo.save(routine);
-
-                System.out.println("루틴 1회 성공 !");
+                System.out.println("루틴 정보 변경 성공");
                 return 200;
             }
             System.out.println("루틴 정보를 찾을 수 없음");
@@ -68,8 +61,8 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public List<ShowRoutineResponse> show(ShowRoutineRequest request) {
-        Optional<User> u = userRepo.findById(request.getUid());
+    public List<ShowRoutineResponse> show(String id) {
+        Optional<User> u = userRepo.findById(id);
         List<ShowRoutineResponse> responses = new ArrayList<>();
         ShowRoutineResponse response;
 
@@ -98,19 +91,15 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public int delete(DeleteRoutineRequest request) {
-        Optional<User> u = userRepo.findById(request.getUid());
-        Optional<Routine> r = routineRepo.findById(request.getRid());
-        if (u.isPresent()) {
-            if (r.isPresent()) {
-                routineRepo.delete(r.get());
-                System.out.println("루틴 삭제 성공");
-                return 200;
-            }
-            System.out.println("루틴 정보를 찾을 수 없음");
-            return 400;
+    public boolean delete(int routineId) {
+        Optional<Routine> r = routineRepo.findById(routineId);
+        if (r.isEmpty())
+            return false;
+        try {
+            routineRepo.deleteById(routineId);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        System.out.println("사용자 정보를 찾을 수 없음");
-        return 500;
     }
 }
