@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String role = u.getUserRole();  // ROLE_USER || ROLE_ADMIN
 
                 boolean validToken = tokensRepo.findByToken(token).map(t ->
-                        !t.getExpired() && !t.getRevoked()).orElse(false);
+                        !t.getExpired()).orElse(false);
                 if (!validToken) {
                     filterChain.doFilter(request, response);
                     return;

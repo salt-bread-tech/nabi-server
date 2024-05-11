@@ -24,9 +24,6 @@ public class Tokens {
     @Column(name = "expired")
     Boolean expired;
 
-    @Column(name = "revoked")
-    Boolean revoked;
-
     @Column(name = "user_id")
     String userId;
 }

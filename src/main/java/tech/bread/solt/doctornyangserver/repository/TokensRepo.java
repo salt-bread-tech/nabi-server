@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TokensRepo extends JpaRepository<Tokens, Integer> {
-    List<Tokens> findAllByExpiredIsFalseAndRevokedIsFalseAndUserId(String userId);
+    List<Tokens> findAllByExpiredIsFalseAndUserId(String userId);
     Optional<Tokens> findByToken(String token);
 }

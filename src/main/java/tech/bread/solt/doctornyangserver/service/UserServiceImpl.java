@@ -262,16 +262,14 @@ public class UserServiceImpl implements UserService{
         tokensRepo.save(Tokens.builder()
                 .token(token)
                 .expired(false)
-                .revoked(false)
                 .userId(userId).build());
     }
 
     private void updateTokens(String userId){
-        List<Tokens> t = tokensRepo.findAllByExpiredIsFalseAndRevokedIsFalseAndUserId(userId);
+        List<Tokens> t = tokensRepo.findAllByExpiredIsFalseAndUserId(userId);
 
         for (Tokens token : t) {
             token.setExpired(true);
-            token.setRevoked(true);
         }
         tokensRepo.saveAll(t);
     }
