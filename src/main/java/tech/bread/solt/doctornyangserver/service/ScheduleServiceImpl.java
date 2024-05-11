@@ -3,7 +3,6 @@ package tech.bread.solt.doctornyangserver.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.ScheduleRegisterRequest;
-import tech.bread.solt.doctornyangserver.model.dto.request.WeeklyCalendarRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ScheduleListResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -11,7 +10,6 @@ import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.util.*;
