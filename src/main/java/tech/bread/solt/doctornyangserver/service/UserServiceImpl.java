@@ -11,9 +11,11 @@ import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.*;
 import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
+import tech.bread.solt.doctornyangserver.model.entity.Tokens;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
+import tech.bread.solt.doctornyangserver.repository.TokensRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.security.JwtProvider;
 import tech.bread.solt.doctornyangserver.util.Gender;
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepo userRepo;
     private final BMIRangeRepo bmiRangeRepo;
     private final ScheduleRepo scheduleRepo;
+    private final TokensRepo tokensRepo;
 
     private final JwtProvider jwtProvider;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -132,6 +135,8 @@ public class UserServiceImpl implements UserService{
             // 토큰 생성
             token = jwtProvider.create(userId);
 
+            updateTokens(userId);
+            saveToken(userId, token);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
@@ -251,5 +256,23 @@ public class UserServiceImpl implements UserService{
             }
         }
         return str;
+    }
+
+    private void saveToken(String userId, String token) {
+        tokensRepo.save(Tokens.builder()
+                .token(token)
+                .expired(false)
+                .revoked(false)
+                .userId(userId).build());
+    }
+
+    private void updateTokens(String userId){
+        List<Tokens> t = tokensRepo.findAllByExpiredIsFalseAndRevokedIsFalseAndUserId(userId);
+
+        for (Tokens token : t) {
+            token.setExpired(true);
+            token.setRevoked(true);
+        }
+        tokensRepo.saveAll(t);
     }
 }

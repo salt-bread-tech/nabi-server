@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tech.bread.solt.doctornyangserver.model.entity.User;
+import tech.bread.solt.doctornyangserver.repository.TokensRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserRepo userRepo;
     private final JwtProvider jwtProvider;
+    private final TokensRepo tokensRepo;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request
@@ -52,6 +54,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (user.isPresent()) {
                 User u = user.get();
                 String role = u.getUserRole();  // ROLE_USER || ROLE_ADMIN
+
+                boolean validToken = tokensRepo.findByToken(token).map(t ->
+                        !t.getExpired() && !t.getRevoked()).orElse(false);
+                if (!validToken) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 // ROLE_DEVELOPER, ROLE_BOSS, ...
                 List<GrantedAuthority> authorities = new ArrayList<>();
