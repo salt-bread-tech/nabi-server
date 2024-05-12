@@ -54,10 +54,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (user.isPresent()) {
                 User u = user.get();
                 String role = u.getUserRole();  // ROLE_USER || ROLE_ADMIN
+                boolean isValidTokens;
 
-                boolean validToken = tokensRepo.findByToken(token).map(t ->
-                        !t.getExpired()).orElse(false);
-                if (!validToken) {
+                try {
+                    isValidTokens = tokensRepo.findByToken(token).isPresent();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                if (!isValidTokens) {
                     filterChain.doFilter(request, response);
                     return;
                 }
