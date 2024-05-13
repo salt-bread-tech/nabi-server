@@ -18,4 +18,5 @@ public interface RoutineRepo extends JpaRepository<Routine, Integer> {
     Routine findTopByUserUidAndRoutineNameOrderByTermDesc(User uid, String userName);
 
     boolean existsByUserUidAndRoutineNameAndTerm(User uid, String userName, int term);
+    List<Routine> findByUserUidAndStartDateBetween(User uid, LocalDate startDate, LocalDate endDate);
 }

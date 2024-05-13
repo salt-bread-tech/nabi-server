@@ -10,6 +10,8 @@ import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.RoutineRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,8 @@ public class RoutineServiceImpl implements RoutineService {
                     .routineName(request.getName())
                     .maxPerform(request.getMaxPerform())
                     .startDate(request.getDate())
+                    .maxTerm(request.getMaxTerm())
+                    .term(1)
                     .colorCode(request.getColorCode())
                     .performCounts(0).build());
             System.out.println("루틴 등록 성공!");
@@ -67,7 +71,12 @@ public class RoutineServiceImpl implements RoutineService {
         ShowRoutineResponse response;
 
         if (u.isPresent()) {
-            List<Routine> routines = routineRepo.findByUserUid(u.get());
+            int dayOfWeek = LocalDate.now().get(ChronoField.DAY_OF_WEEK);
+            if (dayOfWeek == 7)
+                dayOfWeek = 0;
+            LocalDate startDate = LocalDate.now().minusDays(dayOfWeek);
+            LocalDate endDate = startDate.plusDays(6);
+            List<Routine> routines = routineRepo.findByUserUidAndStartDateBetween(u.get(), startDate, endDate);
 
             if (routines.isEmpty()) {
                 System.out.println("등록된 루틴이 없습니다.");
