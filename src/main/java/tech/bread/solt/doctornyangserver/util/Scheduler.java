@@ -2,9 +2,12 @@ package tech.bread.solt.doctornyangserver.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
+import tech.bread.solt.doctornyangserver.model.entity.Routine;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
 import tech.bread.solt.doctornyangserver.model.entity.User;
+import tech.bread.solt.doctornyangserver.repository.RoutineRepo;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
@@ -17,7 +20,7 @@ import java.util.List;
 public class Scheduler {
     private final UserRepo userRepo;
     private final ScheduleRepo scheduleRepo;
-//    private final SetRoutineRepo setRoutineRepo;
+    private final RoutineRepo routineRepo;
 
 //    @Scheduled(cron = "*/5 * * * * *") // 테스트용
     @Scheduled(cron = "0 0 8 * * *")
@@ -59,16 +62,32 @@ public class Scheduler {
         System.out.println("먹이 주기 초기화 완료");
     }
 
-//    @Scheduled(cron = "0 0 8 1 * *")
-//    public void alertMonthlyReport() {
-//        LocalDate today = LocalDate.now();
-//        List<User> users = userRepo.findAll();
-//
-//        for (User u : users){
-//            System.out.println(u.getNickname() + "님이 한 달 간 성공한 루틴은 "
-//                    + setRoutineRepo.countByUserUidAndCompletionAndPerformDateBetween(u, true,
-//                    today.minusMonths(1),
-//                    today.plusDays(1)) + "개 입니다.");
-//        }
-//    }
+    //@Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 0 ? * SUN *")
+    public void renewRoutine() {
+        List<Routine> allRoutines = routineRepo.findAll();
+        List<Routine> topRoutines = new ArrayList<>();
+
+        for (Routine routine : allRoutines) {
+            topRoutines.add(routineRepo.findTopByUserUidAndRoutineNameOrderByTermDesc(
+                    routine.getUserUid(),
+                    routine.getRoutineName()));
+        }
+        for (Routine routine : topRoutines) {
+            boolean isExist = routineRepo.existsByUserUidAndRoutineNameAndTerm(
+                    routine.getUserUid(), routine.getRoutineName(), routine.getTerm() + 1);
+            if (routine.getTerm() < routine.getMaxTerm() && !isExist) {
+                Routine r = Routine.builder()
+                        .userUid(routine.getUserUid())
+                        .routineName(routine.getRoutineName())
+                        .colorCode(routine.getColorCode())
+                        .startDate(routine.getStartDate().plusDays(7))
+                        .maxPerform(routine.getMaxPerform())
+                        .performCounts(0)
+                        .maxTerm(routine.getMaxTerm())
+                        .term(routine.getTerm() + 1).build();
+                routineRepo.save(r);
+            }
+        }
+    }
 }

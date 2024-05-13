@@ -14,4 +14,8 @@ public interface RoutineRepo extends JpaRepository<Routine, Integer> {
 
 //    Long countByUserUidAndPerformCountsEqualsAndDateBetween(User user, int maxPerform, LocalDate startDate, LocalDate endDate);
     void deleteById(int routineId);
+
+    Routine findTopByUserUidAndRoutineNameOrderByTermDesc(User uid, String userName);
+
+    boolean existsByUserUidAndRoutineNameAndTerm(User uid, String userName, int term);
 }

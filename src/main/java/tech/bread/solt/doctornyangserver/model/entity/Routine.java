@@ -32,6 +32,12 @@ public class Routine {
     @Column(name = "start_date")
     LocalDate startDate;
 
+    @Column(name = "max_term")
+    Integer maxTerm;
+
+    @Column(name = "term")
+    Integer term;
+
     @Column(name = "color_code")
     String colorCode;
 
