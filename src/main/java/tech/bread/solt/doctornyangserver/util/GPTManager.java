@@ -39,7 +39,7 @@ public class GPTManager {
         type = 1;
         initPersonality(type);
 
-        maxToken = 2000;
+        maxToken = 50;
         temperature = 0.8;
         topP = 1.0;
 
@@ -125,7 +125,8 @@ public class GPTManager {
                 .build());
         messages.add(GPTMessage.builder()
                 .role("system")
-                .content("답변은 꼭 공백 포함 한글 20자 이내로 말해야 한다. " +
+                .content("답변은 꼭 최대한 짧고 간결하게 대화 나누듯이 해야 한다." +
+                        "한 답변 내에서 같은 말을 반복하면 안 된다. " +
                         "대화는 모두 한글로 하고, 절대 다른 언어를 사용하면 안된다. " )
                 .build());
 
