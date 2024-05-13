@@ -2,7 +2,7 @@ package tech.bread.solt.doctornyangserver.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.ModifyUserRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.CountingDaysResponse;
@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
+    @PostMapping()
     public ResponseEntity<? super RegisterResponse> register(@RequestBody RegisterRequest request){
         return userService.register(request);
     }
@@ -31,18 +31,19 @@ public class UserController {
         return userService.login(request);
     }
 
-    @PostMapping("/enter-body-information")
-    public int enterBodyInformation(@RequestBody EnterBodyInformationRequest request){
-        return userService.enterBodyInformation(request);
+    @PutMapping()
+    public int modifyUser(@RequestBody ModifyUserRequest request, Principal p){
+        request.setId(p.getName());
+        return userService.modifyUser(request);
     }
 
-    @GetMapping("/show-info/{uid}")
-    public UserInfoResponse showUserInformation(@PathVariable("uid") int uid) {
-        return userService.showUser(uid);
+    @GetMapping()
+    public UserInfoResponse getUser(Principal p) {
+        return userService.getUser(p.getName());
     }
 
     @GetMapping("/d-day")
-    public CountingDaysResponse test(Principal p) {
+    public CountingDaysResponse countingDays(Principal p) {
         return userService.countingDays(p.getName());
     }
 }

@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DosageRegisterRequest {
-    private int userUid;
+    private String userId;
     private int medicineId;
     private LocalDate startDate;
 }

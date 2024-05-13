@@ -5,15 +5,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.bread.solt.doctornyangserver.model.dto.request.EnterBodyInformationRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.ModifyUserRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.*;
 import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
+import tech.bread.solt.doctornyangserver.model.entity.Tokens;
 import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
 import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
+import tech.bread.solt.doctornyangserver.repository.TokensRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.security.JwtProvider;
 import tech.bread.solt.doctornyangserver.util.Gender;
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepo userRepo;
     private final BMIRangeRepo bmiRangeRepo;
     private final ScheduleRepo scheduleRepo;
+    private final TokensRepo tokensRepo;
 
     private final JwtProvider jwtProvider;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -132,6 +135,8 @@ public class UserServiceImpl implements UserService{
             // 토큰 생성
             token = jwtProvider.create(userId);
 
+            updateTokens(userId);
+            saveToken(userId, token);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
@@ -140,7 +145,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int enterBodyInformation(EnterBodyInformationRequest request) {
+    public int modifyUser(ModifyUserRequest request) {
+        User u;
         double bmi = calcBMI(request.getWeight(), request.getHeight());
         int bmiId = setBMIRangeId(bmi);
         BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
@@ -160,21 +166,23 @@ public class UserServiceImpl implements UserService{
         else
             g = Gender.FEMALE;
 
-        User user = userRepo.findOneByUid(request.getId());
-        user.setHeight(request.getHeight());
-        user.setWeight(request.getWeight());
-        user.setBirthDate(request.getBirth());
-        user.setGender(g);
-        user.setBmr(bmr);
-        user.setBmiRangeId(bmiRange);
-        userRepo.save(user);
-
+        Optional<User> user = userRepo.findById(request.getId());
+        if(user.isPresent()) {
+            u = user.get();
+            u.setHeight(request.getHeight());
+            u.setWeight(request.getWeight());
+            u.setBirthDate(request.getBirth());
+            u.setGender(g);
+            u.setBmr(bmr);
+            u.setBmiRangeId(bmiRange);
+            userRepo.save(u);
+        }
         return 200;
     }
 
     @Override
-    public UserInfoResponse showUser(int uid) {
-        Optional<User> u = userRepo.findById(uid);
+    public UserInfoResponse getUser(String id) {
+        Optional<User> u = userRepo.findById(id);
         UserInfoResponse userInfoResponse;
         String gender;
         if(u.isPresent()) {
@@ -248,5 +256,17 @@ public class UserServiceImpl implements UserService{
             }
         }
         return str;
+    }
+
+    private void saveToken(String userId, String token) {
+        tokensRepo.save(Tokens.builder()
+                .token(token)
+                .userId(userId).build());
+    }
+
+    private void updateTokens(String userId){
+        Optional<Tokens> t = tokensRepo.findByUserId(userId);
+
+        t.ifPresent(tokensRepo::delete);
     }
 }

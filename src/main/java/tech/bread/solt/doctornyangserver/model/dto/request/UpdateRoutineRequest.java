@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IncrementRoutinePerformRequest {
-    private int uid;
+public class UpdateRoutineRequest {
+    private String id;
     private int rid;
+    private int counts;
 }

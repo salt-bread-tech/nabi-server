@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterMedicineRequest {
-    int uid;
+    String id;
     LocalDate startDate;
     String medicineName;
     int once;
