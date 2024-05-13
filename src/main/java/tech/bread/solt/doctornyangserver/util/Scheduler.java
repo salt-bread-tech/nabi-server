@@ -63,7 +63,7 @@ public class Scheduler {
     }
 
     //@Scheduled(cron = "*/10 * * * * *")
-    @Scheduled(cron = "0 0 0 ? * SUN *")
+    @Scheduled(cron = "0 0 0 ? * SUN")
     public void renewRoutine() {
         List<Routine> allRoutines = routineRepo.findAll();
         List<Routine> topRoutines = new ArrayList<>();
