@@ -65,16 +65,16 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public List<ShowRoutineResponse> show(String id) {
+    public List<ShowRoutineResponse> show(LocalDate date, String id) {
         Optional<User> u = userRepo.findById(id);
         List<ShowRoutineResponse> responses = new ArrayList<>();
         ShowRoutineResponse response;
 
         if (u.isPresent()) {
-            int dayOfWeek = LocalDate.now().get(ChronoField.DAY_OF_WEEK);
+            int dayOfWeek = date.get(ChronoField.DAY_OF_WEEK);
             if (dayOfWeek == 7)
                 dayOfWeek = 0;
-            LocalDate startDate = LocalDate.now().minusDays(dayOfWeek);
+            LocalDate startDate = date.minusDays(dayOfWeek);
             LocalDate endDate = startDate.plusDays(6);
             List<Routine> routines = routineRepo.findByUserUidAndStartDateBetween(u.get(), startDate, endDate);
 

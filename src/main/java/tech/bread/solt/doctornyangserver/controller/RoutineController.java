@@ -7,6 +7,7 @@ import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.service.RoutineService;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,12 @@ public class RoutineController {
 
     @GetMapping()
     public List<ShowRoutineResponse> showRoutine(Principal principal){
-        return routineService.show(principal.getName());
+        return routineService.show(LocalDate.now(), principal.getName());
+    }
+
+    @GetMapping("/{date}")
+    public List<ShowRoutineResponse> showRoutinePast(@PathVariable("date") LocalDate date, Principal principal) {
+        return routineService.show(date, principal.getName());
     }
 
     @DeleteMapping("/{routineId}")
