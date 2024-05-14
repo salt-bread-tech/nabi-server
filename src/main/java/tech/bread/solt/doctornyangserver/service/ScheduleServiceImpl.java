@@ -12,6 +12,8 @@ import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Service
@@ -55,25 +57,23 @@ public class ScheduleServiceImpl implements ScheduleService {
         Optional<User> users = userRepo.findById(id);
         Map<LocalDate, List<ScheduleListResponse>> schedulesByLocalDate = new HashMap<>();
 
-        int day = date.get(ChronoField.DAY_OF_WEEK);
-        if (day == 7)
-            day = 0;
-        LocalDate startDate = date.minusDays(day);
+        LocalDate startDate = date.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate endDate = date.with(TemporalAdjusters.lastDayOfMonth());
 
         if (users.isPresent()) {
-            for(int i = 0; i <= 6; i++) {
-                List<ScheduleListResponse> schedules = new ArrayList<>();
-                date = startDate.plusDays(i);
-                List<Schedule> s = scheduleRepo.findByUserUidAndDateBetween(users.get(),
-                        date.atStartOfDay(), date.atTime(LocalTime.MAX));
-                for (Schedule schedule : s) {
+            while (!startDate.isAfter(endDate)) {
+                List<ScheduleListResponse> scheduleRes = new ArrayList<>();
+                List<Schedule> schedules = scheduleRepo.findByUserUidAndDateBetween(users.get(),
+                        startDate.atStartOfDay(), startDate.atTime(23, 59, 0));
+                for (Schedule s : schedules) {
                     ScheduleListResponse r = ScheduleListResponse.builder()
-                            .scheduleId(schedule.getId())
-                            .text(schedule.getText())
-                            .date(schedule.getDate()).build();
-                    schedules.add(r);
+                            .scheduleId(s.getId())
+                            .text(s.getText())
+                            .date(s.getDate()).build();
+                    scheduleRes.add(r);
                 }
-                schedulesByLocalDate.put(date, schedules);
+                schedulesByLocalDate.put(startDate, scheduleRes);
+                startDate = startDate.plusDays(1);
             }
         }
         return schedulesByLocalDate;
