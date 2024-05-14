@@ -4,6 +4,7 @@ import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineReques
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface RoutineService {
@@ -11,7 +12,7 @@ public interface RoutineService {
 
     int update(UpdateRoutineRequest request);
 
-    List<ShowRoutineResponse> show(String id);
+    List<ShowRoutineResponse> show(LocalDate date, String id);
 
     boolean delete(int routineId);
 }

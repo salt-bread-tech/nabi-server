@@ -15,4 +15,5 @@ public class RegisterRoutineRequest {
     int maxPerform;
     LocalDate date;
     String colorCode;
+    int maxTerm;
 }
