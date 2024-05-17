@@ -7,9 +7,9 @@ import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResp
 import java.util.List;
 
 public interface PrescriptionService {
-    int addPrescription(PostPrescriptionRequest request);
+    int addPrescription(PostPrescriptionRequest request, String id);
 
-    List<GetPrescriptionsResponse> getPrescriptions(int uid);
+    List<GetPrescriptionsResponse> getPrescriptions(String id);
 
     GetPrescriptionResponse getPrescription(int prescriptionId);
 }

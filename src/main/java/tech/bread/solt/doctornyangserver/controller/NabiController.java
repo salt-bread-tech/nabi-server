@@ -6,6 +6,7 @@ import tech.bread.solt.doctornyangserver.model.dto.request.CreateChatRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetChatResponse;
 import tech.bread.solt.doctornyangserver.service.NabiService;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,23 +20,23 @@ public class NabiController {
         this.nabiService = nabiService;
     }
 
-    @GetMapping("/chats/{uid}/recent")
-    public List<GetChatResponse> getChats(@PathVariable("uid") int uid) {
-        return nabiService.getChats(uid);
+    @GetMapping("/chats/recent")
+    public List<GetChatResponse> getChats(Principal p) {
+        return nabiService.getChats(p.getName());
     }
 
-    @GetMapping("/chats/{uid}/{page}")
-    public List<GetChatResponse> getChatsByPage(@PathVariable("uid") int uid, @PathVariable("page") int page) {
-        return nabiService.getChats(uid, page);
+    @GetMapping("/chats/{page}")
+    public List<GetChatResponse> getChatsByPage(@PathVariable("page") int page, Principal p) {
+        return nabiService.getChats(p.getName(), page);
     }
 
     @PostMapping("/chat")
-    public String createChat(@RequestBody CreateChatRequest request) {
-        return nabiService.createChat(request);
+    public String createChat(@RequestBody CreateChatRequest request, Principal p) {
+        return nabiService.createChat(request, p.getName());
     }
 
-    @GetMapping("/feed/{uid}")
-    public int feed(@PathVariable("uid") int uid) {
-        return nabiService.feed(uid);
+    @GetMapping("/feed")
+    public int feed(Principal p) {
+        return nabiService.feed(p.getName());
     }
 }

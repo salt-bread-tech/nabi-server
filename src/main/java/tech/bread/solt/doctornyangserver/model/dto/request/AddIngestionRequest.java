@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class AddIngestionRequest {
-    private int uid;
     private int times;
     private String foodName;
     private double servingSize;

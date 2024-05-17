@@ -15,11 +15,11 @@ public interface DietService {
 
     GetCalorieInformResponse getCalorieInform(String name, int num);
 
-    int addIngestion(AddIngestionRequest request);
+    int addIngestion(AddIngestionRequest request, String id);
 
-    List<GetDietResponse> getDiet(int uid, LocalDate date);
+    List<GetDietResponse> getDiet(String id, LocalDate date);
 
-    GetIngestionTotalResponse getIngestionTotal(int uid, LocalDate date);
+    GetIngestionTotalResponse getIngestionTotal(String id, LocalDate date);
 
     int updateIngestion(UpdateIngestionRequest request);
     int deleteIngestion(int ingestionId);

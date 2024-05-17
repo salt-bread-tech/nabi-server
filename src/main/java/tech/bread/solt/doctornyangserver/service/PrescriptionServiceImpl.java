@@ -25,8 +25,8 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     private final MedicineRepo medicineRepo;
 
     @Override
-    public int addPrescription(PostPrescriptionRequest request) {
-        Optional<User> user = userRepo.findById(request.getUid());
+    public int addPrescription(PostPrescriptionRequest request, String id) {
+        Optional<User> user = userRepo.findById(id);
         List<MedicineTaking> medicineTakingList = request.getMedicineTakings();
         Prescription prescription;
         List<Medicine> medicineList = new ArrayList<>();
@@ -58,8 +58,8 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     }
 
     @Override
-    public List<GetPrescriptionsResponse> getPrescriptions(int uid) {
-        Optional<User> user = userRepo.findById(uid);
+    public List<GetPrescriptionsResponse> getPrescriptions(String id) {
+        Optional<User> user = userRepo.findById(id);
         List<Prescription> prescriptions = new ArrayList<>();
         List<GetPrescriptionsResponse> responses = new ArrayList<>();
 

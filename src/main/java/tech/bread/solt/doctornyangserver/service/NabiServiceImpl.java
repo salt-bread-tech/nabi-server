@@ -34,9 +34,9 @@ public class NabiServiceImpl implements NabiService {
     private int LIKEABILITY_SCORE = 3;
 
     @Override
-    public String createChat(CreateChatRequest request) {
+    public String createChat(CreateChatRequest request, String id) {
         String result = "";
-        Optional<User> optionalUser = userRepo.findById(request.getUid());
+        Optional<User> optionalUser = userRepo.findById(id);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -73,9 +73,9 @@ public class NabiServiceImpl implements NabiService {
     }
 
     @Override
-    public List<GetChatResponse> getChats(int uid) {
+    public List<GetChatResponse> getChats(String id) {
         List<GetChatResponse> result = new ArrayList<>();
-        Optional<User> optionalUser = userRepo.findById(uid);
+        Optional<User> optionalUser = userRepo.findById(id);
 
         if (optionalUser.isPresent()) {
             List<Chat> chats = chatRepo.findTop100ByUidOrderByCreateAtDesc(optionalUser.get());
@@ -94,9 +94,9 @@ public class NabiServiceImpl implements NabiService {
     }
 
     @Override
-    public List<GetChatResponse> getChats(int uid, int page) {
+    public List<GetChatResponse> getChats(String id, int page) {
         List<GetChatResponse> result = new ArrayList<>();
-        Optional<User> optionalUser = userRepo.findById(uid);
+        Optional<User> optionalUser = userRepo.findById(id);
 
         if (optionalUser.isPresent()) {
             Pageable pageable = PageRequest.of(page, CHAT_PAGE_SIZE, Sort.by("createAt").descending());
@@ -117,9 +117,9 @@ public class NabiServiceImpl implements NabiService {
     }
 
     @Override
-    public int feed(int uid) {
+    public int feed(String id) {
         int result = 400;
-        Optional<User> optionalUser = userRepo.findById(uid);
+        Optional<User> optionalUser = userRepo.findById(id);
 
         if (optionalUser.isEmpty()) {
             System.out.println("먹이 주기 실패: 유저가 존재하지 않음");

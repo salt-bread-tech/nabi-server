@@ -110,9 +110,9 @@ public class DietServiceImpl implements DietService {
     }
 
     @Override
-    public int addIngestion(AddIngestionRequest request) {
+    public int addIngestion(AddIngestionRequest request, String id) {
         int result = 0;
-        Optional<User> optionalUser = userRepo.findById(request.getUid());
+        Optional<User> optionalUser = userRepo.findById(id);
 
         if (optionalUser.isPresent()) {
             FoodInformation foodInformation = FoodInformation.builder()
@@ -162,9 +162,9 @@ public class DietServiceImpl implements DietService {
     }
 
     @Override
-    public List<GetDietResponse> getDiet(int uid, LocalDate date) {
+    public List<GetDietResponse> getDiet(String id, LocalDate date) {
         List<GetDietResponse> result = new ArrayList<>();
-        Optional<User> optionalUser = userRepo.findById(uid);
+        Optional<User> optionalUser = userRepo.findById(id);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -189,9 +189,9 @@ public class DietServiceImpl implements DietService {
     }
 
     @Override
-    public GetIngestionTotalResponse getIngestionTotal(int uid, LocalDate date) {
+    public GetIngestionTotalResponse getIngestionTotal(String id, LocalDate date) {
         GetIngestionTotalResponse result;
-        Optional<User> optionalUser = userRepo.findById(uid);
+        Optional<User> optionalUser = userRepo.findById(id);
 
         double totalKcal = 0;
         double breakfastKcal = 0;
