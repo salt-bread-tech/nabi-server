@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface NabiService {
 
-    String createChat(CreateChatRequest request);
-    List<GetChatResponse> getChats(int uid);
-    List<GetChatResponse> getChats(int uid, int page);
+    String createChat(CreateChatRequest request, String id);
+    List<GetChatResponse> getChats(String id);
+    List<GetChatResponse> getChats(String id, int page);
 
-    int feed(int uid);
+    int feed(String id);
 }

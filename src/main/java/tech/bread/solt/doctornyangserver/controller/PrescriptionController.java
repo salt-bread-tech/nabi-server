@@ -7,6 +7,7 @@ import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionRespo
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResponse;
 import tech.bread.solt.doctornyangserver.service.PrescriptionService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,19 +20,19 @@ public class PrescriptionController {
         this.prescriptionService = prescriptionService;
     }
 
-    @GetMapping("/prescription")
-    public GetPrescriptionResponse getPrescriptionResponse(@RequestParam int prescriptionId) {
-        return prescriptionService.getPrescription(prescriptionId);
+    @GetMapping("/prescription/{pid}")
+    public GetPrescriptionResponse getPrescriptionResponse(@PathVariable("pid") int pid) {
+        return prescriptionService.getPrescription(pid);
     }
 
-    @PostMapping("/prescription")
-    public int addPrescription(@RequestBody PostPrescriptionRequest request) {
-        return prescriptionService.addPrescription(request);
+    @PostMapping("/prescriptions")
+    public int addPrescription(@RequestBody PostPrescriptionRequest request, Principal p) {
+        return prescriptionService.addPrescription(request, p.getName());
     }
 
     @GetMapping("/prescriptions")
-    public List<GetPrescriptionsResponse> getPrescriptionsResponses(@RequestParam int uid) {
-        return prescriptionService.getPrescriptions(uid);
+    public List<GetPrescriptionsResponse> getPrescriptionsResponses(Principal p) {
+        return prescriptionService.getPrescriptions(p.getName());
     }
 
 }

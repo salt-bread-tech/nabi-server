@@ -9,6 +9,7 @@ import tech.bread.solt.doctornyangserver.model.dto.response.GetDietResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetIngestionTotalResponse;
 import tech.bread.solt.doctornyangserver.service.DietService;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -31,30 +32,30 @@ public class DietController {
         return dietService.getCalorieInform(name, num);
     }
 
-    @GetMapping("/diet/{uid}/today")
-    public List<GetDietResponse> getDietToday(@PathVariable("uid") int uid) {
-        return dietService.getDiet(uid, LocalDate.now());
+    @GetMapping("/diet/today")
+    public List<GetDietResponse> getDietToday(Principal p) {
+        return dietService.getDiet(p.getName(), LocalDate.now());
     }
 
-    @GetMapping("/diet/{uid}/{date}")
-    public List<GetDietResponse> getDiet(@PathVariable("uid") int uid, @PathVariable("date") LocalDate date) {
-        return dietService.getDiet(uid, date);
+    @GetMapping("/diet/{date}")
+    public List<GetDietResponse> getDiet(@PathVariable("date") LocalDate date, Principal p) {
+        return dietService.getDiet(p.getName(), date);
     }
 
 
-    @GetMapping("/ingestion/total/{uid}/today")
-    public GetIngestionTotalResponse getIngestionTotalToday(@PathVariable("uid") int uid) {
-        return dietService.getIngestionTotal(uid, LocalDate.now());
+    @GetMapping("/ingestion/total/today")
+    public GetIngestionTotalResponse getIngestionTotalToday(Principal p) {
+        return dietService.getIngestionTotal(p.getName(), LocalDate.now());
     }
 
-    @GetMapping("/ingestion/total/{uid}/{date}")
-    public GetIngestionTotalResponse getIngestionTotal(@PathVariable("uid") int uid, @PathVariable("date") LocalDate date) {
-        return dietService.getIngestionTotal(uid, date);
+    @GetMapping("/ingestion/total/{date}")
+    public GetIngestionTotalResponse getIngestionTotal(@PathVariable("date") LocalDate date, Principal p) {
+        return dietService.getIngestionTotal(p.getName(), date);
     }
 
     @PostMapping("/ingestion")
-    public int addIngestion(@RequestBody AddIngestionRequest request) {
-        return dietService.addIngestion(request);
+    public int addIngestion(@RequestBody AddIngestionRequest request, Principal p) {
+        return dietService.addIngestion(request, p.getName());
     }
 
     @PostMapping("/ingestion/update")

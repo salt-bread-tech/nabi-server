@@ -10,8 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CreateChatRequest {
-
-    int uid;
     String content;
-
 }

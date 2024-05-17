@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class PostPrescriptionRequest {
-    private int uid;
     private LocalDate date;
     private List<MedicineTaking> medicineTakings;
 
