@@ -206,6 +206,18 @@ public class UserServiceImpl implements UserService{
         return null;
     }
 
+    @Override
+    public boolean deleteUser(String userId) {
+        Optional<User> user = userRepo.findById(userId);
+        if (user.isEmpty()) return false;
+        try {
+            userRepo.deleteById(user.get().getUid());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private int setBMIRangeId(double bmi){
         int bmiId = 0;
         List<BMIRange> ranges = bmiRangeRepo.findAll();

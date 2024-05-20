@@ -46,4 +46,9 @@ public class UserController {
     public CountingDaysResponse countingDays(Principal p) {
         return userService.countingDays(p.getName());
     }
+
+    @DeleteMapping()
+    public boolean deleteUser(Principal p) {
+        return userService.deleteUser(p.getName());
+    }
 }

@@ -16,4 +16,5 @@ public interface UserService {
     int modifyUser(ModifyUserRequest request);
     UserInfoResponse getUser(String id);
     CountingDaysResponse countingDays(String userId);
+    boolean deleteUser(String userId);
 }
