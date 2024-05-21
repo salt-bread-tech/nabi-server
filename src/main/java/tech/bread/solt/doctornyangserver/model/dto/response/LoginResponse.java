@@ -11,15 +11,17 @@ public class LoginResponse extends ResponseDto{
     private String token;
     private int expirationTime;
     private int userUid;
-    private LoginResponse(String token, int userUid) {
+    private boolean doneTutorial;
+    private LoginResponse(String token, int userUid, boolean doneTutorial) {
         super();
         this.token = token;
         this.expirationTime = 3600;
         this.userUid = userUid;
+        this.doneTutorial = doneTutorial;
     }
 
-    public static ResponseEntity<LoginResponse> success(String token, int userUid) {
-        LoginResponse response = new LoginResponse(token, userUid);
+    public static ResponseEntity<LoginResponse> success(String token, int userUid, boolean doneTutorial) {
+        LoginResponse response = new LoginResponse(token, userUid, doneTutorial);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

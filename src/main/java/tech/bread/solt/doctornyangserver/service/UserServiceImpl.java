@@ -120,6 +120,7 @@ public class UserServiceImpl implements UserService{
     public ResponseEntity<? super LoginResponse> login(LoginRequest request) {
         String token = null;
         int userUid = 0;
+        boolean doneTutorial;
         try {
 
             String userId = request.getId();
@@ -130,6 +131,10 @@ public class UserServiceImpl implements UserService{
             String encodedPassword = user.get().getPassword();
             boolean isMatched = passwordEncoder.matches(password, encodedPassword);
             userUid = user.get().getUid();
+            doneTutorial = user.get().getDoneTutorial();
+            if (!doneTutorial) {
+                toggleDoneTutorial(userId);
+            }
             if (!isMatched) return LoginResponse.loginFail();
 
             // 토큰 생성
@@ -141,7 +146,7 @@ public class UserServiceImpl implements UserService{
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return LoginResponse.success(token, userUid);
+        return LoginResponse.success(token, userUid, doneTutorial);
     }
 
     @Override
@@ -280,5 +285,12 @@ public class UserServiceImpl implements UserService{
         Optional<Tokens> t = tokensRepo.findByUserId(userId);
 
         t.ifPresent(tokensRepo::delete);
+    }
+
+    private void toggleDoneTutorial(String userId) {
+        Optional<User> u = userRepo.findById(userId);
+        User saveUser = u.get();
+        saveUser.setDoneTutorial(true);
+        userRepo.save(saveUser);
     }
 }
