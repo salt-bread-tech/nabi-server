@@ -25,7 +25,7 @@ public class RoutineServiceImpl implements RoutineService {
     public int register(RegisterRoutineRequest request) {
         Optional<User> u = userRepo.findById(request.getId());
         if (u.isPresent()){
-            for (int i = 0; i < request.getMaxPerform(); i++) {
+            for (int i = 0; i < request.getMaxTerm(); i++) {
                 routineRepo.save(Routine.builder()
                         .userUid(u.get())
                         .routineName(request.getName())
