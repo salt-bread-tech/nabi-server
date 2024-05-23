@@ -35,4 +35,16 @@ public class Medicine {
 
     @Column(name = "medicine_dosage")
     String medicineDosage;
+
+    @Column(name = "breakfast")
+    boolean breakfast;
+
+    @Column(name = "lunch")
+    boolean lunch;
+
+    @Column(name = "dinner")
+    boolean dinner;
+
+    @Column(name = "before_sleep")
+    boolean beforeSleep;
 }

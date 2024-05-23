@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class GetPrescriptionResponse {
+    private String prescriptionName;
     private LocalDate prescriptionDate;
     private List<MedicineTaking> medicineTakings;
 
@@ -21,9 +22,10 @@ public class GetPrescriptionResponse {
     @Builder
     public static class MedicineTaking {
         String medicineName;
-        Integer dailyDosage;
-        Integer totalDosage;
-        Integer onceDosage;
-        String medicineDosage;
+        int once;
+        int days;
+        List<Integer> time;
+        String dosage;
+        Boolean registeredDosingSchedule;
     }
 }

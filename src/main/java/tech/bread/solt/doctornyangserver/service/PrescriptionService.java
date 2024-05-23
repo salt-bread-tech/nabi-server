@@ -11,5 +11,5 @@ public interface PrescriptionService {
 
     List<GetPrescriptionsResponse> getPrescriptions(String id);
 
-    GetPrescriptionResponse getPrescription(int prescriptionId);
+    GetPrescriptionResponse getPrescription(int prescriptionId, String id);
 }

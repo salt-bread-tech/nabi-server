@@ -2,7 +2,6 @@ package tech.bread.solt.doctornyangserver.service;
 
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
-import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineResponse;
 
 import java.util.List;
 
@@ -12,7 +11,6 @@ public interface MedicineService {
 
     GetMedicineDescriptionResponse getMedicineDescription(String name, int num);
 
-    int register(RegisterMedicineRequest request);
+    int register(RegisterMedicineRequest request, String id);
 
-    List<GetMedicineResponse> getMedicines(String id);
 }

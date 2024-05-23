@@ -6,16 +6,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterMedicineRequest {
-    String id;
-    LocalDate startDate;
+    int prescriptionId;
     String medicineName;
     int once;
-    int total;
-    int daily;
-    String dosage;
+    int days;
+    List<Integer> time;
+    int dosage;
 }
