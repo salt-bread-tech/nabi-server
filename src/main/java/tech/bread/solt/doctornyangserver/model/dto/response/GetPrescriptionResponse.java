@@ -21,6 +21,7 @@ public class GetPrescriptionResponse {
     @NoArgsConstructor
     @Builder
     public static class MedicineTaking {
+        int medicineId;
         String medicineName;
         int once;
         int days;

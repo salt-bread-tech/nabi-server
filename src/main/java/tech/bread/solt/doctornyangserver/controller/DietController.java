@@ -42,7 +42,6 @@ public class DietController {
         return dietService.getDiet(p.getName(), date);
     }
 
-
     @GetMapping("/ingestion/total/today")
     public GetIngestionTotalResponse getIngestionTotalToday(Principal p) {
         return dietService.getIngestionTotal(p.getName(), LocalDate.now());
