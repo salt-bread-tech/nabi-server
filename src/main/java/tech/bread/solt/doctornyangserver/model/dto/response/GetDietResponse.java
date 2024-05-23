@@ -1,5 +1,6 @@
 package tech.bread.solt.doctornyangserver.model.dto.response;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,10 @@ public class GetDietResponse {
     Double carbohydrate;
     Double protein;
     Double fat;
+    Double sugars;
+    Double salt;
+    Double cholesterol;
+    Double saturatedFattyAcid;
+    Double transFattyAcid;
 
 }
