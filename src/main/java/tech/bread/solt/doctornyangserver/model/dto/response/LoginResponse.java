@@ -15,7 +15,7 @@ public class LoginResponse extends ResponseDto{
     private LoginResponse(String token, int userUid, boolean doneTutorial) {
         super();
         this.token = token;
-        this.expirationTime = 3600;
+        this.expirationTime = 3600 * 24;
         this.userUid = userUid;
         this.doneTutorial = doneTutorial;
     }
