@@ -1,9 +1,11 @@
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdateDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
@@ -22,6 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DosageServiceImpl implements DosageService {
     private final DosageRepo dosageRepo;
     private final MedicineRepo medicineRepo;
@@ -152,5 +155,23 @@ public class DosageServiceImpl implements DosageService {
         } catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public int update(UpdateDosageRequest request) {
+        Optional<Dosage> optionalDosage = dosageRepo.findById(request.getDosageId());
+        Times time = new TimesConverter().convertToEntityAttribute(request.getTimes());
+
+        if (optionalDosage.isPresent()) {
+            Dosage updateDosage = optionalDosage.get();
+            updateDosage.setDate(request.getDate());
+            updateDosage.setTimes(time);
+            updateDosage.setMedicineTaken(false);
+            dosageRepo.save(updateDosage);
+            log.info("복용 일정 수정 성공");
+            return 200;
+        }
+        log.error("복용 일정을 찾을 수 없음");
+        return 100;
     }
 }
