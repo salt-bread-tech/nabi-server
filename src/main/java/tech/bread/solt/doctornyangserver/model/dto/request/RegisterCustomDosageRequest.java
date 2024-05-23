@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateDosageRequest {
+public class RegisterCustomDosageRequest {
     String userId;
-    int dosageId;
+    int medicineId;
     LocalDate date;
-    int times;
+    int time;
     int dosage;
 }

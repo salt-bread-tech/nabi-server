@@ -3,6 +3,7 @@ package tech.bread.solt.doctornyangserver.controller;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.RegisterCustomDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.service.DosageService;
@@ -45,5 +46,11 @@ public class DosageController {
     @DeleteMapping("/{dosageId}")
     public boolean delete(@PathVariable("dosageId") int dosageId){
         return dosageService.delete(dosageId);
+    }
+
+    @PostMapping("/custom")
+    public int registerCustom(@RequestBody RegisterCustomDosageRequest request, Principal principal) {
+        request.setUserId(principal.getName());
+        return dosageService.customize(request);
     }
 }
