@@ -13,5 +13,4 @@ import java.time.LocalDate;
 public class DosageRegisterRequest {
     private String userId;
     private int medicineId;
-    private LocalDate startDate;
 }

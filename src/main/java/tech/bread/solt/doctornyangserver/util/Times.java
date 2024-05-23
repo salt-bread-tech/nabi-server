@@ -11,10 +11,13 @@ import java.util.List;
 @AllArgsConstructor
 public enum Times {
     BEFORE_BREAKFAST("아침 식전"),
+    DURING_BREAKFAST("아침 식중"),
     AFTER_BREAKFAST("아침 식후"),
     BEFORE_LUNCH("점심 식전"),
+    DURING_LUNCH("점심 식중"),
     AFTER_LUNCH("점심 식후"),
     BEFORE_DINNER("저녁 식전"),
+    DURING_DINNER("저녁 식중"),
     AFTER_DINNER("저녁 식후"),
     BEFORE_SLEEP("자기 전"),
     EMPTY_STOMACH("공복"),
