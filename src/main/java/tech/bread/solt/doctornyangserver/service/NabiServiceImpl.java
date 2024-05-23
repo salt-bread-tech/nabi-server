@@ -46,7 +46,8 @@ public class NabiServiceImpl implements NabiService {
 
             GPTManager gptManager = new GPTManager(recentChats, type);
             ChatGPTResponse chatGPTResponse = gptManager.getResponse(request.getContent());
-            result = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+            String gptContent = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+            result = removeLastSentence(gptContent);
 
             Chat userChat = Chat.builder()
                             .isUser(true)
@@ -57,7 +58,7 @@ public class NabiServiceImpl implements NabiService {
 
             Chat gptChat = Chat.builder()
                             .isUser(false)
-                            .text(result)
+                            .text(removeLastSentence(result))
                             .createAt(LocalDateTime.now())
                             .uid(optionalUser.get())
                             .build();
@@ -79,6 +80,7 @@ public class NabiServiceImpl implements NabiService {
 
         if (optionalUser.isPresent()) {
             List<Chat> chats = chatRepo.findTop100ByUidOrderByCreateAtDesc(optionalUser.get());
+            Collections.reverse(chats);
 
             for (Chat c: chats) {
                 System.out.println(c.getUid() + " " + c.getText());
@@ -145,4 +147,17 @@ public class NabiServiceImpl implements NabiService {
     }
 
 
+    private static String removeLastSentence(String text) {
+        int lastPeriodIndex = text.lastIndexOf(".");
+        int lastQuestionIndex = text.lastIndexOf("?");
+        int lastExclamationIndex = text.lastIndexOf("!");
+
+        int lastIndex = Math.max(lastPeriodIndex, Math.max(lastQuestionIndex, lastExclamationIndex));
+
+        if (lastIndex == -1) {
+            return text;
+        }
+
+        return text.substring(0, lastIndex+1);
+    }
 }

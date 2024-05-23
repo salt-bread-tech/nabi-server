@@ -21,4 +21,8 @@ public class ChatGPTRequest {
     private Double temperature;
     @JsonProperty("top_p")
     private Double topP;
+    @JsonProperty("frequency_penalty")
+    private Double frequencyPenalty;
+    @JsonProperty("presence_penalty")
+    private Double presencePenalty;
 }
