@@ -3,6 +3,7 @@ package tech.bread.solt.doctornyangserver.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdatePrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResponse;
 import tech.bread.solt.doctornyangserver.service.PrescriptionService;
@@ -33,6 +34,11 @@ public class PrescriptionController {
     @GetMapping("/prescriptions")
     public List<GetPrescriptionsResponse> getPrescriptionsResponse(Principal p) {
         return prescriptionService.getPrescriptions(p.getName());
+    }
+
+    @PutMapping("/prescription")
+    public int update(@RequestBody UpdatePrescriptionRequest request) {
+        return prescriptionService.update(request);
     }
 
 }

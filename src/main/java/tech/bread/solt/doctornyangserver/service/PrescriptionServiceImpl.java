@@ -1,8 +1,10 @@
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdatePrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Dosage;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PrescriptionServiceImpl implements PrescriptionService {
     private final UserRepo userRepo;
     private final PrescriptionRepo prescriptionRepo;
@@ -122,5 +125,22 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         }
 
         return response;
+    }
+
+    @Override
+    public int update(UpdatePrescriptionRequest request) {
+        Optional<Prescription> optionalPrescription =
+                prescriptionRepo.getPrescriptionById(request.getPrescriptionId());
+
+        if (optionalPrescription.isPresent()) {
+            Prescription updatedPrescription = optionalPrescription.get();
+
+            updatedPrescription.setName(request.getName());
+            prescriptionRepo.save(updatedPrescription);
+            log.info("처방전 수정 성공");
+            return 200;
+        }
+        log.warn("처방전 정보를 찾지 못함");
+        return 100;
     }
 }
