@@ -30,7 +30,6 @@ public class MedicineServiceImpl implements MedicineService {
     final private UserRepo userRepo;
     final private PrescriptionRepo prescriptionRepo;
     final private MedicineRepo medicineRepo;
-    final private DosageRepo dosageRepo;
 
     @Override
     public List<String> getMedicineList(String name) {

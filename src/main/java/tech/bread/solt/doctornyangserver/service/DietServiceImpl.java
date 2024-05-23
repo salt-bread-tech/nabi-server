@@ -171,16 +171,23 @@ public class DietServiceImpl implements DietService {
             List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, date);
 
             for (Ingestion ingestion : ingestionList) {
+                FoodInformation f = ingestion.getFoodId();
+
                 result.add(GetDietResponse.builder()
                                 .dietId(ingestion.getId())
                                 .foodId(ingestion.getFoodId().getFoodId())
                                 .times(ingestion.getTimes())
-                                .name(ingestion.getFoodId().getName())
-                                .servingSize(ingestion.getFoodId().getServingSize())
-                                .calories(ingestion.getFoodId().getCalories())
-                                .carbohydrate(ingestion.getFoodId().getCarbohydrate())
-                                .protein(ingestion.getFoodId().getProtein())
-                                .fat(ingestion.getFoodId().getFat())
+                                .name(f.getName())
+                                .servingSize(f.getServingSize())
+                                .calories(f.getCalories())
+                                .carbohydrate(f.getCarbohydrate())
+                                .protein(f.getProtein())
+                                .fat(f.getFat())
+                                .sugars(f.getSugars())
+                                .salt(f.getSalt())
+                                .cholesterol(f.getCholesterol())
+                                .saturatedFattyAcid(f.getSaturatedFattyAcid())
+                                .transFattyAcid(f.getTransFattyAcid())
                                 .build());
             }
         }
