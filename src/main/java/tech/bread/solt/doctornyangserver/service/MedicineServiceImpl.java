@@ -83,7 +83,7 @@ public class MedicineServiceImpl implements MedicineService {
     public int register(RegisterMedicineRequest request, String id) {
         Optional<User> optionalUser = userRepo.findById(id);
         Optional<Prescription> optionalPrescription = prescriptionRepo.getPrescriptionById(request.getPrescriptionId());
-        String[] dosageText = {"식전", "식중", "식후", "공복"};
+        String[] dosageText = {"식전", "식중", "식후", "상관 없음"};
 
         if (optionalUser.isPresent()) {
             if (optionalPrescription.isPresent()) {

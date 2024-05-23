@@ -1,9 +1,12 @@
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.DoneDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.RegisterCustomDosageRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdateDosageRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowDosageResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
@@ -15,6 +18,7 @@ import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.util.Times;
 import tech.bread.solt.doctornyangserver.util.TimesConverter;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +26,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DosageServiceImpl implements DosageService {
     private final DosageRepo dosageRepo;
     private final MedicineRepo medicineRepo;
@@ -47,24 +52,27 @@ public class DosageServiceImpl implements DosageService {
                     case "식전" -> ordinals.add(0);
                     case "식중" -> ordinals.add(1);
                     case "식후" -> ordinals.add(2);
+                    case "상관 없음" -> ordinals.add(3);
                 }
             }
             if (medicine.isLunch()) {
                 switch (medicine.getMedicineDosage()) {
-                    case "식전" -> ordinals.add(3);
-                    case "식중" -> ordinals.add(4);
-                    case "식후" -> ordinals.add(5);
+                    case "식전" -> ordinals.add(4);
+                    case "식중" -> ordinals.add(5);
+                    case "식후" -> ordinals.add(6);
+                    case "상관 없음" -> ordinals.add(7);
                 }
             }
             if (medicine.isDinner()) {
                 switch (medicine.getMedicineDosage()) {
-                    case "식전" -> ordinals.add(6);
-                    case "식중" -> ordinals.add(7);
-                    case "식후" -> ordinals.add(8);
+                    case "식전" -> ordinals.add(8);
+                    case "식중" -> ordinals.add(9);
+                    case "식후" -> ordinals.add(10);
+                    case "상관 없음" -> ordinals.add(11);
                 }
             }
             if (medicine.isBeforeSleep()) {
-                ordinals.add(9);
+                ordinals.add(12);
             }
 
             LocalDate startDate = prescriptionRepo
@@ -152,5 +160,97 @@ public class DosageServiceImpl implements DosageService {
         } catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public int update(UpdateDosageRequest request) {
+        Optional<Dosage> optionalDosage = dosageRepo.findById(request.getDosageId());
+        int times = 100;
+        if (request.getTimes() == 0) {
+            switch (request.getDosage()) {
+                case 0 -> times = 0;
+                case 1 -> times = 1;
+                case 2 -> times = 2;
+                case 3 -> times = 3;
+            }
+        }
+        else if (request.getTimes() == 1) {
+            switch (request.getDosage()) {
+                case 0 -> times = 4;
+                case 1 -> times = 5;
+                case 2 -> times = 6;
+                case 3 -> times = 7;
+            }
+        }
+        else if (request.getTimes() == 2) {
+            switch (request.getDosage()) {
+                case 0 -> times = 8;
+                case 1 -> times = 9;
+                case 2 -> times = 10;
+                case 3 -> times = 11;
+            }
+        }
+        else times = 12;
+
+        if (optionalDosage.isPresent() && times <= 12) {
+            Dosage updateDosage = optionalDosage.get();
+            updateDosage.setDate(request.getDate());
+            updateDosage.setTimes(Times.ofOrdinal(times));
+            updateDosage.setMedicineTaken(false);
+            dosageRepo.save(updateDosage);
+            log.info("복용 일정 수정 성공");
+            return 200;
+        }
+        log.error("복용 일정을 찾을 수 없음");
+        return 100;
+    }
+
+    @Override
+    public int customize(RegisterCustomDosageRequest request) {
+        Optional<Medicine> optionalMedicine = medicineRepo.findById(request.getMedicineId());
+        Optional<User> optionalUser = userRepo.findById(request.getUserId());
+        int times = 100;
+
+        if (optionalMedicine.isPresent() && optionalUser.isPresent()) {
+            Medicine medicine = optionalMedicine.get();
+            User user = optionalUser.get();
+            if (request.getTime() == 0) {
+                switch (request.getDosage()) {
+                    case 0 -> times = 0;
+                    case 1 -> times = 1;
+                    case 2 -> times = 2;
+                    case 3 -> times = 3;
+                }
+            }
+            else if (request.getTime() == 1) {
+                switch (request.getDosage()) {
+                    case 0 -> times = 4;
+                    case 1 -> times = 5;
+                    case 2 -> times = 6;
+                    case 3 -> times = 7;
+                }
+            }
+            else if (request.getTime() == 2) {
+                switch (request.getDosage()) {
+                    case 0 -> times = 8;
+                    case 1 -> times = 9;
+                    case 2 -> times = 10;
+                    case 3 -> times = 11;
+                }
+            }
+            else times = 12;
+
+            dosageRepo.save(Dosage.builder()
+                    .date(request.getDate())
+                    .userUid(user)
+                    .times(Times.ofOrdinal(times))
+                    .medicineId(medicine)
+                    .medicineTaken(false).build());
+
+            log.info("등록 성공");
+            return 200;
+        }
+        log.warn("등록되지 의약품");
+        return 100;
     }
 }
