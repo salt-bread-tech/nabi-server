@@ -22,5 +22,6 @@ public interface DietService {
     GetIngestionTotalResponse getIngestionTotal(String id, LocalDate date);
 
     int updateIngestion(UpdateIngestionRequest request);
+
     int deleteIngestion(int ingestionId);
 }

@@ -104,6 +104,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
                 }
 
                 medicineTakings.add(GetPrescriptionResponse.MedicineTaking.builder()
+                                .medicineId(m.getId())
                                 .medicineName(m.getMedicineName())
                                 .once(m.getOnceDosage())
                                 .days(m.getTotalDosage()/m.getDailyDosage())

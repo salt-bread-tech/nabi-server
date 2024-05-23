@@ -139,7 +139,7 @@ public class DietServiceImpl implements DietService {
                 User user = optionalUser.get();
 
                 Ingestion ingestion = Ingestion.builder()
-                        .times(Times.ofOrdinal(8+request.getTimes()))
+                        .times(Times.ofOrdinal(11+request.getTimes()))
                         .userUid(user)
                         .foodId(foodInformationResult)
                         .date(request.getDate())
@@ -171,16 +171,23 @@ public class DietServiceImpl implements DietService {
             List<Ingestion> ingestionList = ingestionRepo.findAllByUserUidAndDate(user, date);
 
             for (Ingestion ingestion : ingestionList) {
+                FoodInformation f = ingestion.getFoodId();
+
                 result.add(GetDietResponse.builder()
                                 .dietId(ingestion.getId())
                                 .foodId(ingestion.getFoodId().getFoodId())
                                 .times(ingestion.getTimes())
-                                .name(ingestion.getFoodId().getName())
-                                .servingSize(ingestion.getFoodId().getServingSize())
-                                .calories(ingestion.getFoodId().getCalories())
-                                .carbohydrate(ingestion.getFoodId().getCarbohydrate())
-                                .protein(ingestion.getFoodId().getProtein())
-                                .fat(ingestion.getFoodId().getFat())
+                                .name(f.getName())
+                                .servingSize(f.getServingSize())
+                                .calories(f.getCalories())
+                                .carbohydrate(f.getCarbohydrate())
+                                .protein(f.getProtein())
+                                .fat(f.getFat())
+                                .sugars(f.getSugars())
+                                .salt(f.getSalt())
+                                .cholesterol(f.getCholesterol())
+                                .saturatedFattyAcid(f.getSaturatedFattyAcid())
+                                .transFattyAcid(f.getTransFattyAcid())
                                 .build());
             }
         }
