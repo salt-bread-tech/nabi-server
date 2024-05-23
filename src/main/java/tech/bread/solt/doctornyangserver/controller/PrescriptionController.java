@@ -20,9 +20,9 @@ public class PrescriptionController {
         this.prescriptionService = prescriptionService;
     }
 
-    @GetMapping("/prescription/{pid}")
-    public GetPrescriptionResponse getPrescriptionResponse(@PathVariable("pid") int pid) {
-        return prescriptionService.getPrescription(pid);
+    @GetMapping("/prescriptions/{pid}")
+    public GetPrescriptionResponse getPrescriptionResponse(@PathVariable("pid") int pid, Principal p) {
+        return prescriptionService.getPrescription(pid, p.getName());
     }
 
     @PostMapping("/prescriptions")
@@ -31,7 +31,7 @@ public class PrescriptionController {
     }
 
     @GetMapping("/prescriptions")
-    public List<GetPrescriptionsResponse> getPrescriptionsResponses(Principal p) {
+    public List<GetPrescriptionsResponse> getPrescriptionsResponse(Principal p) {
         return prescriptionService.getPrescriptions(p.getName());
     }
 

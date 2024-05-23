@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
-import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineResponse;
 import tech.bread.solt.doctornyangserver.service.MedicineService;
 
 import java.security.Principal;
@@ -32,12 +31,6 @@ public class MedicineController {
 
     @PostMapping("/medicine")
     public int register(@RequestBody RegisterMedicineRequest request, Principal principal){
-        request.setId(principal.getName());
-        return medicineService.register(request);
-    }
-
-    @GetMapping("/medicine")
-    public List<GetMedicineResponse> GetMedicineList(Principal principal){
-        return medicineService.getMedicines(principal.getName());
+        return medicineService.register(request, principal.getName());
     }
 }

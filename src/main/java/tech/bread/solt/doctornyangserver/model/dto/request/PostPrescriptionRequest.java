@@ -11,18 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class PostPrescriptionRequest {
+    private String name;
     private LocalDate date;
-    private List<MedicineTaking> medicineTakings;
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MedicineTaking {
-        String medicineName;
-        Integer dailyDosage;
-        Integer totalDosage;
-        Integer onceDosage;
-        String medicineDosage;
-    }
 }
