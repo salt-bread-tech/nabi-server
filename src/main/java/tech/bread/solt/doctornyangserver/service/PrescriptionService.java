@@ -15,4 +15,5 @@ public interface PrescriptionService {
     GetPrescriptionResponse getPrescription(int prescriptionId, String id);
 
     int update(UpdatePrescriptionRequest request);
+    boolean delete(int prescriptionId);
 }

@@ -143,4 +143,16 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         log.warn("처방전 정보를 찾지 못함");
         return 100;
     }
+
+    @Override
+    public boolean delete(int prescriptionId) {
+        Optional<Prescription> optionalPrescription = prescriptionRepo.getPrescriptionById(prescriptionId);
+
+        if (optionalPrescription.isPresent()) {
+            prescriptionRepo.delete(optionalPrescription.get());
+            log.info("처방전 정보 삭제 성공");
+            return true;
+        }
+        return false;
+    }
 }

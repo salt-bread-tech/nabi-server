@@ -41,4 +41,9 @@ public class PrescriptionController {
         return prescriptionService.update(request);
     }
 
+    @DeleteMapping("/prescription/{prescriptionId}")
+    public boolean delete(@PathVariable("prescriptionId") int prescriptionId) {
+        return prescriptionService.delete(prescriptionId);
+    }
+
 }
