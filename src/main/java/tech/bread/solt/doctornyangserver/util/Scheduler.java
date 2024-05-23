@@ -61,33 +61,4 @@ public class Scheduler {
         userRepo.saveAll(users);
         System.out.println("먹이 주기 초기화 완료");
     }
-
-    //@Scheduled(cron = "*/10 * * * * *")
-    @Scheduled(cron = "0 0 0 ? * SUN")
-    public void renewRoutine() {
-        List<Routine> allRoutines = routineRepo.findAll();
-        List<Routine> topRoutines = new ArrayList<>();
-
-        for (Routine routine : allRoutines) {
-            topRoutines.add(routineRepo.findTopByUserUidAndRoutineNameOrderByTermDesc(
-                    routine.getUserUid(),
-                    routine.getRoutineName()));
-        }
-        for (Routine routine : topRoutines) {
-            boolean isExist = routineRepo.existsByUserUidAndRoutineNameAndTerm(
-                    routine.getUserUid(), routine.getRoutineName(), routine.getTerm() + 1);
-            if (routine.getTerm() < routine.getMaxTerm() && !isExist) {
-                Routine r = Routine.builder()
-                        .userUid(routine.getUserUid())
-                        .routineName(routine.getRoutineName())
-                        .colorCode(routine.getColorCode())
-                        .startDate(routine.getStartDate().plusDays(7))
-                        .maxPerform(routine.getMaxPerform())
-                        .performCounts(0)
-                        .maxTerm(routine.getMaxTerm())
-                        .term(routine.getTerm() + 1).build();
-                routineRepo.save(r);
-            }
-        }
-    }
 }
