@@ -139,7 +139,7 @@ public class DietServiceImpl implements DietService {
                 User user = optionalUser.get();
 
                 Ingestion ingestion = Ingestion.builder()
-                        .times(Times.ofOrdinal(8+request.getTimes()))
+                        .times(Times.ofOrdinal(11+request.getTimes()))
                         .userUid(user)
                         .foodId(foodInformationResult)
                         .date(request.getDate())
