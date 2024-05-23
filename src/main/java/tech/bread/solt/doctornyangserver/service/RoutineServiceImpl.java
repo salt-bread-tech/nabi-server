@@ -25,15 +25,17 @@ public class RoutineServiceImpl implements RoutineService {
     public int register(RegisterRoutineRequest request) {
         Optional<User> u = userRepo.findById(request.getId());
         if (u.isPresent()){
-            routineRepo.save(Routine.builder()
-                    .userUid(u.get())
-                    .routineName(request.getName())
-                    .maxPerform(request.getMaxPerform())
-                    .startDate(request.getDate())
-                    .maxTerm(request.getMaxTerm())
-                    .term(1)
-                    .colorCode(request.getColorCode())
-                    .performCounts(0).build());
+            for (int i = 0; i < request.getMaxTerm(); i++) {
+                routineRepo.save(Routine.builder()
+                        .userUid(u.get())
+                        .routineName(request.getName())
+                        .maxPerform(request.getMaxPerform())
+                        .startDate(request.getDate().plusDays(i * 7L))
+                        .maxTerm(request.getMaxTerm())
+                        .term(i + 1)
+                        .colorCode(request.getColorCode())
+                        .performCounts(0).build());
+            }
             System.out.println("루틴 등록 성공!");
             return 200;
         }
