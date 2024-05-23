@@ -1,6 +1,7 @@
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     private final UserRepo userRepo;
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService{
         boolean isExistId = userRepo.existsById(userId);
 
         if (isExistId) {
+            log.warn("아이디 중복: {}", request.getId());
             return RegisterResponse.duplicateId();
         }
         else {
@@ -69,11 +72,11 @@ public class UserServiceImpl implements UserService{
                 int bmiId = setBMIRangeId(bmi);
                 BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
                 if (request.getHeight() > 251 || request.getHeight() < 65){
-                    System.out.println("키를 잘못 입력했습니다.");
+                    log.warn("입력한 키가 유효 범위를 벗어남: {}", request.getHeight());
                     return RegisterResponse.certificationFail();
                 }
                 if (request.getWeight() > 769 || request.getWeight() < 6 ) {
-                    System.out.println("체중을 잘못 입력했습니다.");
+                    log.warn("입력한 몸무게가 유효 범위를 벗어남: {}", request.getWeight());
                     return RegisterResponse.certificationFail();
                 }
                 double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
@@ -102,14 +105,15 @@ public class UserServiceImpl implements UserService{
                             .likeability(0)
                             .userRole("ROLE_USER")
                             .createAt(LocalDate.now()).build());
-                    System.out.println("회원가입 성공!");
+                    log.info("회원가입 성공");
                 }
                 catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("Critical Exception {}", e.toString());
                     throw new RuntimeException(e);
                 }
             }
             else {
+                log.warn("아이디 {}, 비밀번호 {} 형식 불일치", request.getId(), request.getPassword());
                 return RegisterResponse.certificationFail();
             }
         }
@@ -135,15 +139,17 @@ public class UserServiceImpl implements UserService{
             if (!doneTutorial) {
                 toggleDoneTutorial(userId);
             }
-            if (!isMatched) return LoginResponse.loginFail();
-
+            if (!isMatched) {
+                log.warn("잘못된 비밀번호");
+                return LoginResponse.loginFail();
+            }
             // 토큰 생성
             token = jwtProvider.create(userId);
 
             updateTokens(userId);
             saveToken(userId, token);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Database Error");
             return ResponseDto.databaseError();
         }
         return LoginResponse.success(token, userUid, doneTutorial);
@@ -157,11 +163,11 @@ public class UserServiceImpl implements UserService{
         BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
         Gender g;
         if (request.getHeight() > 251 || request.getHeight() < 65){
-            System.out.println("키를 잘못 입력했습니다.");
+            log.warn("입력한 키가 유효 범위를 벗어남: {}", request.getHeight());
             return 300;
         }
         if (request.getWeight() > 769 || request.getWeight() < 6 ) {
-            System.out.println("체중을 잘못 입력했습니다.");
+            log.warn("입력한 몸무게가 유효 범위를 벗어남: {}", request.getWeight());
             return 300;
         }
         double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
@@ -181,6 +187,7 @@ public class UserServiceImpl implements UserService{
             u.setBmr(bmr);
             u.setBmiRangeId(bmiRange);
             userRepo.save(u);
+            log.info("사용자 정보 수정 완료 ID: {}", user.get().getId());
         }
         return 200;
     }
@@ -208,6 +215,7 @@ public class UserServiceImpl implements UserService{
 
             return userInfoResponse;
         }
+        log.warn("존재하지 않는 User Information {}", id);
         return null;
     }
 
@@ -219,6 +227,7 @@ public class UserServiceImpl implements UserService{
             userRepo.deleteById(user.get().getUid());
             return true;
         } catch (Exception e) {
+            log.error("Database Error");
             return false;
         }
     }
