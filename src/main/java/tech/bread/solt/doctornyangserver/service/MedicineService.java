@@ -13,4 +13,5 @@ public interface MedicineService {
 
     int register(RegisterMedicineRequest request, String id);
 
+    boolean delete(int medicineId);
 }

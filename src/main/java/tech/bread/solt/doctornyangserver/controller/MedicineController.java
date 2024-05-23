@@ -33,4 +33,9 @@ public class MedicineController {
     public int register(@RequestBody RegisterMedicineRequest request, Principal principal){
         return medicineService.register(request, principal.getName());
     }
+
+    @DeleteMapping("/medicine/{medicineId}")
+    public boolean update(@PathVariable("medicineId") int medicineId) {
+        return medicineService.delete(medicineId);
+    }
 }

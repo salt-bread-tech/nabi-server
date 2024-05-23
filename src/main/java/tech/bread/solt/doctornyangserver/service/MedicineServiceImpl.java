@@ -1,6 +1,7 @@
 package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MedicineServiceImpl implements MedicineService {
 
     final private String REQUEST_URL = "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList?serviceKey=" + KeySet.MEDICINE_API_KEY.getKey();
@@ -73,6 +75,7 @@ public class MedicineServiceImpl implements MedicineService {
             result.setDepositMethodQesitm(item.select("depositMethodQesitm").text());
 
         } catch (IOException e) {
+            log.error("Request Valid Error");
             throw new RuntimeException(e);
         }
 
@@ -105,19 +108,29 @@ public class MedicineServiceImpl implements MedicineService {
                         .dinner(request.getTime().contains(2))
                         .beforeSleep(request.getTime().contains(3))
                         .build();
-
                 medicineRepo.save(medicine);
 
-                System.out.println("의약품 등록 완료");
+                log.info("의약품 등록 완료");
                 return 200;
             }
-
-            System.out.println("처방전을 찾을 수 없습니다.");
+            log.warn("잘못된 처방전 아이디");
             return 300;
         }
-
-        System.out.println("유저 정보를 찾을 수 없습니다.");
+        log.warn("잘못된 유저 정보");
         return 100;
     }
 
+    @Override
+    public boolean delete(int medicineId) {
+        Optional<Medicine> optionalMedicine = medicineRepo.findById(medicineId);
+
+        if (optionalMedicine.isPresent()) {
+            Medicine deleteMedicine = optionalMedicine.get();
+            medicineRepo.delete(deleteMedicine);
+            log.info("의약품 삭제 성공");
+            return true;
+        }
+        log.warn("잘못된 의약품 정보");
+        return false;
+    }
 }
