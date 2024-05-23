@@ -57,7 +57,7 @@ public class NabiServiceImpl implements NabiService {
 
             Chat gptChat = Chat.builder()
                             .isUser(false)
-                            .text(result)
+                            .text(removeLastSentence(result))
                             .createAt(LocalDateTime.now())
                             .uid(optionalUser.get())
                             .build();
@@ -145,4 +145,12 @@ public class NabiServiceImpl implements NabiService {
     }
 
 
+    private static String removeLastSentence(String text) {
+        int lastPeriodIndex = text.lastIndexOf(".");
+        if (lastPeriodIndex == -1) {
+            return text;
+        }
+
+        return text.substring(0, lastPeriodIndex);
+    }
 }
