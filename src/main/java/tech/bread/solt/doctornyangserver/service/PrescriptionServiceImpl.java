@@ -16,6 +16,7 @@ import tech.bread.solt.doctornyangserver.repository.MedicineRepo;
 import tech.bread.solt.doctornyangserver.repository.PrescriptionRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -135,8 +136,22 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         if (optionalPrescription.isPresent()) {
             Prescription updatedPrescription = optionalPrescription.get();
 
+            // 처방전 수정
+            long dayBetween = ChronoUnit.DAYS.between(updatedPrescription.getDate(), request.getDate());
             updatedPrescription.setName(request.getName());
-            prescriptionRepo.save(updatedPrescription);
+            updatedPrescription.setDate(request.getDate());
+            Prescription p = prescriptionRepo.save(updatedPrescription);
+
+            // 수정된 처방전에 대한 의약품과 복용 일정 수정
+            List<Medicine> medicines = medicineRepo.findAllByPrescriptionId(p);
+            for (Medicine m : medicines) {
+                List<Dosage> dosages = dosageRepo.findByMedicineId(m);
+                for (Dosage d : dosages) {
+                    d.setDate(d.getDate().plusDays(dayBetween));
+                    dosageRepo.save(d);
+                }
+                log.info("복용일정 수정 성공");
+            }
             log.info("처방전 수정 성공");
             return 200;
         }
