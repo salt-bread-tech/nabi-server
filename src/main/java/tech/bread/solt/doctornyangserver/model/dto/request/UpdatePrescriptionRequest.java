@@ -12,4 +12,5 @@ import java.time.LocalDate;
 public class UpdatePrescriptionRequest {
     int prescriptionId;
     String name;
+    LocalDate date;
 }
