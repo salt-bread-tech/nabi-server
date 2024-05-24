@@ -12,9 +12,11 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class AddIngestionRequest {
+    private LocalDate date;
     private int times;
     private String foodName;
     private double servingSize;
+    private double totalIngestionSize;
     private double calories;
     private double carbohydrate;
     private double protein;
@@ -24,5 +26,4 @@ public class AddIngestionRequest {
     private double cholesterol;
     private double saturatedFattyAcid;
     private double transFattyAcid;
-    private LocalDate date;
 }

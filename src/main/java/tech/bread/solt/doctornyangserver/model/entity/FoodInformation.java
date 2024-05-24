@@ -23,6 +23,9 @@ public class FoodInformation {
     @Column(name="serving_size")
     Double servingSize;
 
+    @Column(name="total_ingestion_size")
+    Double totalIngestionSize;
+
     @Column(name = "calories")
     Double calories;
 

@@ -13,7 +13,7 @@ import tech.bread.solt.doctornyangserver.util.Times;
 @Builder
 public class GetDietResponse {
 
-    int dietId;
+    int ingestionId;
     int foodId;
     Times times;
     String name;
