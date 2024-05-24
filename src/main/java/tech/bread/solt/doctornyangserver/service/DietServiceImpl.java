@@ -118,6 +118,7 @@ public class DietServiceImpl implements DietService {
             FoodInformation foodInformation = FoodInformation.builder()
                     .name(request.getFoodName())
                     .servingSize(request.getServingSize())
+                    .totalIngestionSize(request.getTotalIngestionSize())
                     .calories(request.getCalories())
                     .carbohydrate(request.getCarbohydrate())
                     .protein(request.getProtein())
@@ -174,11 +175,12 @@ public class DietServiceImpl implements DietService {
                 FoodInformation f = ingestion.getFoodId();
 
                 result.add(GetDietResponse.builder()
-                                .dietId(ingestion.getId())
+                                .ingestionId(ingestion.getId())
                                 .foodId(ingestion.getFoodId().getFoodId())
                                 .times(ingestion.getTimes())
                                 .name(f.getName())
                                 .servingSize(f.getServingSize())
+                                .totalIngestionSize(f.getTotalIngestionSize())
                                 .calories(f.getCalories())
                                 .carbohydrate(f.getCarbohydrate())
                                 .protein(f.getProtein())
@@ -256,26 +258,33 @@ public class DietServiceImpl implements DietService {
 
     @Override
     public int updateIngestion(UpdateIngestionRequest request) {
-        Optional<Ingestion> ingestionOptional = ingestionRepo.findById(request.getIngestionId());
+        Optional<Ingestion> optionalIngestion = ingestionRepo.findById(request.getIngestionId());
 
-        if (ingestionOptional.isPresent()){
-            Optional<FoodInformation> foodOptional
-                    = foodInformationRepo.findById(ingestionOptional.get().getFoodId().getFoodId());
+        if (optionalIngestion.isPresent()){
+            Ingestion ingestion = optionalIngestion.get();
+            ingestion.setDate(request.getDate());
+            ingestion.setTimes(Times.ofOrdinal(Times.values().length-4+request.getTimes()));
+            ingestionRepo.save(ingestion);
+            System.out.println("섭취 날짜, 시간대 수정 완료");
 
-            if (foodOptional.isPresent()){
-                FoodInformation info = foodOptional.get();
-                info.setServingSize(request.getServingSize());
-                info.setCalories(request.getCalories());
-                info.setProtein(request.getProtein());
-                info.setFat(request.getFat());
-                info.setCarbohydrate(request.getCarbohydrate());
-                info.setSugars(request.getSugars());
-                info.setSalt(request.getSalt());
-                info.setCholesterol(request.getCholesterol());
-                info.setSaturatedFattyAcid(request.getSaturatedFattyAcid());
-                info.setTransFattyAcid(request.getTransFattyAcid());
-                foodInformationRepo.save(info);
-                
+            Optional<FoodInformation> optionalFood = foodInformationRepo.findById(ingestion.getFoodId().getFoodId());
+
+            if (optionalFood.isPresent()){
+                FoodInformation food = optionalFood.get();
+                food.setServingSize(request.getServingSize());
+                food.setTotalIngestionSize(request.getTotalIngestionSize());
+                food.setCalories(request.getCalories());
+                food.setProtein(request.getProtein());
+                food.setFat(request.getFat());
+                food.setCarbohydrate(request.getCarbohydrate());
+                food.setSugars(request.getSugars());
+                food.setSalt(request.getSalt());
+                food.setCholesterol(request.getCholesterol());
+                food.setSaturatedFattyAcid(request.getSaturatedFattyAcid());
+                food.setTransFattyAcid(request.getTransFattyAcid());
+                foodInformationRepo.save(food);
+                System.out.println("섭취 정보 수정 완료");
+
                 return 200;
             }
             System.out.println("찾는 음식에 대한 정보가 없음");
