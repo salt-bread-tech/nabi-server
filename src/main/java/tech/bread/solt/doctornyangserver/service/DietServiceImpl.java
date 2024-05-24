@@ -180,6 +180,7 @@ public class DietServiceImpl implements DietService {
                                 .times(ingestion.getTimes())
                                 .name(f.getName())
                                 .servingSize(f.getServingSize())
+                                .totalIngestionSize(f.getTotalIngestionSize())
                                 .calories(f.getCalories())
                                 .carbohydrate(f.getCarbohydrate())
                                 .protein(f.getProtein())

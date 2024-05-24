@@ -18,6 +18,7 @@ public class GetDietResponse {
     Times times;
     String name;
     Double servingSize;
+    Double totalIngestionSize;
     Double calories;
     Double carbohydrate;
     Double protein;
