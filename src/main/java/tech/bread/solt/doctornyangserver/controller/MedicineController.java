@@ -35,7 +35,7 @@ public class MedicineController {
     }
 
     @DeleteMapping("/medicine/{medicineId}")
-    public boolean update(@PathVariable("medicineId") int medicineId) {
+    public boolean delete(@PathVariable("medicineId") int medicineId) {
         return medicineService.delete(medicineId);
     }
 }
