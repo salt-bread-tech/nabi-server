@@ -2,13 +2,17 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+import tech.bread.solt.doctornyangserver.model.dto.request.DosageRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterMedicineRequest;
+import tech.bread.solt.doctornyangserver.model.dto.request.UpdateMedicineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetMedicineDescriptionResponse;
+import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
 import tech.bread.solt.doctornyangserver.model.entity.Prescription;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -32,6 +36,8 @@ public class MedicineServiceImpl implements MedicineService {
     final private UserRepo userRepo;
     final private PrescriptionRepo prescriptionRepo;
     final private MedicineRepo medicineRepo;
+    final private DosageRepo dosageRepo;
+    final private DosageService dosageService;
 
     @Override
     public List<String> getMedicineList(String name) {
@@ -121,6 +127,37 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
+    public int update(UpdateMedicineRequest request) {
+        Optional<Medicine> optionalMedicine = medicineRepo.findById(request.getMedicineId());
+
+        if (optionalMedicine.isPresent()) {
+            Medicine medicine = optionalMedicine.get();
+            medicine = medicineRepo.save(getMedicine(request, medicine));
+
+            List<Dosage> dosages = dosageRepo.findByMedicineId(medicine);
+
+            // 복용 일정이 등록되지 않은 경우
+            if (dosages.isEmpty()) {
+                log.info("복용 일정이 등록되지 않아 의약품 정보만 수정");
+                return 201;
+            }
+            // 복용 일정이 등록되어 있는 경우: 복용 일정 수정
+            dosageRepo.deleteAll(dosages);
+            DosageRegisterRequest dosageRegisterRequest =
+                    DosageRegisterRequest.builder()
+                            .userId(request.getUserId())
+                            .medicineId(medicine.getId())
+                            .build();
+            dosageService.register(dosageRegisterRequest);
+
+            log.info("복용 일정 수정 성공");
+            return 200;
+        }
+        log.warn("등록되지 않은 의약품");
+        return 100;
+    }
+
+    @Override
     public boolean delete(int medicineId) {
         Optional<Medicine> optionalMedicine = medicineRepo.findById(medicineId);
 
@@ -132,5 +169,25 @@ public class MedicineServiceImpl implements MedicineService {
         }
         log.warn("잘못된 의약품 정보");
         return false;
+    }
+
+    private Medicine getMedicine(UpdateMedicineRequest request, Medicine medicine) {
+        String[] dosageText = {"식전", "식중", "식후", "상관 없음"};
+        int once = request.getOnce();
+        int daily = request.getTime().size() * once;
+        int total = request.getDays() * daily;
+
+        // 의약품 정보 수정
+        medicine.setMedicineName(request.getMedicineName());
+        medicine.setOnceDosage(once);
+        medicine.setDailyDosage(daily);
+        medicine.setTotalDosage(total);
+        medicine.setMedicineDosage(dosageText[request.getDosage() % 4]);
+        medicine.setBreakfast(request.getTime().contains(0));
+        medicine.setLunch(request.getTime().contains(1));
+        medicine.setDinner(request.getTime().contains(2));
+        medicine.setBeforeSleep(request.getTime().contains(3));
+
+        return medicine;
     }
 }
