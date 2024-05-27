@@ -18,7 +18,6 @@ import tech.bread.solt.doctornyangserver.repository.UserRepo;
 import tech.bread.solt.doctornyangserver.util.Times;
 import tech.bread.solt.doctornyangserver.util.TimesConverter;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +75,7 @@ public class DosageServiceImpl implements DosageService {
             }
 
             LocalDate startDate = prescriptionRepo
-                    .getPrescriptionById(medicine.getPrescriptionId().getId())
+                    .findAllById(medicine.getPrescriptionId().getId())
                     .get().getDate();
 
             for (int i = 0; i < doseDays; i++) {

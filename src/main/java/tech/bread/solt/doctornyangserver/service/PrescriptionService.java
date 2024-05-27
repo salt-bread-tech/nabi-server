@@ -3,8 +3,11 @@ package tech.bread.solt.doctornyangserver.service;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdatePrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsByDateResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResponse;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface PrescriptionService {
@@ -16,4 +19,6 @@ public interface PrescriptionService {
 
     int update(UpdatePrescriptionRequest request);
     boolean delete(int prescriptionId);
+
+    List<GetPrescriptionsByDateResponse> getPrescriptionsByDate(LocalDate date, String id);
 }

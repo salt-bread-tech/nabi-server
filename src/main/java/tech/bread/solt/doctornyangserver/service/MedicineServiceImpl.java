@@ -2,7 +2,6 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -91,7 +90,7 @@ public class MedicineServiceImpl implements MedicineService {
     @Override
     public int register(RegisterMedicineRequest request, String id) {
         Optional<User> optionalUser = userRepo.findById(id);
-        Optional<Prescription> optionalPrescription = prescriptionRepo.getPrescriptionById(request.getPrescriptionId());
+        Optional<Prescription> optionalPrescription = prescriptionRepo.findAllById(request.getPrescriptionId());
         String[] dosageText = {"식전", "식중", "식후", "상관 없음"};
 
         if (optionalUser.isPresent()) {
