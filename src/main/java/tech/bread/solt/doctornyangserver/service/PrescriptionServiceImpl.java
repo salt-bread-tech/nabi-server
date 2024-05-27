@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.PostPrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdatePrescriptionRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionResponse;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsByDateResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.GetPrescriptionsResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Dosage;
 import tech.bread.solt.doctornyangserver.model.entity.Medicine;
@@ -16,6 +17,7 @@ import tech.bread.solt.doctornyangserver.repository.MedicineRepo;
 import tech.bread.solt.doctornyangserver.repository.PrescriptionRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +57,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
         List<GetPrescriptionsResponse> responses = new ArrayList<>();
 
         if (user.isPresent()) {
-            prescriptions = prescriptionRepo.getPrescriptionsByUserUid(user.get());
+            prescriptions = prescriptionRepo.findAllByUserUidOrderByDateDescIdDesc(user.get());
 
             for (Prescription p : prescriptions) {
                 responses.add(new GetPrescriptionsResponse(p.getId(), p.getName(), p.getDate()));
@@ -69,7 +71,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     @Override
     public GetPrescriptionResponse getPrescription(int prescriptionId, String id) {
-        Optional<Prescription> prescription = prescriptionRepo.getPrescriptionById(prescriptionId);
+        Optional<Prescription> prescription = prescriptionRepo.findAllById(prescriptionId);
         GetPrescriptionResponse response = new GetPrescriptionResponse();
         List<GetPrescriptionResponse.MedicineTaking> medicineTakings = new ArrayList<>();
         Optional<User> optionalUser = userRepo.findById(id);
@@ -131,7 +133,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     @Override
     public int update(UpdatePrescriptionRequest request) {
         Optional<Prescription> optionalPrescription =
-                prescriptionRepo.getPrescriptionById(request.getPrescriptionId());
+                prescriptionRepo.findAllById(request.getPrescriptionId());
 
         if (optionalPrescription.isPresent()) {
             Prescription updatedPrescription = optionalPrescription.get();
@@ -161,7 +163,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     @Override
     public boolean delete(int prescriptionId) {
-        Optional<Prescription> optionalPrescription = prescriptionRepo.getPrescriptionById(prescriptionId);
+        Optional<Prescription> optionalPrescription = prescriptionRepo.findAllById(prescriptionId);
 
         if (optionalPrescription.isPresent()) {
             prescriptionRepo.delete(optionalPrescription.get());
@@ -169,5 +171,24 @@ public class PrescriptionServiceImpl implements PrescriptionService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<GetPrescriptionsByDateResponse> getPrescriptionsByDate(LocalDate date, String id) {
+        Optional<User> user = userRepo.findById(id);
+        List<Prescription> prescriptions = new ArrayList<>();
+        List<GetPrescriptionsByDateResponse> responses = new ArrayList<>();
+
+        if (user.isPresent()) {
+            prescriptions = prescriptionRepo.findTop3ByUserUidAndDateLessThanEqualOrderByDateDescIdDesc(user.get(), date);
+
+            for (Prescription p : prescriptions) {
+                responses.add(new GetPrescriptionsByDateResponse(p.getName(), p.getDate()));
+            }
+
+            return responses;
+        }
+
+        return responses;
     }
 }
