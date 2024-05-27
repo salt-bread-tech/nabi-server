@@ -3,6 +3,7 @@ package tech.bread.solt.doctornyangserver.controller;
 import org.springframework.web.bind.annotation.*;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetRoutineTop3ByDateResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.service.RoutineService;
 
@@ -39,6 +40,11 @@ public class RoutineController {
     @GetMapping("/{date}")
     public List<ShowRoutineResponse> showRoutinePast(@PathVariable("date") LocalDate date, Principal principal) {
         return routineService.show(date, principal.getName());
+    }
+
+    @GetMapping("/date/{date}")
+    public List<GetRoutineTop3ByDateResponse> getRoutineTop3ByDate(@PathVariable("date") LocalDate date, Principal principal) {
+        return routineService.getRoutineTop3ByDate(date, principal.getName());
     }
 
     @DeleteMapping("/{routineId}")

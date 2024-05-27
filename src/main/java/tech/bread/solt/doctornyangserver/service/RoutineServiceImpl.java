@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetRoutineTop3ByDateResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Routine;
 import tech.bread.solt.doctornyangserver.model.entity.User;
@@ -111,6 +112,44 @@ public class RoutineServiceImpl implements RoutineService {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    @Override
+    public List<GetRoutineTop3ByDateResponse> getRoutineTop3ByDate(LocalDate date, String id) {
+        Optional<User> optionalUser = userRepo.findById(id);
+        List<GetRoutineTop3ByDateResponse> responses = new ArrayList<>();
+
+        if (optionalUser.isPresent()) {
+            int dayOfWeek = date.get(ChronoField.DAY_OF_WEEK);
+            if (dayOfWeek == 7)
+                dayOfWeek = 0;
+            LocalDate startDate = date.minusDays(dayOfWeek);
+            LocalDate endDate = startDate.plusDays(6);
+
+            List<Routine> routines = routineRepo.findTop3ByUserUidAndStartDateBetweenOrderByStartDateAscRoutineIdAsc(optionalUser.get(), startDate, endDate);
+
+            if (routines.isEmpty()) {
+                System.out.println("루틴 조회 실패: 등록된 루틴이 없음");
+                return responses;
+            }
+
+            for (Routine r: routines) {
+                GetRoutineTop3ByDateResponse response = GetRoutineTop3ByDateResponse.builder()
+                        .id(r.getRoutineId())
+                        .name(r.getRoutineName())
+                        .color(r.getColorCode())
+                        .max(r.getMaxPerform())
+                        .counts(r.getPerformCounts()).build();
+                responses.add(response);
+            }
+
+            System.out.println("루틴 조회 성공");
+            return responses;
+        }
+        else {
+            System.out.println("루틴 조회 실패: 유저가 존재하지 않음");
+            return responses;
         }
     }
 }

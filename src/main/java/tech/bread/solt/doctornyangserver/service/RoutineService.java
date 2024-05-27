@@ -2,6 +2,7 @@ package tech.bread.solt.doctornyangserver.service;
 
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRoutineRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.UpdateRoutineRequest;
+import tech.bread.solt.doctornyangserver.model.dto.response.GetRoutineTop3ByDateResponse;
 import tech.bread.solt.doctornyangserver.model.dto.response.ShowRoutineResponse;
 
 import java.time.LocalDate;
@@ -15,4 +16,6 @@ public interface RoutineService {
     List<ShowRoutineResponse> show(LocalDate date, String id);
 
     boolean delete(int routineId);
+
+    List<GetRoutineTop3ByDateResponse> getRoutineTop3ByDate(LocalDate date, String id);
 }
