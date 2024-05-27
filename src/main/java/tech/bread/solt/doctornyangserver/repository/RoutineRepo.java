@@ -19,4 +19,6 @@ public interface RoutineRepo extends JpaRepository<Routine, Integer> {
 
     boolean existsByUserUidAndRoutineNameAndTerm(User uid, String userName, int term);
     List<Routine> findByUserUidAndStartDateBetween(User uid, LocalDate startDate, LocalDate endDate);
+
+    List<Routine> findTop3ByUserUidAndStartDateBetweenOrderByStartDateAscRoutineIdAsc(User userUid, LocalDate startDate, LocalDate endDate);
 }
