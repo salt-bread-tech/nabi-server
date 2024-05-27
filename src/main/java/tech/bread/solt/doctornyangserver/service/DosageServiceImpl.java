@@ -80,7 +80,7 @@ public class DosageServiceImpl implements DosageService {
                     .get().getDate();
 
             for (int i = 0; i < doseDays; i++) {
-                for (int j = 0; j < medicine.getDailyDosage(); j++) {
+                for (int j = 0; j < (medicine.getDailyDosage() / medicine.getOnceDosage()); j++) {
                     dosageRepo.save(Dosage.builder()
                             .date(startDate.plusDays(i))
                             .userUid(u.get())
@@ -89,10 +89,10 @@ public class DosageServiceImpl implements DosageService {
                             .medicineTaken(false).build());
                 }
             }
-            System.out.println("복용 날짜 등록 완료");
+            log.info("복용 일정 등록 성공");
             return 200;
         }
-        System.out.println("복용 날짜 등록 실패");
+        log.warn("복용 일정 등록 실패");
         return 500;
     }
 
