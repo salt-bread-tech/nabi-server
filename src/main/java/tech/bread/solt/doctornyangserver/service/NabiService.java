@@ -13,4 +13,6 @@ public interface NabiService {
     List<GetChatResponse> getChats(String id, int page);
 
     int feed(String id);
+
+    String resetFeed();
 }
