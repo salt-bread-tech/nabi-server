@@ -39,4 +39,9 @@ public class NabiController {
     public int feed(Principal p) {
         return nabiService.feed(p.getName());
     }
+
+    @GetMapping("/feed/reset")
+    public String resetFeed() {
+        return nabiService.resetFeed();
+    }
 }

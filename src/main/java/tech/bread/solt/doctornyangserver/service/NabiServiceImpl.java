@@ -146,6 +146,21 @@ public class NabiServiceImpl implements NabiService {
         return result;
     }
 
+    @Override
+    public String resetFeed() {
+        List<User> fedUsers = userRepo.findByFedIsTrue();
+        List<User> users = new ArrayList<>();
+
+        for (User user : fedUsers) {
+            user.setFed(false);
+            users.add(user);
+        }
+
+        userRepo.saveAll(users);
+        System.out.println("먹이 주기 초기화 완료");
+        return "먹이 주기 초기화 완료";
+    }
+
 
     private static String removeLastSentence(String text) {
         int lastPeriodIndex = text.lastIndexOf(".");
