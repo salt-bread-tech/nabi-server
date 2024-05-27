@@ -2,6 +2,7 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tech.bread.solt.doctornyangserver.model.dto.request.ModifyScheduleRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.ScheduleRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ScheduleListResponse;
 import tech.bread.solt.doctornyangserver.model.entity.Schedule;
@@ -77,5 +78,31 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
         return schedulesByLocalDate;
+    }
+
+    @Override
+    public int modifySchedule(ModifyScheduleRequest request, String id) {
+        Optional<User> optionalUser = userRepo.findById(id);
+
+        if (optionalUser.isPresent()) {
+            Optional<Schedule> scheduleOptional = scheduleRepo.findById(request.getScheduleId());
+
+            if (scheduleOptional.isPresent()) {
+                Schedule schedule = scheduleOptional.get();
+                schedule.setText(request.getText());
+                schedule.setDate(request.getDate());
+
+                scheduleRepo.save(schedule);
+                System.out.println("스케줄 수정 성공");
+                return 200;
+            }
+            else {
+                System.out.println("스케줄 수정 실패: 스케줄 ID를 찾을 수 없음");
+                return 300;
+            }
+        } else {
+            System.out.println("스케줄 수정 실패: 유저를 찾을 수 없음");
+            return 500;
+        }
     }
 }

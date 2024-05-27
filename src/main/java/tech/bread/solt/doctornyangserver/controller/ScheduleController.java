@@ -1,6 +1,7 @@
 package tech.bread.solt.doctornyangserver.controller;
 
 import org.springframework.web.bind.annotation.*;
+import tech.bread.solt.doctornyangserver.model.dto.request.ModifyScheduleRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.ScheduleRegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.ScheduleListResponse;
 import tech.bread.solt.doctornyangserver.service.ScheduleService;
@@ -22,6 +23,11 @@ public class ScheduleController {
     public int registerSchedule(@RequestBody ScheduleRegisterRequest request, Principal principal){
         request.setId(principal.getName());
         return scheduleService.register(request);
+    }
+
+    @PutMapping()
+    public int modifySchedule(@RequestBody ModifyScheduleRequest request, Principal p) {
+        return scheduleService.modifySchedule(request, p.getName());
     }
 
     @DeleteMapping("/{scheduleId}")
