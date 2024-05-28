@@ -204,4 +204,22 @@ public class DosageServiceImpl implements DosageService {
         log.warn("등록 되지 않은 의약품");
         return 100;
     }
+
+    @Override
+    public boolean deleteByMedicineId(int medicineId) {
+        Optional<Medicine> optionalMedicine = medicineRepo.findById(medicineId);
+        if (optionalMedicine.isPresent()) {
+            List<Dosage> dosages = dosageRepo.findByMedicineId(optionalMedicine.get());
+
+            if (dosages.isEmpty()) {
+                log.warn("등록된 복용 일정이 없습니다.");
+                return false;
+            }
+            dosageRepo.deleteAll(dosages);
+            log.info("복용 일정 삭제 성공");
+            return true;
+        }
+        log.warn("해당 의약품이 존재하지 않음");
+        return false;
+    }
 }
