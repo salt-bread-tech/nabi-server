@@ -16,7 +16,8 @@ public class ShowDosageResponse {
     LocalDate date;
     int medicineId;
     String medicineName;
-    String times;
+    int times;
+    int dosage;
     boolean medicineTaken;
 
 }

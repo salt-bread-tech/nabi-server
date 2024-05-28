@@ -17,8 +17,10 @@ import tech.bread.solt.doctornyangserver.model.entity.User;
 import tech.bread.solt.doctornyangserver.repository.FoodInformationRepo;
 import tech.bread.solt.doctornyangserver.repository.IngestionRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
+import tech.bread.solt.doctornyangserver.util.IngestionTimes;
+import tech.bread.solt.doctornyangserver.util.IngestionTimesConverter;
 import tech.bread.solt.doctornyangserver.util.KeySet;
-import tech.bread.solt.doctornyangserver.util.Times;
+import tech.bread.solt.doctornyangserver.util.DosageTimes;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -140,7 +142,7 @@ public class DietServiceImpl implements DietService {
                 User user = optionalUser.get();
 
                 Ingestion ingestion = Ingestion.builder()
-                        .times(Times.ofOrdinal(Times.values().length-4+request.getTimes()))
+                        .ingestionTimes(IngestionTimes.ofOrdinal(request.getTimes()))
                         .userUid(user)
                         .foodId(foodInformationResult)
                         .date(request.getDate())
@@ -177,7 +179,7 @@ public class DietServiceImpl implements DietService {
                 result.add(GetDietResponse.builder()
                                 .ingestionId(ingestion.getId())
                                 .foodId(ingestion.getFoodId().getFoodId())
-                                .times(ingestion.getTimes())
+                                .ingestionTimes(ingestion.getIngestionTimes().ordinal())
                                 .name(f.getName())
                                 .servingSize(f.getServingSize())
                                 .totalIngestionSize(f.getTotalIngestionSize())
@@ -218,7 +220,7 @@ public class DietServiceImpl implements DietService {
             for (Ingestion ingestion : ingestionList) {
                 FoodInformation food = ingestion.getFoodId();
 
-                switch (ingestion.getTimes()) {
+                switch (ingestion.getIngestionTimes()) {
                     case BREAKFAST -> breakfastKcal += food.getCalories();
                     case LUNCH -> lunchKcal += food.getCalories();
                     case DINNER -> dinnerKcal += food.getCalories();
@@ -259,11 +261,12 @@ public class DietServiceImpl implements DietService {
     @Override
     public int updateIngestion(UpdateIngestionRequest request) {
         Optional<Ingestion> optionalIngestion = ingestionRepo.findById(request.getIngestionId());
+        IngestionTimes times = new IngestionTimesConverter().convertToEntityAttribute(request.getIngestionId());
 
         if (optionalIngestion.isPresent()){
             Ingestion ingestion = optionalIngestion.get();
             ingestion.setDate(request.getDate());
-            ingestion.setTimes(Times.ofOrdinal(Times.values().length-4+request.getTimes()));
+            ingestion.setIngestionTimes(times);
             ingestionRepo.save(ingestion);
             System.out.println("섭취 날짜, 시간대 수정 완료");
 

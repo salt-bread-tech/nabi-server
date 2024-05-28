@@ -1,11 +1,10 @@
 package tech.bread.solt.doctornyangserver.model.dto.response;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tech.bread.solt.doctornyangserver.util.Times;
+import tech.bread.solt.doctornyangserver.util.DosageTimes;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +14,7 @@ public class GetDietResponse {
 
     int ingestionId;
     int foodId;
-    Times times;
+    int ingestionTimes;
     String name;
     Double servingSize;
     Double totalIngestionSize;
