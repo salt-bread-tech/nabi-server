@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tech.bread.solt.doctornyangserver.util.Times;
+import tech.bread.solt.doctornyangserver.util.IngestionTimes;
+import tech.bread.solt.doctornyangserver.util.IngestionTimesConverter;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +22,8 @@ public class Ingestion {
     Integer id;
 
     @Column(name = "times")
-    Times times;
+    @Convert(converter = IngestionTimesConverter.class)
+    IngestionTimes ingestionTimes;
 
     @ManyToOne
     @JoinColumn(name = "user_uid")

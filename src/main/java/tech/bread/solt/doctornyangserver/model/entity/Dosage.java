@@ -5,11 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tech.bread.solt.doctornyangserver.util.Times;
-import tech.bread.solt.doctornyangserver.util.TimesConverter;
+import tech.bread.solt.doctornyangserver.util.TakingDosagesConverter;
+import tech.bread.solt.doctornyangserver.util.TakingDosages;
+import tech.bread.solt.doctornyangserver.util.DosageTimes;
+import tech.bread.solt.doctornyangserver.util.DosageTimesConverter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -26,8 +27,12 @@ public class Dosage {
     LocalDate date;
 
     @Column(name = "times")
-    @Convert(converter = TimesConverter.class)
-    Times times;
+    @Convert(converter = DosageTimesConverter.class)
+    DosageTimes times;
+
+    @Column(name = "dosages")
+    @Convert(converter = TakingDosagesConverter.class)
+    TakingDosages dosages;
 
     @Column(name = "medicine_taken")
     Boolean medicineTaken;

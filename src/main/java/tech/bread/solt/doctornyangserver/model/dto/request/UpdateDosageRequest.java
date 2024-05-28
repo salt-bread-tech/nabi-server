@@ -14,5 +14,5 @@ public class UpdateDosageRequest {
     int dosageId;
     LocalDate date;
     int times;
-    int dosage;
+    int dosages;
 }

@@ -15,8 +15,10 @@ import tech.bread.solt.doctornyangserver.repository.DosageRepo;
 import tech.bread.solt.doctornyangserver.repository.MedicineRepo;
 import tech.bread.solt.doctornyangserver.repository.PrescriptionRepo;
 import tech.bread.solt.doctornyangserver.repository.UserRepo;
-import tech.bread.solt.doctornyangserver.util.Times;
-import tech.bread.solt.doctornyangserver.util.TimesConverter;
+import tech.bread.solt.doctornyangserver.util.TakingDosages;
+import tech.bread.solt.doctornyangserver.util.TakingDosagesConverter;
+import tech.bread.solt.doctornyangserver.util.DosageTimes;
+import tech.bread.solt.doctornyangserver.util.DosageTimesConverter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -46,33 +48,22 @@ public class DosageServiceImpl implements DosageService {
             if (medicine.getTotalDosage() % medicine.getDailyDosage() > 0)
                 doseDays += 1;
 
-            if (medicine.isBreakfast()) {
-                switch (medicine.getMedicineDosage()) {
-                    case "식전" -> ordinals.add(0);
-                    case "식중" -> ordinals.add(1);
-                    case "식후" -> ordinals.add(2);
-                    case "상관 없음" -> ordinals.add(3);
+            int medicineTaking;
+            switch (medicine.getMedicineDosage()) {
+                case "식전" -> medicineTaking = 0;
+                case "식중" -> medicineTaking = 1;
+                case "식후" -> medicineTaking = 2;
+                case "상관 없음" -> medicineTaking = 3;
+                default -> {
+                    log.error("Illegal Arguments");
+                    return 100;
                 }
             }
-            if (medicine.isLunch()) {
-                switch (medicine.getMedicineDosage()) {
-                    case "식전" -> ordinals.add(4);
-                    case "식중" -> ordinals.add(5);
-                    case "식후" -> ordinals.add(6);
-                    case "상관 없음" -> ordinals.add(7);
-                }
-            }
-            if (medicine.isDinner()) {
-                switch (medicine.getMedicineDosage()) {
-                    case "식전" -> ordinals.add(8);
-                    case "식중" -> ordinals.add(9);
-                    case "식후" -> ordinals.add(10);
-                    case "상관 없음" -> ordinals.add(11);
-                }
-            }
-            if (medicine.isBeforeSleep()) {
-                ordinals.add(12);
-            }
+
+            if (medicine.isBreakfast()) ordinals.add(0);
+            if (medicine.isLunch()) ordinals.add(1);
+            if (medicine.isDinner()) ordinals.add(2);
+            if (medicine.isBeforeSleep()) ordinals.add(3);
 
             LocalDate startDate = prescriptionRepo
                     .findAllById(medicine.getPrescriptionId().getId())
@@ -83,7 +74,8 @@ public class DosageServiceImpl implements DosageService {
                     dosageRepo.save(Dosage.builder()
                             .date(startDate.plusDays(i))
                             .userUid(u.get())
-                            .times(Times.ofOrdinal(ordinals.get(j)))
+                            .times(DosageTimes.ofOrdinal(ordinals.get(j)))
+                            .dosages(TakingDosages.ofOrdinal(medicineTaking))
                             .medicineId(medicine)
                             .medicineTaken(false).build());
                 }
@@ -99,24 +91,27 @@ public class DosageServiceImpl implements DosageService {
     public Boolean take(DoneDosageRequest request) {
         Optional<User> u = userRepo.findById(request.getUserId());
         Medicine m = medicineRepo.findOneById(request.getMedicineId());
-        Times time = new TimesConverter().convertToEntityAttribute(request.getTimes());
+        DosageTimes time = new DosageTimesConverter().convertToEntityAttribute(request.getTimes());
+        TakingDosages takingDosages =
+                new TakingDosagesConverter().convertToEntityAttribute(request.getDosages());
 
         if (u.isPresent()) {
-            Optional<Dosage> d = dosageRepo.findByUserUidAndMedicineIdAndTimesAndDate(
-                    u.get(), m, time, request.getDate()
+            Optional<Dosage> d =
+                    dosageRepo.findByUserUidAndMedicineIdAndTimesAndDosagesAndDate(
+                            u.get(), m, time, takingDosages, request.getDate()
             );
             if (d.isPresent()) {
                 Dosage dosage = d.get();
                 dosage.setMedicineTaken(!dosage.getMedicineTaken());
                 dosageRepo.save(dosage);
 
-                System.out.println("변경 완료");
+                log.info("복용 일정 토글링");
                 return true;
             }
-            System.out.println("약 정보를 찾을 수 없습니다.");
+            log.warn("약 정보를 찾을 수 없습니다.");
             return false;
         }
-        System.out.println("유저 정보를 찾을 수 없습니다.");
+        log.warn("유저 정보를 찾을 수 없습니다.");
         return false;
     }
 
@@ -132,31 +127,34 @@ public class DosageServiceImpl implements DosageService {
                 return null;
             }
             else{
-                for (Dosage dosage : d) {
+                for (tech.bread.solt.doctornyangserver.model.entity.Dosage dosage : d) {
                     Medicine m = medicineRepo.findOneById(dosage.getMedicineId().getId());
                     responses.add(ShowDosageResponse.builder()
                             .dosageId(dosage.getId())
                             .date(dosage.getDate())
                             .medicineId(m.getId())
                             .medicineName(m.getMedicineName())
-                            .times(dosage.getTimes().getDesc())
+                            .times(dosage.getTimes().ordinal())
+                            .dosage(dosage.getDosages().ordinal())
                             .medicineTaken(dosage.getMedicineTaken()).build());
                 }
-                System.out.println("복용 일정 가져오기 성공");
+                log.info("복용 일정 가져오기 성공");
                 return responses;
             }
         }
-        System.out.println("찾고자 하는 User 없음");
+        log.warn("찾고자 하는 User 없음");
         return null;
     }
 
     @Override
     public boolean delete(int dosageId) {
-        try {
+        Optional<Dosage> dosageForDelete = dosageRepo.findById(dosageId);
+        if (dosageForDelete.isPresent()){
             dosageRepo.deleteById(dosageId);
-            System.out.println("복용 일정 삭제");
+            log.info("복용 일정 삭제");
             return true;
-        } catch (Exception e){
+        } else {
+            log.warn("찾고자 하는 복용 일정이 없음");
             return false;
         }
     }
@@ -164,43 +162,20 @@ public class DosageServiceImpl implements DosageService {
     @Override
     public int update(UpdateDosageRequest request) {
         Optional<Dosage> optionalDosage = dosageRepo.findById(request.getDosageId());
-        int times = 100;
-        if (request.getTimes() == 0) {
-            switch (request.getDosage()) {
-                case 0 -> times = 0;
-                case 1 -> times = 1;
-                case 2 -> times = 2;
-                case 3 -> times = 3;
-            }
-        }
-        else if (request.getTimes() == 1) {
-            switch (request.getDosage()) {
-                case 0 -> times = 4;
-                case 1 -> times = 5;
-                case 2 -> times = 6;
-                case 3 -> times = 7;
-            }
-        }
-        else if (request.getTimes() == 2) {
-            switch (request.getDosage()) {
-                case 0 -> times = 8;
-                case 1 -> times = 9;
-                case 2 -> times = 10;
-                case 3 -> times = 11;
-            }
-        }
-        else times = 12;
+        TakingDosages taking = new TakingDosagesConverter().convertToEntityAttribute(request.getDosages());
+        DosageTimes time = new DosageTimesConverter().convertToEntityAttribute(request.getTimes());
 
-        if (optionalDosage.isPresent() && times <= 12) {
-            Dosage updateDosage = optionalDosage.get();
+        if (optionalDosage.isPresent()) {
+            tech.bread.solt.doctornyangserver.model.entity.Dosage updateDosage = optionalDosage.get();
             updateDosage.setDate(request.getDate());
-            updateDosage.setTimes(Times.ofOrdinal(times));
+            updateDosage.setTimes(time);
+            updateDosage.setDosages(taking);
             updateDosage.setMedicineTaken(false);
             dosageRepo.save(updateDosage);
             log.info("복용 일정 수정 성공");
             return 200;
         }
-        log.error("복용 일정을 찾을 수 없음");
+        log.warn("복용 일정을 찾을 수 없음");
         return 100;
     }
 
@@ -208,48 +183,25 @@ public class DosageServiceImpl implements DosageService {
     public int customize(RegisterCustomDosageRequest request) {
         Optional<Medicine> optionalMedicine = medicineRepo.findById(request.getMedicineId());
         Optional<User> optionalUser = userRepo.findById(request.getUserId());
-        int times = 100;
+        TakingDosages taking = new TakingDosagesConverter().convertToEntityAttribute(request.getDosage());
+        DosageTimes time = new DosageTimesConverter().convertToEntityAttribute(request.getTime());
 
         if (optionalMedicine.isPresent() && optionalUser.isPresent()) {
             Medicine medicine = optionalMedicine.get();
             User user = optionalUser.get();
-            if (request.getTime() == 0) {
-                switch (request.getDosage()) {
-                    case 0 -> times = 0;
-                    case 1 -> times = 1;
-                    case 2 -> times = 2;
-                    case 3 -> times = 3;
-                }
-            }
-            else if (request.getTime() == 1) {
-                switch (request.getDosage()) {
-                    case 0 -> times = 4;
-                    case 1 -> times = 5;
-                    case 2 -> times = 6;
-                    case 3 -> times = 7;
-                }
-            }
-            else if (request.getTime() == 2) {
-                switch (request.getDosage()) {
-                    case 0 -> times = 8;
-                    case 1 -> times = 9;
-                    case 2 -> times = 10;
-                    case 3 -> times = 11;
-                }
-            }
-            else times = 12;
 
-            dosageRepo.save(Dosage.builder()
+            dosageRepo.save(tech.bread.solt.doctornyangserver.model.entity.Dosage.builder()
                     .date(request.getDate())
                     .userUid(user)
-                    .times(Times.ofOrdinal(times))
+                    .times(time)
+                    .dosages(taking)
                     .medicineId(medicine)
                     .medicineTaken(false).build());
 
             log.info("등록 성공");
             return 200;
         }
-        log.warn("등록되지 의약품");
+        log.warn("등록 되지 않은 의약품");
         return 100;
     }
 }
