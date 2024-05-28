@@ -36,8 +36,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/{date}")
-    public Map<LocalDate, List<ScheduleListResponse>>
-    getScheduleList(@PathVariable("date") LocalDate date, Principal principal) {
+    public Map<LocalDate, List<ScheduleListResponse>> getScheduleList(@PathVariable("date") LocalDate date, Principal principal) {
         return scheduleService.getScheduleList(date, principal.getName());
     }
 

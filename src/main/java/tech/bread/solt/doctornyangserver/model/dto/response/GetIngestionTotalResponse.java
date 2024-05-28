@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GetIngestionTotalResponse {
 
-    double totalKcal;
-    double breakfastKcal;
-    double lunchKcal;
-    double dinnerKcal;
-    double snackKcal;
-    double totalCarbohydrate;
-    double totalProtein;
-    double totalFat;
+    private double totalKcal;
+    private double breakfastKcal;
+    private double lunchKcal;
+    private double dinnerKcal;
+    private double snackKcal;
+    private double totalCarbohydrate;
+    private double totalProtein;
+    private double totalFat;
 
 }
