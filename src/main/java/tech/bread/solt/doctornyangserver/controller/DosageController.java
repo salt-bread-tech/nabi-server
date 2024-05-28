@@ -53,4 +53,10 @@ public class DosageController {
         request.setUserId(principal.getName());
         return dosageService.customize(request);
     }
+
+
+    @DeleteMapping("/medicine/{medicineId}")
+    public boolean deleteByMedicineId(@PathVariable("medicineId") int medicineId) {
+        return dosageService.deleteByMedicineId(medicineId);
+    }
 }

@@ -15,4 +15,6 @@ public interface DosageService {
     boolean delete(int dosageId);
     int update(UpdateDosageRequest request);
     int customize(RegisterCustomDosageRequest request);
+
+    boolean deleteByMedicineId(int medicineId);
 }
