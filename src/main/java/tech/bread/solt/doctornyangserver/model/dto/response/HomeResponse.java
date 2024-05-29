@@ -19,7 +19,7 @@ public class HomeResponse {
     private HomeDiet diets;
     private List<HomeRoutine> routines;
     private List<HomePrescription> prescriptions;
-    private List<String> dosages;
+    private List<HomeDosage> dosages;
 
     @AllArgsConstructor
     @Data
@@ -60,5 +60,14 @@ public class HomeResponse {
     public class HomePrescription {
         private String name;
         private LocalDate date;
+    }
+
+    @AllArgsConstructor
+    @Data
+    @NoArgsConstructor
+    public class HomeDosage {
+        private String name;
+        private int times;
+        private int dosage;
     }
 }

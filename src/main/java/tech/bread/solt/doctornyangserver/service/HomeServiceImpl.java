@@ -54,7 +54,7 @@ public class HomeServiceImpl implements HomeService {
             HomeResponse.HomeDiet homeDiet = homeResponse.new HomeDiet();
             List<HomeResponse.HomeRoutine> homeRoutines = new ArrayList<>();
             List<HomeResponse.HomePrescription> homePrescriptions = new ArrayList<>();
-            List<String> homeDosages = new ArrayList<>();
+            List<HomeResponse.HomeDosage> homeDosages = new ArrayList<>();
 
             for (Schedule s : scheduleList) {
                 homeSchedules.add(homeResponse.new HomeSchedule(s.getDate(), s.getText()));
@@ -118,16 +118,12 @@ public class HomeServiceImpl implements HomeService {
             }
 
             for (Dosage d : dosageList) {
-                System.out.println(d);
                 Optional<Medicine> optionalMedicine = medicineRepo.findById(d.getMedicineId().getId());
 
                 if (optionalMedicine.isPresent()) {
-                    Medicine medicine = optionalMedicine.get();
-                    System.out.println(medicine);
-
-                    if (!homeDosages.contains(medicine.getMedicineName())) {
-                        homeDosages.add(medicine.getMedicineName());
-                    }
+                    homeDosages.add(homeResponse.new HomeDosage(optionalMedicine.get().getMedicineName(),
+                            d.getTimes().ordinal(),
+                            d.getDosages().ordinal()));
                 }
             }
 
