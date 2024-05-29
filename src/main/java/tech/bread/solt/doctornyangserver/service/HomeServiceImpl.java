@@ -2,6 +2,7 @@ package tech.bread.solt.doctornyangserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tech.bread.solt.doctornyangserver.model.dto.request.WidgetSequenceRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.HomeResponse;
 import tech.bread.solt.doctornyangserver.model.entity.*;
 import tech.bread.solt.doctornyangserver.repository.*;
@@ -10,9 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +24,7 @@ public class HomeServiceImpl implements HomeService {
     private final PrescriptionRepo prescriptionRepo;
     private final DosageRepo dosageRepo;
     private final MedicineRepo medicineRepo;
+    private final WidgetRepo widgetRepo;
 
     @Override
     public HomeResponse getHomeData(LocalDate date, String id) {
@@ -141,6 +141,57 @@ public class HomeServiceImpl implements HomeService {
         System.out.println(homeResponse);
 
         return homeResponse;
+    }
+
+    @Override
+    public String modifyWidgetSequence(WidgetSequenceRequest request, String id) {
+        Optional<User> optionalUser = userRepo.findById(id);
+
+        if (optionalUser.isEmpty()) {
+            System.out.println("위젯 순서 수정 실패: 유저가 존재하지 않음");
+            return "300";
+        }
+
+        User user = optionalUser.get();
+        Optional<Widget> optionalWidget = widgetRepo.findByUserUid(user);
+
+        if (optionalWidget.isEmpty()) {
+            System.out.println("위젯 순서 수정 실패: 위젯 순서가 지정되어 있지 않음");
+            return "400";
+        }
+
+        Widget widget = optionalWidget.get();
+        widget.setUsed(request.getUsed());
+        widget.setUnused(request.getUnused());
+        widgetRepo.save(widget);
+        System.out.println("위젯 순서 수정 완료");
+
+        return "200";
+    }
+
+    @Override
+    public Map<String, String> getWidgetSequence(String id) {
+        Optional<User> optionalUser = userRepo.findById(id);
+        Map<String, String> result = new HashMap<>();
+
+        if (optionalUser.isEmpty()) {
+            System.out.println("위젯 순서 조회 실패: 유저가 존재하지 않음");
+            return result;
+        }
+
+        User user = optionalUser.get();
+        Optional<Widget> optionalWidget = widgetRepo.findByUserUid(user);
+
+        if (optionalWidget.isEmpty()) {
+            System.out.println("위젯 순서 조회 실패: 위젯 순서가 지정되어 있지 않음");
+            return result;
+        }
+
+        Widget widget = optionalWidget.get();
+        result.put("used", widget.getUsed());
+        result.put("unused", widget.getUnused());
+
+        return result;
     }
 
 }
