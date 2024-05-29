@@ -10,14 +10,8 @@ import tech.bread.solt.doctornyangserver.model.dto.request.ModifyUserRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.LoginRequest;
 import tech.bread.solt.doctornyangserver.model.dto.request.RegisterRequest;
 import tech.bread.solt.doctornyangserver.model.dto.response.*;
-import tech.bread.solt.doctornyangserver.model.entity.BMIRange;
-import tech.bread.solt.doctornyangserver.model.entity.Schedule;
-import tech.bread.solt.doctornyangserver.model.entity.Tokens;
-import tech.bread.solt.doctornyangserver.model.entity.User;
-import tech.bread.solt.doctornyangserver.repository.BMIRangeRepo;
-import tech.bread.solt.doctornyangserver.repository.ScheduleRepo;
-import tech.bread.solt.doctornyangserver.repository.TokensRepo;
-import tech.bread.solt.doctornyangserver.repository.UserRepo;
+import tech.bread.solt.doctornyangserver.model.entity.*;
+import tech.bread.solt.doctornyangserver.repository.*;
 import tech.bread.solt.doctornyangserver.security.JwtProvider;
 import tech.bread.solt.doctornyangserver.util.Gender;
 
@@ -36,6 +30,7 @@ public class UserServiceImpl implements UserService{
     private final BMIRangeRepo bmiRangeRepo;
     private final ScheduleRepo scheduleRepo;
     private final TokensRepo tokensRepo;
+    private final WidgetRepo widgetRepo;
 
     private final JwtProvider jwtProvider;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -90,7 +85,7 @@ public class UserServiceImpl implements UserService{
                     String password = request.getPassword();
                     String encodedPassword = passwordEncoder.encode(password);
                     request.setPassword(encodedPassword);
-                    userRepo.save(User.builder()
+                    User user = User.builder()
                             .id(request.getId())
                             .password(request.getPassword())
                             .nickname(request.getNickname())
@@ -104,8 +99,15 @@ public class UserServiceImpl implements UserService{
                             .fed(false)
                             .likeability(0)
                             .userRole("ROLE_USER")
-                            .createAt(LocalDate.now()).build());
+                            .createAt(LocalDate.now()).build();
+
+                    userRepo.save(user);
                     log.info("회원가입 성공");
+
+                    widgetRepo.save(Widget.builder()
+                            .userUid(user)
+                            .used("01234").build());
+                    log.info("위젯 순서 등록 성공");
                 }
                 catch (Exception e) {
                     log.error("Critical Exception {}", e.toString());
