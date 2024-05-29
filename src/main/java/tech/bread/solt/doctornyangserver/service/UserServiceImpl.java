@@ -51,74 +51,74 @@ public class UserServiceImpl implements UserService{
         Pattern patternId = Pattern.compile("^[A-Za-z0-9]{4,}$");
         Pattern patternEmail = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(?:\\.[A-Za-z]{2,})?$");
         Pattern patternPassword = Pattern.compile("^(?=.*[0-9])(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*()\\-_=+\\\\\\|{}\\[\\]:;\"'<>,.?/]{8,20}$");
-        Gender g;
-        String userId = request.getId();
-        boolean isExistId = userRepo.existsById(userId);
 
-        if (isExistId) {
+        if (request.getNickname().length() < 2 || request.getNickname().length() > 20) {
+            log.warn("닉네임 길이 오류: {}", request.getNickname());
+            return RegisterResponse.nicknameFormatError();
+        }
+
+        if (!patternId.matcher(request.getId()).find() && !patternEmail.matcher(request.getId()).find()) {
+            log.warn("아이디 형식 오류: {}", request.getId());
+            return RegisterResponse.idFormatError();
+        }
+
+        if (!patternPassword.matcher(request.getPassword()).find()) {
+            log.warn("비밀번호 형식 오류: {}", request.getPassword());
+            return RegisterResponse.passwordFormatError();
+        }
+
+        if (userRepo.existsById(request.getId())) {
             log.warn("아이디 중복: {}", request.getId());
             return RegisterResponse.duplicateId();
         }
-        else {
-            if ((patternId.matcher(request.getId()).find() || patternEmail.matcher(request.getId()).find())
-                    && patternPassword.matcher(request.getPassword()).find()) {
 
-                double bmi = calcBMI(request.getWeight(), request.getHeight());
-                int bmiId = setBMIRangeId(bmi);
-                BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
-                if (request.getHeight() > 251 || request.getHeight() < 65){
-                    log.warn("입력한 키가 유효 범위를 벗어남: {}", request.getHeight());
-                    return RegisterResponse.certificationFail();
-                }
-                if (request.getWeight() > 769 || request.getWeight() < 6 ) {
-                    log.warn("입력한 몸무게가 유효 범위를 벗어남: {}", request.getWeight());
-                    return RegisterResponse.certificationFail();
-                }
-                double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
-
-                if (request.getSex().equals("남성"))
-                    g = Gender.MALE;
-                else
-                    g = Gender.FEMALE;
-
-                try {
-                    String password = request.getPassword();
-                    String encodedPassword = passwordEncoder.encode(password);
-                    request.setPassword(encodedPassword);
-                    User user = User.builder()
-                            .id(request.getId())
-                            .password(request.getPassword())
-                            .nickname(request.getNickname())
-                            .birthDate(request.getBirthDate())
-                            .gender(g)
-                            .height(request.getHeight())
-                            .weight(request.getWeight())
-                            .bmr(bmr)
-                            .bmiRangeId(bmiRange)
-                            .doneTutorial(false)
-                            .fed(false)
-                            .likeability(0)
-                            .userRole("ROLE_USER")
-                            .createAt(LocalDate.now()).build();
-
-                    userRepo.save(user);
-                    log.info("회원가입 성공");
-
-                    widgetRepo.save(Widget.builder()
-                            .userUid(user)
-                            .used("01234").build());
-                    log.info("위젯 순서 등록 성공");
-                }
-                catch (Exception e) {
-                    log.error("Critical Exception {}", e.toString());
-                    throw new RuntimeException(e);
-                }
-            }
-            else {
-                log.warn("아이디 {}, 비밀번호 {} 형식 불일치", request.getId(), request.getPassword());
-                return RegisterResponse.certificationFail();
-            }
+        if (request.getHeight() > 251 || request.getHeight() < 65){
+            log.warn("신장 입력 오류: {}", request.getHeight());
+            return RegisterResponse.heightFormatError();
         }
+
+        if (request.getWeight() > 769 || request.getWeight() < 6 ) {
+            log.warn("체중 입력 오류: {}", request.getWeight());
+            return RegisterResponse.weightFormatError();
+        }
+
+        Gender gender = request.getSex().equals("남성")? Gender.MALE : Gender.FEMALE;
+
+        double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
+
+        double bmi = calcBMI(request.getWeight(), request.getHeight());
+        BMIRange bmiRange = bmiRangeRepo.findOneById(getBMIRangeId(bmi));
+
+        try {
+            User user = User.builder()
+                    .id(request.getId())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .nickname(request.getNickname())
+                    .birthDate(request.getBirthDate())
+                    .gender(gender)
+                    .height(request.getHeight())
+                    .weight(request.getWeight())
+                    .bmr(bmr)
+                    .bmiRangeId(bmiRange)
+                    .doneTutorial(false)
+                    .fed(false)
+                    .likeability(0)
+                    .userRole("ROLE_USER")
+                    .createAt(LocalDate.now()).build();
+
+            userRepo.save(user);
+            log.info("회원가입 성공");
+
+            widgetRepo.save(Widget.builder()
+                    .userUid(user)
+                    .used("01234").build());
+            log.info("위젯 순서 등록 성공");
+        }
+        catch (Exception e) {
+            log.error("Critical Exception {}", e.toString());
+            throw new RuntimeException(e);
+        }
+
         return RegisterResponse.success();
     }
 
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService{
     public int modifyUser(ModifyUserRequest request) {
         User u;
         double bmi = calcBMI(request.getWeight(), request.getHeight());
-        int bmiId = setBMIRangeId(bmi);
+        int bmiId = getBMIRangeId(bmi);
         BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
         Gender g;
         if (request.getHeight() > 251 || request.getHeight() < 65){
@@ -237,21 +237,19 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    private int setBMIRangeId(double bmi){
-        int bmiId = 0;
-        List<BMIRange> ranges = bmiRangeRepo.findAll();
+    private int getBMIRangeId(double bmi){
+        List<BMIRange> ranges = bmiRangeRepo.findAllByOrderByIdAsc();
 
-        for (BMIRange b : ranges){
-            if(bmi < 18.5)
-                return 0;
-            else if (bmi > 35.0) {
-                return 5;
-            } else if(b.getMax() < bmi){
-                bmiId = b.getId() + 1;
+        if (bmi < ranges.get(0).getMax())
+            return 0;
+
+        for (int i = 1; i < ranges.size(); i++) {
+            if (bmi < ranges.get(i).getMax()) {
+                return i;
             }
         }
 
-        return bmiId;
+        return ranges.size()-1;
     }
 
     private double calcBMR(String sex, double weight, double height, int age) {

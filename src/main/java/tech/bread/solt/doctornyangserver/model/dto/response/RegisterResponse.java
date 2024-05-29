@@ -17,6 +17,31 @@ public class RegisterResponse extends ResponseDto {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    public static ResponseEntity<ResponseDto> nicknameFormatError() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseDto(ResponseCode.NICKNAME_VALIDATION_FAIL, ResponseMessage.NICKNAME_VALIDATION_FAIL));
+    }
+
+    public static ResponseEntity<ResponseDto> idFormatError() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseDto(ResponseCode.ID_VALIDATION_FAIL, ResponseMessage.ID_VALIDATION_FAIL));
+    }
+
+    public static ResponseEntity<ResponseDto> passwordFormatError() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseDto(ResponseCode.PW_VALIDATION_FAIL, ResponseMessage.PW_VALIDATION_FAIL));
+    }
+
+    public static ResponseEntity<ResponseDto> heightFormatError() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseDto(ResponseCode.HEIGHT_VALIDATION_FAIL, ResponseMessage.HEIGHT_VALIDATION_FAIL));
+    }
+
+    public static ResponseEntity<ResponseDto> weightFormatError() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseDto(ResponseCode.WEIGHT_VALIDATION_FAIL, ResponseMessage.WEIGHT_VALIDATION_FAIL));
+    }
+
     public static ResponseEntity<ResponseDto> duplicateId() {
         ResponseDto response = new ResponseDto(ResponseCode.DUPLICATE_ID
                 , ResponseMessage.DUPLICATE_ID);
