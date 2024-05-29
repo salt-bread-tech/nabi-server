@@ -226,6 +226,9 @@ public class UserServiceImpl implements UserService{
         Optional<User> user = userRepo.findById(userId);
         if (user.isEmpty()) return false;
         try {
+            Optional<Widget> widget = widgetRepo.findByUserUid(user.get());
+            widget.ifPresent(widgetRepo::delete);
+
             userRepo.deleteById(user.get().getUid());
             return true;
         } catch (Exception e) {
