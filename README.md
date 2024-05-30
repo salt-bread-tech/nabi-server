@@ -1,7 +1,11 @@
+
+<img width="1357" alt="Frame 27" src="https://github.com/salt-bread-tech/nabi-server/assets/100851180/9a14bc1e-881a-4ffe-bbc9-3b0da2043a97">
+
 # 🐱 NABI
 > 일상 대화 챗봇 '나비'와 함께하는 자기 관리 애플리케이션
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fsalt-bread-tech%2Fnabi-server&count_bg=%23D3EAFF&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+
 
 | ![image](https://github.com/salt-bread-tech/nabi-server/assets/83108398/9f567e4e-3cc5-4d59-bd2e-7a6c93e750b5) | ![image](https://github.com/salt-bread-tech/nabi-server/assets/83108398/26c5dc35-4713-4bc1-887c-85c313a3e94f) | ![image](https://github.com/salt-bread-tech/nabi-server/assets/83108398/c949ef25-10b7-4129-8d9b-daf79a426049) | ![image](https://github.com/salt-bread-tech/nabi-server/assets/83108398/7f6c17c7-f6a1-4f89-99d1-a8f316a541cd) |
 | --- | --- | --- | --- |
