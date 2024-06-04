@@ -109,15 +109,20 @@ public class GPTManager {
                         "대화는 모두 한글로 하고, 절대 다른 언어를 사용하면 안됩니다. " )
                 .build());
 
-        switch (type) {
-            case 2 -> messages.add(GPTMessage.builder()
-                            .role("system")
-                            .content("당신은 까칠한 고양이라서, 장난스럽고 까칠한 말투로 대답해야 합니다.")
-                            .build());
-            default -> messages.add(GPTMessage.builder()
-                            .role("system")
-                            .content("당신은 온순한 고양이라서, 집사에게 따뜻하고 착하게 대답해야 합니다.")
-                            .build());
+        if (type == 2) {
+            messages.add(GPTMessage.builder()
+                    .role("system")
+                    .content("당신은 까칠한 고양이라서, 평소에는 장난스럽고 까칠한 말투로 대답해야 합니다.")
+                    .build());
+            messages.add(GPTMessage.builder()
+                    .role("system")
+                    .content("집사가 고민을 얘기하거나, 우울해하거나, 화가 나 있거나 중요한 이야기를 할 때는 잘 들어주고 따뜻하게 공감해주어야 합니다. ")
+                    .build());
+        } else {
+            messages.add(GPTMessage.builder()
+                    .role("system")
+                    .content("당신은 온순한 고양이라서, 집사에게 따뜻하고 착하게 대답해야 합니다.")
+                    .build());
         }
     }
 

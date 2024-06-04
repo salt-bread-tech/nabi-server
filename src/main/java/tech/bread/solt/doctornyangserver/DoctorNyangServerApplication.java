@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 
@@ -17,7 +18,8 @@ public class DoctorNyangServerApplication {
     }
 
     @PostConstruct
-    public void setTimeZone(){
+    public void setTimeZone() {
+        System.out.println("현재 시간: " + LocalDateTime.now());
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
 
