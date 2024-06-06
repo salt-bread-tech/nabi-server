@@ -72,34 +72,34 @@ public class UserServiceImpl implements UserService{
             return RegisterResponse.duplicateId();
         }
 
-        if (request.getHeight() > 251 || request.getHeight() < 65){
-            log.warn("신장 입력 오류: {}", request.getHeight());
-            return RegisterResponse.heightFormatError();
-        }
+//        if (request.getHeight() > 251 || request.getHeight() < 65){
+//            log.warn("신장 입력 오류: {}", request.getHeight());
+//            return RegisterResponse.heightFormatError();
+//        }
+//
+//        if (request.getWeight() > 769 || request.getWeight() < 6 ) {
+//            log.warn("체중 입력 오류: {}", request.getWeight());
+//            return RegisterResponse.weightFormatError();
+//        }
 
-        if (request.getWeight() > 769 || request.getWeight() < 6 ) {
-            log.warn("체중 입력 오류: {}", request.getWeight());
-            return RegisterResponse.weightFormatError();
-        }
+//        Gender gender = request.getSex().equals("남성")? Gender.MALE : Gender.FEMALE;
 
-        Gender gender = request.getSex().equals("남성")? Gender.MALE : Gender.FEMALE;
-
-        double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
-
-        double bmi = calcBMI(request.getWeight(), request.getHeight());
-        BMIRange bmiRange = bmiRangeRepo.findOneById(getBMIRangeId(bmi));
+//        double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
+//
+//        double bmi = calcBMI(request.getWeight(), request.getHeight());
+//        BMIRange bmiRange = bmiRangeRepo.findOneById(getBMIRangeId(bmi));
 
         try {
             User user = User.builder()
                     .id(request.getId())
                     .password(passwordEncoder.encode(request.getPassword()))
                     .nickname(request.getNickname())
-                    .birthDate(request.getBirthDate())
-                    .gender(gender)
-                    .height(request.getHeight())
-                    .weight(request.getWeight())
-                    .bmr(bmr)
-                    .bmiRangeId(bmiRange)
+//                    .birthDate(request.getBirthDate())
+//                    .gender(gender)
+//                    .height(request.getHeight())
+//                    .weight(request.getWeight())
+//                    .bmr(bmr)
+//                    .bmiRangeId(bmiRange)
                     .doneTutorial(false)
                     .fed(false)
                     .likeability(0)
@@ -159,61 +159,63 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int modifyUser(ModifyUserRequest request) {
-        User u;
-        double bmi = calcBMI(request.getWeight(), request.getHeight());
-        int bmiId = getBMIRangeId(bmi);
-        BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
-        Gender g;
-        if (request.getHeight() > 251 || request.getHeight() < 65){
-            log.warn("입력한 키가 유효 범위를 벗어남: {}", request.getHeight());
-            return 300;
-        }
-        if (request.getWeight() > 769 || request.getWeight() < 6 ) {
-            log.warn("입력한 몸무게가 유효 범위를 벗어남: {}", request.getWeight());
-            return 300;
-        }
-        double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
-
-        if (request.getSex().equals("남성"))
-            g = Gender.MALE;
-        else
-            g = Gender.FEMALE;
-
-        Optional<User> user = userRepo.findById(request.getId());
-        if(user.isPresent()) {
-            u = user.get();
-            u.setHeight(request.getHeight());
-            u.setWeight(request.getWeight());
-            u.setBirthDate(request.getBirth());
-            u.setGender(g);
-            u.setBmr(bmr);
-            u.setBmiRangeId(bmiRange);
-            userRepo.save(u);
-            log.info("사용자 정보 수정 완료 ID: {}", user.get().getId());
-        }
-        return 200;
+        return 0;
+//        User u;
+//        double bmi = calcBMI(request.getWeight(), request.getHeight());
+//        int bmiId = getBMIRangeId(bmi);
+//        BMIRange bmiRange = bmiRangeRepo.findOneById(bmiId);
+//        Gender g;
+//        if (request.getHeight() > 251 || request.getHeight() < 65){
+//            log.warn("입력한 키가 유효 범위를 벗어남: {}", request.getHeight());
+//            return 300;
+//        }
+//        if (request.getWeight() > 769 || request.getWeight() < 6 ) {
+//            log.warn("입력한 몸무게가 유효 범위를 벗어남: {}", request.getWeight());
+//            return 300;
+//        }
+//        double bmr = calcBMR(request.getSex(), request.getWeight(), request.getHeight(), request.getAge());
+//
+//        if (request.getSex().equals("남성"))
+//            g = Gender.MALE;
+//        else
+//            g = Gender.FEMALE;
+//
+//        Optional<User> user = userRepo.findById(request.getId());
+//        if(user.isPresent()) {
+//            u = user.get();
+//            u.setHeight(request.getHeight());
+//            u.setWeight(request.getWeight());
+//            u.setBirthDate(request.getBirth());
+//            u.setGender(g);
+//            u.setBmr(bmr);
+//            u.setBmiRangeId(bmiRange);
+//            userRepo.save(u);
+//            log.info("사용자 정보 수정 완료 ID: {}", user.get().getId());
+//        }
+//        return 200;
     }
 
     @Override
     public UserInfoResponse getUser(String id) {
         Optional<User> u = userRepo.findById(id);
         UserInfoResponse userInfoResponse;
-        String gender;
+//        String gender;
         if(u.isPresent()) {
             User user = u.get();
-            Optional<BMIRange> bmi = bmiRangeRepo.findById(user.getBmiRangeId().getId());
-            if (user.getGender().toString().equals("MALE"))
-                gender = "남성";
-            else gender = "여성";
+//            Optional<BMIRange> bmi = bmiRangeRepo.findById(user.getBmiRangeId().getId());
+//            if (user.getGender().toString().equals("MALE"))
+//                gender = "남성";
+//            else gender = "여성";
             userInfoResponse = UserInfoResponse.builder()
                     .id(user.getId())
                     .nickName(user.getNickname())
-                    .birth(user.getBirthDate())
-                    .bmr(user.getBmr())
-                    .gender(gender)
-                    .weight(user.getWeight())
-                    .height(user.getHeight())
-                    .bmiRangeName(bmi.get().getName()).build();
+//                    .birth(user.getBirthDate())
+//                    .bmr(user.getBmr())
+//                    .gender(gender)
+//                    .weight(user.getWeight())
+//                    .height(user.getHeight())
+//                    .bmiRangeName(bmi.get().getName())
+                    .build();
 
             return userInfoResponse;
         }
