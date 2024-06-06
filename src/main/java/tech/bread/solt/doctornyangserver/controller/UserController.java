@@ -31,11 +31,11 @@ public class UserController{
         return userService.login(request);
     }
 
-    @PutMapping()
-    public int modifyUser(@RequestBody ModifyUserRequest request, Principal p){
-        request.setId(p.getName());
-        return userService.modifyUser(request);
-    }
+//    @PutMapping()
+//    public int modifyUser(@RequestBody ModifyUserRequest request, Principal p){
+//        request.setId(p.getName());
+//        return userService.modifyUser(request);
+//    }
 
     @GetMapping()
     public UserInfoResponse getUser(Principal p) {

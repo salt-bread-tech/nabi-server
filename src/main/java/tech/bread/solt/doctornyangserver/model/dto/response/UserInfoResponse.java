@@ -15,10 +15,10 @@ import java.time.LocalDate;
 public class UserInfoResponse {
     String id;
     String nickName;
-    LocalDate birth;
-    String gender;
-    double height;
-    double weight;
-    double bmr;
-    String bmiRangeName;
+//    LocalDate birth;
+//    String gender;
+//    double height;
+//    double weight;
+//    double bmr;
+//    String bmiRangeName;
 }
